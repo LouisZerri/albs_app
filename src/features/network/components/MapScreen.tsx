@@ -132,10 +132,10 @@ export function MapScreen() {
           onMapPress(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)
         }
       >
-        {/* La clé remonte tout le contenu quand le réseau change : le fond de secours doit être
+        {/* La clé remonte tout le contenu quand le réseau ou le thème change : le fond de secours doit être
             ajouté AVANT les tracés pour être dessiné dessous (ordre d'ajout = ordre de dessin). */}
-        <Fragment key={online ? 'online' : 'offline'}>
-          {online ? null : <OfflineBasemap latitudeDelta={latDelta} />}
+        <Fragment key={`${online ? 'online' : 'offline'}-${mode}`}>
+          {online ? null : <OfflineBasemap />}
 
           {network.data.lines.flatMap((line) => {
             const dim = lineId !== null && line.id !== lineId;

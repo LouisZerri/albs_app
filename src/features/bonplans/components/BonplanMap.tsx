@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Text, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
@@ -32,8 +32,6 @@ export function BonplanMap({
   const colors = useThemeColors();
   const mapRef = useRef<MapView>(null);
   const { online } = useSyncStatus();
-  // Zoom courant : règle l'épaisseur de la Seine sur le fond de secours.
-  const [latDelta, setLatDelta] = useState(0.008);
   const spots = bonplans.flatMap((b) => {
     const coordinate = coordinateOf(b);
     return coordinate ? [{ bonplan: b, coordinate }] : [];
@@ -67,10 +65,9 @@ export function BonplanMap({
       showsPointsOfInterests={false}
       showsCompass={false}
       toolbarEnabled={false}
-      onRegionChangeComplete={(region) => setLatDelta(region.latitudeDelta)}
     >
       {/* Sans réseau, le fond de carte ne se charge pas : l'app dessine le sien. */}
-      {online ? null : <OfflineBasemap latitudeDelta={latDelta} />}
+      {online ? null : <OfflineBasemap />}
 
       <Marker coordinate={station} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false}>
         <View

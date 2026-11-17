@@ -3,11 +3,6 @@ import { Polygon, Polyline } from 'react-native-maps';
 import { PARIS_OUTLINE, RIVERS, type BasemapPath } from '@/shared/constants/parisBasemap';
 import { useThemeColors } from '@/shared/theme';
 
-type Props = {
-  /** Hauteur visible de la carte, en degrés de latitude (le zoom) : règle l'épaisseur de la Seine. */
-  latitudeDelta: number;
-};
-
 const toCoordinates = (path: BasemapPath) =>
   path.map(([latitude, longitude]) => ({ latitude, longitude }));
 
@@ -22,49 +17,42 @@ const GROUND = [
   { latitude: 48.1, longitude: 1.2 },
 ];
 
-const METERS_PER_DEGREE = 111_320;
 /**
- * Largeur donnée à la Seine (volontairement plus fine que la vraie, ~130 m : elle doit rester un
- * repère discret, jamais plus visible qu'une ligne de métro), et hauteur d'écran typique d'une carte.
+ * Épaisseur FIXE de la Seine : un simple repère, pas plus visible qu'une ligne de métro.
+ * ⚠️ Ne pas la faire varier avec le zoom : sur iOS, modifier une propriété d'un tracé le retire
+ * puis le rajoute sur la carte, donc AU-DESSUS des lignes (l'ordre de dessin est l'ordre d'ajout,
+ * `zIndex` est ignoré par Apple Plans).
  */
-const RIVER_WIDTH_M = 60;
-const TYPICAL_MAP_HEIGHT = 650;
-
-/** Épaisseur du trait de la Seine à ce niveau de zoom (bornée : toujours visible, jamais envahissante). */
-function riverStrokeWidth(latitudeDelta: number): number {
-  const pixels = (RIVER_WIDTH_M / (latitudeDelta * METERS_PER_DEGREE)) * TYPICAL_MAP_HEIGHT;
-  return Math.max(2, Math.min(24, pixels));
-}
+const RIVER_STROKE_WIDTH = 3;
 
 /**
  * Fond de carte de secours, dessiné par l'app quand il n'y a pas de réseau : sous terre, les
  * tuiles de la carte ne se chargent pas et les lignes flotteraient dans le vide. Le contour de
  * Paris et la Seine suffisent à se repérer.
  *
- * À placer dans une `MapView`, AVANT les tracés et les points : il doit être dessiné dessous.
+ * À placer dans une `MapView`, AVANT les tracés et les points, et à monter EN MÊME TEMPS qu'eux
+ * (voir la clé de remontage dans `MapScreen`) : l'ordre de dessin est l'ordre d'ajout sur la carte.
  */
-export function OfflineBasemap({ latitudeDelta }: Props) {
+export function OfflineBasemap() {
   const colors = useThemeColors();
 
   return (
     <>
-      <Polygon coordinates={GROUND} fillColor={colors.mapLand} strokeWidth={0} zIndex={-3} />
+      <Polygon coordinates={GROUND} fillColor={colors.mapLand} strokeWidth={0} />
       <Polygon
         coordinates={PARIS}
         fillColor={colors.mapCity}
         strokeColor={colors.hair}
         strokeWidth={1}
-        zIndex={-2}
       />
       {RIVER_PATHS.map((path, i) => (
         <Polyline
           key={i}
           coordinates={path}
           strokeColor={colors.mapWater}
-          strokeWidth={riverStrokeWidth(latitudeDelta)}
+          strokeWidth={RIVER_STROKE_WIDTH}
           lineCap="round"
           lineJoin="round"
-          zIndex={-1}
         />
       ))}
     </>
