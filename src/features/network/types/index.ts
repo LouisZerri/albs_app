@@ -24,8 +24,10 @@ export {
   lineGeoSchema,
   mapStationSchema,
   networkGeoSchema,
+  platformSchema,
   type LineGeo,
   type MapStation,
   type NetworkGeo,
+  type Platform,
 } from './mapSchemas';
 

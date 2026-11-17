@@ -25,7 +25,7 @@ export function NetworkList() {
     );
   }
 
-  if (isError) {
+  if (isError || !data) {
     return (
       <ErrorState error={error} message="Impossible de charger le réseau." onRetry={() => refetch()} />
     );

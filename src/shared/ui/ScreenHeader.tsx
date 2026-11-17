@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useThemeColors } from '@/shared/theme';
 
+import { OfflineNotice } from './OfflineNotice';
 import { Text } from './Text';
 
 type Props = {
@@ -20,25 +21,25 @@ export function ScreenHeader({ title, onBack, children }: Props) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View
-      className="flex-row items-center gap-3 border-b border-hair bg-surface px-4 pb-3"
-      style={{ paddingTop: insets.top + 6 }}
-    >
-      <Pressable
-        onPress={onBack}
-        hitSlop={8}
-        accessibilityRole="button"
-        accessibilityLabel="Retour"
-        className="h-9 w-7 items-center justify-center"
-      >
-        <Ionicons name="chevron-back" size={26} color={colors.ink} />
-      </Pressable>
+    <View className="border-b border-hair bg-surface" style={{ paddingTop: insets.top }}>
+      <OfflineNotice />
+      <View className="flex-row items-center gap-3 px-4 pb-3 pt-1.5">
+        <Pressable
+          onPress={onBack}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Retour"
+          className="h-9 w-7 items-center justify-center"
+        >
+          <Ionicons name="chevron-back" size={26} color={colors.ink} />
+        </Pressable>
 
-      <View className="flex-1 gap-1">
-        <Text variant="subtitle" numberOfLines={1}>
-          {title}
-        </Text>
-        {children}
+        <View className="flex-1 gap-1">
+          <Text variant="subtitle" numberOfLines={1}>
+            {title}
+          </Text>
+          {children}
+        </View>
       </View>
     </View>
   );

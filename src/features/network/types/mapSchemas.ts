@@ -26,6 +26,14 @@ export const mapStationSchema = z.object({
 });
 export type MapStation = z.infer<typeof mapStationSchema>;
 
+/** Un quai : une station sur une ligne. Plusieurs quais de même nom = une station physique. */
+export const platformSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  lineId: z.number(),
+});
+export type Platform = z.infer<typeof platformSchema>;
+
 export const networkGeoSchema = z.object({
   lines: z.array(lineGeoSchema),
   stations: z.array(mapStationSchema),

@@ -7,10 +7,12 @@ import {
   lineDetailSchema,
   networkGeoSchema,
   networkStatsSchema,
+  platformSchema,
   progressEntrySchema,
   type LineDetail,
   type NetworkGeo,
   type NetworkStats,
+  type Platform,
   type ProgressEntry,
 } from '../types';
 
@@ -36,6 +38,12 @@ export async function fetchLineDetail(id: number): Promise<LineDetail> {
 export async function fetchNetwork(): Promise<NetworkGeo> {
   const data = await apiFetch<unknown>('/api/network');
   return networkGeoSchema.parse(data);
+}
+
+/** Index de tous les quais du réseau (id, nom, ligne). */
+export async function fetchPlatforms(): Promise<Platform[]> {
+  const data = await apiFetch<unknown>('/api/network/platforms');
+  return z.array(platformSchema).parse(data);
 }
 
 /** Toute la progression de l'utilisateur (une entrée par station touchée). */

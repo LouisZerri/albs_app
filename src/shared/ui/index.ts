@@ -6,6 +6,7 @@ export { Chip } from './Chip';
 export { ErrorState } from './ErrorState';
 export { FloatingAction } from './FloatingAction';
 export { Input } from './Input';
+export { OfflineNotice } from './OfflineNotice';
 export { Placeholder } from './Placeholder';
 export { ProgressBar } from './ProgressBar';
 export { ShineOverlay } from './ShineOverlay';

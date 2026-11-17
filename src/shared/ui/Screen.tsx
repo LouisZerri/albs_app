@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { cn } from '@/shared/utils/cn';
 
+import { OfflineNotice } from './OfflineNotice';
+
 type ScreenProps = {
   children: ReactNode;
   /** Contenu scrollable (défaut: false). */
@@ -19,6 +21,7 @@ export function Screen({ children, scroll = false, padded = true, className }: S
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={['top', 'left', 'right']}>
+      <OfflineNotice />
       {scroll ? (
         <ScrollView className={content} contentContainerClassName="grow" keyboardShouldPersistTaps="handled">
           {children}

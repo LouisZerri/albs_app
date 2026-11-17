@@ -3,9 +3,11 @@ import { useMutation, type QueryClient } from '@tanstack/react-query';
 import { retryUntilSynced } from '@/shared/lib';
 
 import { setStationProgress, type SetProgressResponse } from '../api';
-import type { ProgressEntry } from '../types';
+import { applyToggle } from '../lib/localProgress';
+import type { Platform, ProgressEntry } from '../types';
 import { NETWORK_STATS_KEY } from './useNetworkStats';
 import { PROGRESS_KEY } from './useMyProgress';
+import { PLATFORMS_KEY } from './usePlatforms';
 
 /** Ce que l'écran demande : l'état voulu pour une station. */
 type ToggleInput = { stationId: number; passed: boolean; stopped: boolean };
@@ -31,10 +33,12 @@ export function registerToggleStationMutation(client: QueryClient): void {
     // Affichage immédiat, sans attendre le serveur (ni même le réseau).
     onMutate: async ({ stationId, passed, stopped }: ToggleVars) => {
       await client.cancelQueries({ queryKey: PROGRESS_KEY });
-      client.setQueryData<ProgressEntry[]>(PROGRESS_KEY, (old = []) => {
-        const others = old.filter((e) => e.stationId !== stationId);
-        return passed || stopped ? [...others, { stationId, passed, stopped }] : others;
-      });
+      // Mêmes règles que le serveur, appliquées ici : « descendu » coche aussi les autres quais
+      // de la station (correspondances), sans attendre le réseau.
+      const platforms = client.getQueryData<Platform[]>(PLATFORMS_KEY) ?? [];
+      client.setQueryData<ProgressEntry[]>(PROGRESS_KEY, (old = []) =>
+        applyToggle(old, platforms, { stationId, passed, stopped }),
+      );
     },
 
     // Refus définitif du serveur : on recharge la vérité plutôt que de revenir à une copie

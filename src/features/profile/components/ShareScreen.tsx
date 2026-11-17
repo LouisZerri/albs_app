@@ -29,7 +29,7 @@ export function ShareScreen() {
     <SubScreen title="Partager ma progression" onBack={() => router.back()}>
       {stats.isPending ? (
         <Skeleton className="mt-3 h-96 w-full rounded-card" />
-      ) : stats.isError ? (
+      ) : stats.isError || !stats.data ? (
         <ErrorState
           error={stats.error}
           message="Impossible de préparer ton image."
