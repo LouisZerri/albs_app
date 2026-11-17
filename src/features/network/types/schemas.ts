@@ -18,6 +18,8 @@ export type LineStats = z.infer<typeof lineStatsSchema>;
 export const networkStatsSchema = z.object({
   stations: z.object({ total: z.number(), visited: z.number(), passed: z.number() }),
   percent: z.number(),
+  /** Dernière ligne non terminée où l'utilisateur a coché une station (raccourci « Continuer »). */
+  resumeLineId: z.number().nullable().default(null),
   lines: z.array(lineStatsSchema),
 });
 export type NetworkStats = z.infer<typeof networkStatsSchema>;

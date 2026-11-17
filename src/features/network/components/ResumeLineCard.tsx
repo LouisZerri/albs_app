@@ -9,7 +9,7 @@ import { LineBadge } from './LineBadge';
 
 type Props = { line: LineStats; onPress: PressableProps['onPress'] };
 
-/** Raccourci « reprendre » : la ligne en cours la plus avancée, et ce qu'il reste à y visiter. UI pure. */
+/** Raccourci « reprendre » : la dernière ligne où l'utilisateur a coché, et ce qu'il reste à y visiter. UI pure. */
 export function ResumeLineCard({ line, onPress }: Props) {
   const remaining = line.total - line.visited;
 

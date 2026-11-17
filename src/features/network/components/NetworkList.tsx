@@ -59,7 +59,7 @@ type LineListProps = { data: NetworkStats; isRefetching: boolean; onRefresh: () 
 /** La liste des lignes, précédée de la progression globale. */
 function LineList({ data, isRefetching, onRefresh }: LineListProps) {
   const router = useRouter();
-  const resume = resumeLine(data.lines);
+  const resume = resumeLine(data);
 
   return (
     <FlatList

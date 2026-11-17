@@ -36,6 +36,7 @@ export function LineRailScreen({ id, focusStation }: Props) {
   const feedback = useStationFeedback();
   const listRef = useRef<FlatList<RailItem>>(null);
   const focused = useRef(false);
+  const retries = useRef(0);
   const [branch, setBranch] = useState<string | null>(null);
 
   const map = useMemo(() => progressMap(progressQuery.data ?? []), [progressQuery.data]);
@@ -97,11 +98,15 @@ export function LineRailScreen({ id, focusStation }: Props) {
 
   const openBonplans = (station: Station) => router.push(`/bonplans/${station.id}`);
 
-  // Une seule fois, quand la liste est prête : on amène la station recherchée dans le tiers haut.
+  // Amène la station recherchée dans le tiers haut de l'écran.
+  const scrollToIndex = () =>
+    listRef.current?.scrollToIndex({ index: focusIndex, viewPosition: 0.3, animated: true });
+
+  // Une seule fois, quand la liste a pris sa taille. Léger délai : les lignes doivent être mesurées.
   const scrollToFocus = () => {
     if (focused.current || focusIndex < 0) return;
     focused.current = true;
-    listRef.current?.scrollToIndex({ index: focusIndex, viewPosition: 0.3, animated: false });
+    setTimeout(scrollToIndex, 80);
   };
 
   return (
@@ -125,11 +130,17 @@ export function LineRailScreen({ id, focusStation }: Props) {
         ref={listRef}
         data={rail.items}
         keyExtractor={(item, index) => (item.type === 'loop' ? `loop-${index}` : String(item.station.id))}
+        // Une ligne compte au plus quelques dizaines de stations : on les rend toutes d'emblée,
+        // sinon la station visée n'existe pas encore à l'écran et le défilement ne peut pas l'atteindre.
+        initialNumToRender={rail.items.length}
         onContentSizeChange={scrollToFocus}
-        // Lignes de hauteur variable (fourche, boucle) : cible pas encore mesurée → position estimée.
-        onScrollToIndexFailed={({ index, averageItemLength }) =>
-          listRef.current?.scrollToOffset({ offset: index * averageItemLength, animated: false })
-        }
+        // Cible pas encore mesurée (hauteurs variables : fourche, boucle) → on réessaie, 3 fois au plus.
+        onScrollToIndexFailed={() => {
+          if (retries.current < 3) {
+            retries.current += 1;
+            setTimeout(scrollToIndex, 150);
+          }
+        }}
         renderItem={({ item, index }) => {
           if (item.type === 'loop') {
             return rail.loop ? (
@@ -140,6 +151,7 @@ export function LineRailScreen({ id, focusStation }: Props) {
                 map={map}
                 onToggle={onToggle}
                 onOpenBonplans={openBonplans}
+                highlightedName={focusStation}
               />
             ) : null;
           }

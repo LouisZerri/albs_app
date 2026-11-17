@@ -15,10 +15,12 @@ type Props = {
   map: Map<number, ProgressEntry>;
   onToggle: (station: Station) => void;
   onOpenBonplans: (station: Station) => void;
+  /** Nom de la station visée par une recherche, à surligner si elle est dans la boucle. */
+  highlightedName?: string;
 };
 
 /** Bloc « Boucle » (ex. Boucle d'Auteuil, ligne 10) : deux groupes de stations par sens. */
-export function LoopCard({ loop, color, textColor, map, onToggle, onOpenBonplans }: Props) {
+export function LoopCard({ loop, color, textColor, map, onToggle, onOpenBonplans, highlightedName }: Props) {
   return (
     <View
       className="my-1 ml-2 mr-4 rounded-card border p-3"
@@ -53,6 +55,7 @@ export function LoopCard({ loop, color, textColor, map, onToggle, onOpenBonplans
                   isLast={!solo && index === group.stations.length - 1}
                   onPress={() => onToggle(station)}
                   onOpenBonplans={() => onOpenBonplans(station)}
+                  highlighted={station.name === highlightedName}
                 />
               );
             })}

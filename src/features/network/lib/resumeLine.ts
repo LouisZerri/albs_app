@@ -1,12 +1,9 @@
-import type { LineStats } from '../types';
+import type { LineStats, NetworkStats } from '../types';
 
 /**
- * La ligne à reprendre : celle déjà entamée, pas encore terminée, la plus avancée.
- * null si aucune ligne n'est en cours (rien commencé, ou tout terminé).
+ * La ligne à reprendre : la dernière (non terminée) où l'utilisateur a coché une station.
+ * Le choix est fait par l'API (`resumeLineId`) ; null si rien n'est en cours.
  */
-export function resumeLine(lines: LineStats[]): LineStats | null {
-  const inProgress = lines.filter((l) => l.visited > 0 && l.visited < l.total);
-  if (inProgress.length === 0) return null;
-
-  return inProgress.reduce((best, line) => (line.percent > best.percent ? line : best));
+export function resumeLine(stats: NetworkStats): LineStats | null {
+  return stats.lines.find((line) => line.id === stats.resumeLineId) ?? null;
 }

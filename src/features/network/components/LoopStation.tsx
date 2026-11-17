@@ -3,6 +3,7 @@ import { Pressable, type PressableProps, View } from 'react-native';
 
 import { colors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
+import { cn } from '@/shared/utils/cn';
 
 import type { StationState } from '../lib/stationState';
 import type { Station } from '../types';
@@ -22,6 +23,8 @@ type Props = {
   isLast: boolean;
   onPress: PressableProps['onPress'];
   onOpenBonplans?: () => void;
+  /** Station visée par une recherche : fond violet clair pour la repérer. */
+  highlighted?: boolean;
 };
 
 /** Une station dans une boucle : petit nœud cochable + demi-rails (comme le rail principal). UI pure. */
@@ -34,11 +37,18 @@ export function LoopStation({
   isLast,
   onPress,
   onOpenBonplans,
+  highlighted,
 }: Props) {
   const railColor = state === 'todo' ? colors.hair : color;
 
   return (
-    <Pressable onPress={onPress} className="flex-row items-center gap-2 active:opacity-60" style={{ height: ROW_H }}>
+    <Pressable
+      onPress={onPress}
+      className={cn(
+        'flex-row items-center gap-2 rounded-md active:opacity-60',
+        highlighted && 'bg-accentSoft/60',
+      )}
+      style={{ height: ROW_H }}>
       <View style={{ width: SIZE, height: ROW_H }} className="items-center justify-center">
         {!isFirst ? (
           <View style={{ position: 'absolute', top: 0, height: HALF, width: 3, backgroundColor: railColor }} />
