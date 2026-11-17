@@ -1,1 +1,1 @@
-export { fetchBadges, fetchWarnings, acknowledgeWarning } from './profileApi';
+export { fetchBadges, fetchHistory, fetchWarnings, acknowledgeWarning } from './profileApi';

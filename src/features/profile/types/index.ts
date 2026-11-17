@@ -1,1 +1,8 @@
-export { badgeStatusSchema, warningSchema, type BadgeStatus, type Warning } from './schemas';
+export {
+  badgeStatusSchema,
+  visitSchema,
+  warningSchema,
+  type BadgeStatus,
+  type Visit,
+  type Warning,
+} from './schemas';

@@ -1,12 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, type PressableProps, View } from 'react-native';
 
+import { LineBadges } from '@/features/network/components';
 import { useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 
 import { bonplanCountLabel, lineNumbersLabel } from '../lib/stationSearch';
 import type { BonplanStation } from '../types';
-import { LineBadges } from './LineBadges';
 
 type Props = { station: BonplanStation; onPress: PressableProps['onPress'] };
 

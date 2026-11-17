@@ -6,7 +6,7 @@ import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, View }
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
 import { useThemeColors } from '@/shared/theme';
-import { Button, ErrorState, Screen, ThemeSwitch } from '@/shared/ui';
+import { Button, Card, ErrorState, Screen, Text, ThemeSwitch } from '@/shared/ui';
 
 import { useBadges } from '../hooks';
 import { BadgesTab } from './BadgesTab';
@@ -113,6 +113,12 @@ export function ProfileHome() {
             badgesEarned={earned}
             badgesTotal={badges.data.length}
           />
+
+          <Card onPress={() => router.push('/profile/history')} className="flex-row items-center gap-3">
+            <Ionicons name="time-outline" size={20} color={colors.ink} />
+            <Text className="flex-1">Mon historique</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+          </Card>
         </View>
 
         <View className="bg-bg pb-3 pt-3">

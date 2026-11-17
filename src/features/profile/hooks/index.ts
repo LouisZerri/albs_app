@@ -1,4 +1,5 @@
 export { useBadges, BADGES_KEY } from './useBadges';
+export { useHistory, HISTORY_KEY } from './useHistory';
 export {
   useUpdateProfile,
   useUploadAvatar,

@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
-import { LineBadge } from '@/features/network/components';
-import type { Correspondence } from '@/features/network/types';
+import type { Correspondence } from '../types';
+import { LineBadge } from './LineBadge';
 
 /** Les pastilles des lignes desservant une station, côte à côte. UI pure. */
 export function LineBadges({ lines }: { lines: Correspondence[] }) {

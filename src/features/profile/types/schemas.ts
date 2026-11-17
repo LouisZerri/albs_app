@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { correspondenceSchema } from '@/features/network/types';
+
 /** Un avertissement de modération (issu de /api/me/warnings). */
 export const warningSchema = z.object({
   id: z.number(),
@@ -23,3 +25,12 @@ export const badgeStatusSchema = z.object({
   target: z.number().nullable().default(null),
 });
 export type BadgeStatus = z.infer<typeof badgeStatusSchema>;
+
+/** Une station visitée, datée de la première descente (issue de /api/me/history). */
+export const visitSchema = z.object({
+  name: z.string(),
+  /** Date ISO avec le fuseau de Paris (ex. 2026-11-17T11:01:10+01:00). */
+  visitedAt: z.string(),
+  lines: z.array(correspondenceSchema),
+});
+export type Visit = z.infer<typeof visitSchema>;

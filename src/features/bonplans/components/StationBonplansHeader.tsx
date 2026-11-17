@@ -1,10 +1,10 @@
 import { View } from 'react-native';
 
+import { LineBadges } from '@/features/network/components';
 import { ScreenHeader, Text } from '@/shared/ui';
 
 import { bonplanCountLabel } from '../lib/stationSearch';
 import type { StationBonplans } from '../types';
-import { LineBadges } from './LineBadges';
 
 type Props = { station: StationBonplans['station']; count: number; onBack: () => void };
 
