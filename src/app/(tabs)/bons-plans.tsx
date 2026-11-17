@@ -1,5 +1,5 @@
-import { Placeholder } from '@/shared/ui';
+import { BonplansHome } from '@/features/bonplans/components';
 
-export default function BonsPlansScreen() {
-  return <Placeholder title="Bons plans" />;
+export default function BonsPlansTab() {
+  return <BonplansHome />;
 }
