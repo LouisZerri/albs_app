@@ -47,7 +47,8 @@ export async function fetchMyProgress(): Promise<ProgressEntry[]> {
 /** Définit l'état d'une station. Renvoie l'entrée à jour + les badges débloqués. */
 export async function setStationProgress(
   stationId: number,
-  body: { passed: boolean; stopped: boolean },
+  /** `at` : moment réel du cochage (ISO), quand il est envoyé après coup. */
+  body: { passed: boolean; stopped: boolean; at?: string },
 ): Promise<SetProgressResponse> {
   const data = await apiFetch<unknown>(`/api/stations/${stationId}/progress`, {
     method: 'PUT',

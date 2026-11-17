@@ -16,7 +16,12 @@ import type { AuthTokens, User } from '../types';
 
 export const ME_QUERY_KEY = ['auth', 'me'] as const;
 
-type Status = 'loading' | 'authenticated' | 'unauthenticated';
+/**
+ * `offline` : un compte est mémorisé sur ce téléphone mais son profil n'a jamais pu être chargé
+ * (premier lancement sans réseau après une réinstallation, cache vidé…). On ne peut ni entrer dans
+ * l'app ni conclure que la session est invalide : il faut attendre le réseau.
+ */
+type Status = 'loading' | 'authenticated' | 'unauthenticated' | 'offline';
 
 type AuthContextValue = {
   status: Status;
@@ -77,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     hasToken,
     hasUser: Boolean(user),
     meFailed: meQuery.isError,
+    mePaused: meQuery.fetchStatus === 'paused',
   });
 
   const value = useMemo<AuthContextValue>(
@@ -92,11 +98,14 @@ function deriveStatus(s: {
   hasToken: boolean;
   hasUser: boolean;
   meFailed: boolean;
+  mePaused: boolean;
 }): Status {
   if (!s.bootstrapped) return 'loading';
   if (!s.hasToken) return 'unauthenticated';
   if (s.hasUser) return 'authenticated';
-  return s.meFailed ? 'unauthenticated' : 'loading';
+  if (s.meFailed) return 'unauthenticated';
+  // Requête en pause = pas de réseau, et rien en cache pour ce compte.
+  return s.mePaused ? 'offline' : 'loading';
 }
 
 export function useAuth(): AuthContextValue {
