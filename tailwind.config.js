@@ -9,6 +9,7 @@ module.exports = {
       colors, // source unique : src/shared/theme/tokens.js
       borderRadius: {
         card: `${radius.card}px`,
+        pill: `${radius.pill}px`,
       },
     },
   },

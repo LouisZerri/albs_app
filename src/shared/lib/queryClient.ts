@@ -1,18 +1,9 @@
-import { QueryCache, QueryClient } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
 
 import { ApiError } from './ApiError';
-import { tokenStore } from './tokenStore';
 
+// L'expiration du JWT est gérée dans `apiFetch` (renouvellement + rejeu) : rien à faire ici.
 export const queryClient = new QueryClient({
-  // Un 401 sur n'importe quelle requête = JWT invalide/expiré : on purge les tokens.
-  // (Le refresh auto sur 401 sera branché plus tard avec la feature auth.)
-  queryCache: new QueryCache({
-    onError: (error) => {
-      if (error instanceof ApiError && error.status === 401) {
-        void tokenStore.clear();
-      }
-    },
-  }),
   defaultOptions: {
     queries: {
       staleTime: 30_000, // 30 s : évite les refetch trop agressifs sur mobile
