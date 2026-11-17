@@ -9,9 +9,9 @@ import { Text } from './Text';
 
 /**
  * Bandeau d'état de la synchronisation, intégré à la mise en page (il ne recouvre rien).
- * - Sans réseau : « Hors ligne », avec le nombre de cochages gardés en attente (messages courts,
+ * - Sans réseau : « Hors ligne », avec le nombre de changements gardés en attente (messages courts,
  *   pour tenir sur une ligne même sur un petit écran).
- * - Réseau revenu, envoi en cours : « Envoi de N cochages… » — seulement si l'envoi dure : avec du
+ * - Réseau revenu, envoi en cours : « Envoi de N changements… » — seulement si l'envoi dure : avec du
  *   réseau un cochage part en une fraction de seconde, et l'afficher ferait clignoter le bandeau.
  * - Sinon : rien.
  */
@@ -26,12 +26,13 @@ export function OfflineNotice() {
 
   if (online && !sendingForLong) return null;
 
-  const waiting = pending > 1 ? `${pending} cochages` : '1 cochage';
+  // « changements » : la file contient des cochages, mais aussi des favoris.
+  const waiting = pending > 1 ? `${pending} changements` : '1 changement';
   const message = online
     ? `Envoi de ${waiting}…`
     : pending > 0
       ? `Hors ligne · ${waiting} en attente`
-      : 'Hors ligne · tes cochages sont gardés';
+      : 'Hors ligne · tes changements sont gardés';
 
   return (
     <View

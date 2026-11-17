@@ -1,5 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query';
 
+import { PREFETCH_FRESH_MS as FRESH_MS } from '@/shared/lib';
+
 import { fetchLineDetail, fetchNetwork, fetchPlatforms } from '../api';
 
 // Clés identiques à celles des hooks (useLineDetail, usePlatforms, useNetwork) : ce qui est
@@ -7,9 +9,6 @@ import { fetchLineDetail, fetchNetwork, fetchPlatforms } from '../api';
 const PLATFORMS_KEY = ['network', 'platforms'] as const;
 const NETWORK_GEO_KEY = ['network', 'geo'] as const;
 const lineDetailKey = (id: number) => ['network', 'line', id] as const;
-
-/** Une donnée préchargée depuis moins longtemps que ça n'est pas retéléchargée. */
-const FRESH_MS = 1000 * 60 * 60 * 24;
 
 /**
  * Télécharge tout le réseau pour qu'il soit disponible sous terre : l'index des quais, le rail de

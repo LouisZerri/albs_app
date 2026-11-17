@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { beforeEach, test } from 'node:test';
 
-const { createQueryClient } = await import('@/shared/lib');
+const { createQueryClient, prefetchQueries } = await import('@/shared/lib');
 const { prefetchNetwork } = await import('@/features/network/lib/offlinePrefetch');
 
 const line = (id: number) => ({
@@ -97,4 +97,32 @@ test('interrompu (réseau perdu) : s’arrête sans tout télécharger', async (
     !requested.includes('/api/network'),
     'la carte ne doit pas être téléchargée après une interruption',
   );
+});
+
+test('autres onglets : chaque requête est préchargée une fois, un échec n’arrête pas la suite', async () => {
+  const client = createQueryClient();
+  const asked: string[] = [];
+  const query = (name: string, fails = false) => ({
+    queryKey: ['extra', name],
+    queryFn: async () => {
+      asked.push(name);
+      if (fails) throw new Error('panne');
+      return name;
+    },
+  });
+  // `retry: false` : on teste l'enchaînement, pas la politique de réessai.
+  client.setQueryDefaults(['extra'], { retry: false });
+  const task = prefetchQueries([query('a'), query('b', true), query('c')]);
+
+  await task(client, () => false);
+  assert.deepEqual(asked, ['a', 'b', 'c']);
+  assert.equal(client.getQueryData(['extra', 'c']), 'c');
+
+  // Deuxième passage : seul l'échec est redemandé.
+  await task(client, () => false);
+  assert.deepEqual(asked, ['a', 'b', 'c', 'b']);
+
+  // Interrompu d'emblée : rien n'est demandé.
+  await task(client, () => true);
+  assert.equal(asked.length, 4);
 });

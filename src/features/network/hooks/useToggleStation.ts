@@ -1,6 +1,6 @@
 import { useMutation, type QueryClient } from '@tanstack/react-query';
 
-import { retryUntilSynced } from '@/shared/lib';
+import { OFFLINE_QUEUE_META, retryUntilSynced } from '@/shared/lib';
 
 import { setStationProgress, type SetProgressResponse } from '../api';
 import { applyToggle } from '../lib/localProgress';
@@ -29,6 +29,7 @@ export function registerToggleStationMutation(client: QueryClient): void {
     // Les cochages s'envoient un par un, dans l'ordre des taps : l'état final est le bon.
     scope: { id: 'station-progress' },
     retry: retryUntilSynced,
+    meta: OFFLINE_QUEUE_META,
 
     // Affichage immédiat, sans attendre le serveur (ni même le réseau).
     onMutate: async ({ stationId, passed, stopped }: ToggleVars) => {

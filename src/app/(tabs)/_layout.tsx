@@ -2,8 +2,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import type { ColorValue } from 'react-native';
 
-import { useOfflinePrefetch } from '@/features/network/hooks';
+import { bonplansOfflineQueries } from '@/features/bonplans/hooks';
+import { discoverOfflineQueries } from '@/features/discover/hooks';
+import { prefetchNetwork } from '@/features/network/lib/offlinePrefetch';
+import { profileOfflineQueries } from '@/features/profile/hooks';
+import { useOfflinePrefetch } from '@/shared/hooks/useOfflinePrefetch';
+import { prefetchQueries, type OfflineTask } from '@/shared/lib';
 import { fonts, useThemeColors } from '@/shared/theme';
+
+// Ce qui est téléchargé d'avance pour le hors-ligne, dans l'ordre : le réseau d'abord (le cœur de
+// l'app), puis les autres onglets.
+const OFFLINE_TASKS: OfflineTask[] = [
+  prefetchNetwork,
+  prefetchQueries([...bonplansOfflineQueries, ...discoverOfflineQueries, ...profileOfflineQueries]),
+];
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -16,8 +28,8 @@ function tabIcon(base: IconName, outline: IconName) {
 
 export default function TabsLayout() {
   const colors = useThemeColors();
-  // Dès qu'on est dans l'app avec du réseau : tout le réseau est téléchargé pour le hors-ligne.
-  useOfflinePrefetch();
+  // Dès qu'on est dans l'app avec du réseau : de quoi tout utiliser sous terre est téléchargé.
+  useOfflinePrefetch(OFFLINE_TASKS);
 
   return (
     <Tabs

@@ -55,6 +55,16 @@ export const persistOptions: Omit<PersistQueryClientOptions, 'queryClient'> = {
 };
 
 /**
+ * Marque (`meta`) des actions gardées en file hors ligne (cochages, favoris). C'est elle que le
+ * bandeau de synchronisation compte — pas une connexion ou un envoi de formulaire en cours.
+ */
+export const OFFLINE_QUEUE_META = { offlineQueue: true } as const;
+
+/** Une action de la file hors ligne attend-elle encore d'être envoyée ? */
+export const isQueuedOffline = (mutation: Mutation) =>
+  mutation.options.meta?.offlineQueue === true && isAwaitingSync(mutation);
+
+/**
  * Relance, dans l'ordre, les actions restées en attente (à appeler une fois le cache relu au
  * lancement). Elles s'envoient si le réseau est là, et se remettent en pause sinon.
  */

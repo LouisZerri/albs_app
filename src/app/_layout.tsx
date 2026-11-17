@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 
 import { AuthProvider, ME_QUERY_KEY, useAuth } from '@/features/auth/store';
 import { BadgeCelebrationProvider } from '@/features/badges';
+import { registerToggleFavoriteMutation } from '@/features/bonplans/hooks';
 import { registerToggleStationMutation } from '@/features/network/hooks';
 import {
   ApiError,
@@ -30,6 +31,7 @@ SplashScreen.preventAutoHideAsync();
 // Hors-ligne : suivi du réseau + déclaration des actions rejouables après un redémarrage.
 watchNetworkStatus();
 registerToggleStationMutation(queryClient);
+registerToggleFavoriteMutation(queryClient);
 
 export default function RootLayout() {
   useRestoreThemeMode();

@@ -12,15 +12,13 @@ export function useBonplanActions() {
 
   const toggleFavorite = (bonplan: Bonplan) => {
     const favorite = !bonplan.isFavorite;
+    // Confirmation immédiate, comme l'étoile : hors ligne, l'envoi peut n'arriver que bien plus tard.
+    if (favorite) toast.show('Ajouté à tes favoris', 'success');
+    else toast.show('Retiré de tes favoris', 'info');
+
     mutate(
       { bonplanId: bonplan.id, favorite },
-      {
-        onSuccess: () =>
-          favorite
-            ? toast.show('Ajouté à tes favoris', 'success')
-            : toast.show('Retiré de tes favoris', 'info'),
-        onError: () => toast.show('Impossible de modifier ce favori.', 'error'),
-      },
+      { onError: () => toast.show('Impossible de modifier ce favori.', 'error') },
     );
   };
 
