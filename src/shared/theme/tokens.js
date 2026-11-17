@@ -19,7 +19,7 @@ const light = {
   danger: '#DC2626', // erreurs / états invalides (rouge)
   mapLand: '#E9EDF2', // carte hors ligne : sol autour de Paris
   mapCity: '#F8F9FB', // carte hors ligne : Paris
-  mapWater: '#A9CDEE', // carte hors ligne : Seine et Marne
+  mapWater: '#C3DCF3', // carte hors ligne : Seine et Marne
   white: '#FFFFFF', // blanc fixe (texte sur fond coloré : lignes, dégradés)
 };
 
@@ -40,7 +40,7 @@ const dark = {
   danger: '#F87171',
   mapLand: '#12151A',
   mapCity: '#1C2028',
-  mapWater: '#2B4A6B',
+  mapWater: '#1F3349',
   white: '#FFFFFF',
 };
 

@@ -23,14 +23,17 @@ const GROUND = [
 ];
 
 const METERS_PER_DEGREE = 111_320;
-/** Largeur de la Seine dans Paris, et hauteur d'écran typique d'une carte de l'app. */
-const RIVER_WIDTH_M = 130;
+/**
+ * Largeur donnée à la Seine (volontairement plus fine que la vraie, ~130 m : elle doit rester un
+ * repère discret, jamais plus visible qu'une ligne de métro), et hauteur d'écran typique d'une carte.
+ */
+const RIVER_WIDTH_M = 60;
 const TYPICAL_MAP_HEIGHT = 650;
 
 /** Épaisseur du trait de la Seine à ce niveau de zoom (bornée : toujours visible, jamais envahissante). */
 function riverStrokeWidth(latitudeDelta: number): number {
   const pixels = (RIVER_WIDTH_M / (latitudeDelta * METERS_PER_DEGREE)) * TYPICAL_MAP_HEIGHT;
-  return Math.max(3, Math.min(48, pixels));
+  return Math.max(2, Math.min(24, pixels));
 }
 
 /**
