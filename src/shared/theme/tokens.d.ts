@@ -13,6 +13,9 @@ export type Palette = {
   goldSoft: string;
   todo: string;
   danger: string;
+  mapLand: string;
+  mapCity: string;
+  mapWater: string;
   white: string;
 };
 export const palettes: { light: Palette; dark: Palette };

@@ -1,11 +1,12 @@
 import { useRouter } from 'expo-router';
-import { useMemo, useRef, useState } from 'react';
+import { Fragment, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Keyboard, View } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 
 import { useBadgeCelebration } from '@/features/badges';
+import { useSyncStatus } from '@/shared/hooks/useSyncStatus';
 import { useThemeColors, useThemeMode } from '@/shared/theme';
-import { ErrorState } from '@/shared/ui';
+import { ErrorState, OfflineBasemap } from '@/shared/ui';
 
 import {
   useMyProgress,
@@ -34,6 +35,7 @@ export function MapScreen() {
   const toggle = useToggleStation();
   const feedback = useStationFeedback();
   const { celebrate } = useBadgeCelebration();
+  const { online } = useSyncStatus();
   const mapRef = useRef<MapView>(null);
 
   const [selected, setSelected] = useState<MapStation | null>(null);
@@ -56,7 +58,11 @@ export function MapScreen() {
 
   if (network.isError || !network.data) {
     return (
-      <ErrorState error={network.error} message="Impossible de charger la carte." onRetry={() => network.refetch()} />
+      <ErrorState
+        error={network.error}
+        message="Impossible de charger la carte."
+        onRetry={() => network.refetch()}
+      />
     );
   }
 
@@ -86,7 +92,12 @@ export function MapScreen() {
     Keyboard.dismiss();
     setSelected(station);
     mapRef.current?.animateToRegion(
-      { latitude: station.lat, longitude: station.lng, latitudeDelta: 0.012, longitudeDelta: 0.012 },
+      {
+        latitude: station.lat,
+        longitude: station.lng,
+        latitudeDelta: 0.012,
+        longitudeDelta: 0.012,
+      },
       450,
     );
   };
@@ -101,7 +112,10 @@ export function MapScreen() {
   };
 
   return (
-    <View className="flex-1 overflow-hidden" onLayout={(e) => setAreaHeight(e.nativeEvent.layout.height)}>
+    <View
+      className="flex-1 overflow-hidden"
+      onLayout={(e) => setAreaHeight(e.nativeEvent.layout.height)}
+    >
       <MapView
         // Fond de carte assorti au thème de l'app (iOS).
         userInterfaceStyle={mode}
@@ -114,34 +128,44 @@ export function MapScreen() {
         showsCompass={false}
         toolbarEnabled={false}
         onRegionChangeComplete={(r) => setLatDelta(r.latitudeDelta)}
-        onPress={(e) => onMapPress(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)}>
-        {network.data.lines.flatMap((line) => {
-          const dim = lineId !== null && line.id !== lineId;
-          const highlighted = line.id === lineId;
-          return (line.geometry ?? []).map((segment, i) => (
-            <Polyline
-              key={`${line.id}-${i}`}
-              coordinates={segment.map(([lng, lat]) => ({ latitude: lat, longitude: lng }))}
-              strokeColor={dim ? colors.todo : line.color}
-              strokeWidth={highlighted ? 5 : dim ? 2 : 3}
-              zIndex={highlighted ? 3 : 1}
-            />
-          ));
-        })}
+        onPress={(e) =>
+          onMapPress(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)
+        }
+      >
+        {/* La clé remonte tout le contenu quand le réseau change : le fond de secours doit être
+            ajouté AVANT les tracés pour être dessiné dessous (ordre d'ajout = ordre de dessin). */}
+        <Fragment key={online ? 'online' : 'offline'}>
+          {online ? null : <OfflineBasemap latitudeDelta={latDelta} />}
 
-        {shownStations.map((s) => {
-          const st = stationState(map.get(s.id));
-          const isSel = selected?.id === s.id;
-          return (
-            <Marker
-              key={s.id}
-              coordinate={{ latitude: s.lat, longitude: s.lng }}
-              anchor={{ x: 0.5, y: 0.5 }}
-              tracksViewChanges={isSel}>
-              <StationDot state={st} selected={isSel} />
-            </Marker>
-          );
-        })}
+          {network.data.lines.flatMap((line) => {
+            const dim = lineId !== null && line.id !== lineId;
+            const highlighted = line.id === lineId;
+            return (line.geometry ?? []).map((segment, i) => (
+              <Polyline
+                key={`${line.id}-${i}`}
+                coordinates={segment.map(([lng, lat]) => ({ latitude: lat, longitude: lng }))}
+                strokeColor={dim ? colors.todo : line.color}
+                strokeWidth={highlighted ? 5 : dim ? 2 : 3}
+                zIndex={highlighted ? 3 : 1}
+              />
+            ));
+          })}
+
+          {shownStations.map((s) => {
+            const st = stationState(map.get(s.id));
+            const isSel = selected?.id === s.id;
+            return (
+              <Marker
+                key={s.id}
+                coordinate={{ latitude: s.lat, longitude: s.lng }}
+                anchor={{ x: 0.5, y: 0.5 }}
+                tracksViewChanges={isSel}
+              >
+                <StationDot state={st} selected={isSel} />
+              </Marker>
+            );
+          })}
+        </Fragment>
       </MapView>
 
       <MapSearch stations={stations} onSelect={centerOn} />

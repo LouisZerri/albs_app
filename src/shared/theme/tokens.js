@@ -17,6 +17,9 @@ const light = {
   goldSoft: '#FFFBEB', // fond d'un badge acquis
   todo: '#C2C9D4', // station à faire (point sur la carte, tracé estompé)
   danger: '#DC2626', // erreurs / états invalides (rouge)
+  mapLand: '#E9EDF2', // carte hors ligne : sol autour de Paris
+  mapCity: '#F8F9FB', // carte hors ligne : Paris
+  mapWater: '#A9CDEE', // carte hors ligne : Seine et Marne
   white: '#FFFFFF', // blanc fixe (texte sur fond coloré : lignes, dégradés)
 };
 
@@ -35,6 +38,9 @@ const dark = {
   goldSoft: '#2A2310',
   todo: '#5A6272',
   danger: '#F87171',
+  mapLand: '#12151A',
+  mapCity: '#1C2028',
+  mapWater: '#2B4A6B',
   white: '#FFFFFF',
 };
 
