@@ -10,7 +10,7 @@ import { LineBadge } from './LineBadge';
 
 type Props = { line: LineStats; onPress: PressableProps['onPress'] };
 
-/** Une ligne dans la liste Réseau : pastille + nom + progression (+ reflet si 100%). UI pure. */
+/** Une ligne dans la liste Réseau : pastille + numéro + terminus + progression (+ reflet si 100%). UI pure. */
 export function LineRow({ line, onPress }: Props) {
   const complete = line.percent === 100;
 
@@ -24,10 +24,13 @@ export function LineRow({ line, onPress }: Props) {
       <LineBadge number={line.number} color={line.color} textColor={line.textColor} />
 
       <View className="flex-1 gap-2">
-        {/* minHeight = 2 lignes réservées → toutes les cartes ont la même hauteur. */}
-        <Text variant="subtitle" numberOfLines={2} style={{ lineHeight: 22, minHeight: 44 }}>
-          {line.name}
-        </Text>
+        {/* Titre court + terminus sur une ligne : toutes les cartes ont la même hauteur, sans vide. */}
+        <View>
+          <Text variant="subtitle">Ligne {line.number}</Text>
+          <Text variant="muted" numberOfLines={1}>
+            {line.name}
+          </Text>
+        </View>
 
         <ProgressBar percent={line.percent} color={line.color} />
 

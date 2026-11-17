@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Keyboard, View } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
@@ -6,21 +7,21 @@ import { useBadgeCelebration } from '@/features/badges';
 import { colors } from '@/shared/theme';
 import { Button, Text } from '@/shared/ui';
 
-import { useMyProgress, useNetwork, useStationFeedback, useToggleStation } from '../hooks';
-import { snapStations } from '../lib/snapStations';
+import {
+  useMyProgress,
+  useNetwork,
+  useNetworkStats,
+  useStationFeedback,
+  useToggleStation,
+} from '../hooks';
 import { progressMap, stationState, type StationState } from '../lib/stationState';
 import type { MapStation } from '../types';
-import { MapLineSelector } from './MapLineSelector';
+import { MAP_SHEET_COLLAPSED, MapProgressSheet } from './MapProgressSheet';
 import { MapSearch } from './MapSearch';
+import { StationDot } from './StationDot';
 import { StationSheet } from './StationSheet';
 
 const PARIS = { latitude: 48.8566, longitude: 2.3522, latitudeDelta: 0.17, longitudeDelta: 0.17 };
-
-const DOT_COLOR: Record<StationState, string> = {
-  visited: colors.visited,
-  passed: colors.passed,
-  todo: '#C2C9D4',
-};
 
 const FLAGS: Record<StationState, { passed: boolean; stopped: boolean }> = {
   todo: { passed: false, stopped: false },
@@ -30,7 +31,9 @@ const FLAGS: Record<StationState, { passed: boolean; stopped: boolean }> = {
 
 /** Onglet Réseau, vue Carte : réseau réel + stations colorées + cochage (3 états) + recherche. */
 export function MapScreen() {
+  const router = useRouter();
   const network = useNetwork();
+  const stats = useNetworkStats();
   const progress = useMyProgress();
   const toggle = useToggleStation();
   const feedback = useStationFeedback();
@@ -40,12 +43,12 @@ export function MapScreen() {
   const [selected, setSelected] = useState<MapStation | null>(null);
   const [latDelta, setLatDelta] = useState(PARIS.latitudeDelta);
   const [lineId, setLineId] = useState<number | null>(null);
+  const [remainingOnly, setRemainingOnly] = useState(false);
+  const [areaHeight, setAreaHeight] = useState(0);
 
   const map = useMemo(() => progressMap(progress.data ?? []), [progress.data]);
-  const stations = useMemo(
-    () => snapStations(network.data?.lines ?? [], network.data?.stations ?? []),
-    [network.data],
-  );
+  // Positions déjà recalées sur le tracé par l'API (StationSnapper) : on les affiche telles quelles.
+  const stations = network.data?.stations ?? [];
 
   if (network.isPending) {
     return (
@@ -67,6 +70,10 @@ export function MapScreen() {
   }
 
   const selectedState = selected ? stationState(map.get(selected.id)) : 'todo';
+  // « Ce qu'il me reste » : on masque les stations déjà visitées.
+  const shownStations = remainingOnly
+    ? stations.filter((s) => stationState(map.get(s.id)) !== 'visited')
+    : stations;
 
   // Tap sur la carte → sélectionne la station la plus proche (seuil = 6% du zoom visible).
   const onMapPress = (lat: number, lng: number) => {
@@ -103,12 +110,14 @@ export function MapScreen() {
   };
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 overflow-hidden" onLayout={(e) => setAreaHeight(e.nativeEvent.layout.height)}>
       <MapView
         ref={mapRef}
         style={{ flex: 1 }}
         initialRegion={PARIS}
-        showsPointsOfInterest={false}
+        // Le panneau du bas masque une partie de la carte : le centrage en tient compte.
+        mapPadding={{ top: 0, right: 0, bottom: MAP_SHEET_COLLAPSED, left: 0 }}
+        showsPointsOfInterests={false}
         showsCompass={false}
         toolbarEnabled={false}
         onRegionChangeComplete={(r) => setLatDelta(r.latitudeDelta)}
@@ -127,7 +136,7 @@ export function MapScreen() {
           ));
         })}
 
-        {stations.map((s) => {
+        {shownStations.map((s) => {
           const st = stationState(map.get(s.id));
           const isSel = selected?.id === s.id;
           return (
@@ -136,18 +145,7 @@ export function MapScreen() {
               coordinate={{ latitude: s.lat, longitude: s.lng }}
               anchor={{ x: 0.5, y: 0.5 }}
               tracksViewChanges={isSel}>
-              <View style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}>
-                <View
-                  style={{
-                    width: isSel ? 15 : 9,
-                    height: isSel ? 15 : 9,
-                    borderRadius: 8,
-                    backgroundColor: DOT_COLOR[st],
-                    borderWidth: isSel ? 2.5 : 1.5,
-                    borderColor: '#FFFFFF',
-                  }}
-                />
-              </View>
+              <StationDot state={st} selected={isSel} />
             </Marker>
           );
         })}
@@ -160,14 +158,19 @@ export function MapScreen() {
           station={selected}
           state={selectedState}
           onSetState={(target) => setState(selected, target)}
+          onOpenBonplans={() => router.push(`/bonplans/${selected.id}`)}
         />
-      ) : (
-        <MapLineSelector
+      ) : areaHeight > 0 ? (
+        <MapProgressSheet
+          areaHeight={areaHeight}
+          stats={stats.data}
           lines={network.data.lines}
-          selectedId={lineId}
-          onToggle={(id) => setLineId((prev) => (prev === id ? null : id))}
+          lineId={lineId}
+          onToggleLine={(id) => setLineId((prev) => (prev === id ? null : id))}
+          remainingOnly={remainingOnly}
+          onRemainingOnlyChange={setRemainingOnly}
         />
-      )}
+      ) : null}
     </View>
   );
 }

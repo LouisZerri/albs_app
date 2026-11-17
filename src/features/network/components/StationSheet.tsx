@@ -6,6 +6,7 @@ import { cn } from '@/shared/utils/cn';
 
 import type { StationState } from '../lib/stationState';
 import type { MapStation } from '../types';
+import { BonplansLink } from './BonplansLink';
 import { LineBadge } from './LineBadge';
 
 const STATES: { key: StationState; label: string; color: string }[] = [
@@ -18,10 +19,11 @@ type Props = {
   station: MapStation;
   state: StationState;
   onSetState: (target: StationState) => void;
+  onOpenBonplans: () => void;
 };
 
 /** Carte flottante d'une station sélectionnée sur la carte : nom + sélecteur d'état. UI pure. */
-export function StationSheet({ station, state, onSetState }: Props) {
+export function StationSheet({ station, state, onSetState, onOpenBonplans }: Props) {
   return (
     <View
       className="absolute inset-x-3 bottom-3 gap-3 rounded-card bg-surface p-4"
@@ -67,6 +69,12 @@ export function StationSheet({ station, state, onSetState }: Props) {
           );
         })}
       </View>
+
+      {station.bonplanCount > 0 ? (
+        <View className="-mb-2 -mt-1 items-start">
+          <BonplansLink count={station.bonplanCount} onPress={onOpenBonplans} variant="full" />
+        </View>
+      ) : null}
     </View>
   );
 }

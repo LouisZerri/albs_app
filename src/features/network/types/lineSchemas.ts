@@ -17,6 +17,8 @@ export const stationSchema = z.object({
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
   correspondences: z.array(correspondenceSchema),
+  /** Bons plans autour de la station (lien vers l'onglet Bons plans). */
+  bonplanCount: z.number().default(0),
   directionLabel: z.string().nullable(),
 });
 export type Station = z.infer<typeof stationSchema>;

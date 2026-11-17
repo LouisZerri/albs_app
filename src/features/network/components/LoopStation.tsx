@@ -6,6 +6,7 @@ import { Text } from '@/shared/ui';
 
 import type { StationState } from '../lib/stationState';
 import type { Station } from '../types';
+import { BonplansLink } from './BonplansLink';
 import { CorrespondenceDots } from './CorrespondenceDots';
 
 const SIZE = 18;
@@ -20,10 +21,20 @@ type Props = {
   isFirst: boolean;
   isLast: boolean;
   onPress: PressableProps['onPress'];
+  onOpenBonplans?: () => void;
 };
 
 /** Une station dans une boucle : petit nœud cochable + demi-rails (comme le rail principal). UI pure. */
-export function LoopStation({ station, state, color, textColor, isFirst, isLast, onPress }: Props) {
+export function LoopStation({
+  station,
+  state,
+  color,
+  textColor,
+  isFirst,
+  isLast,
+  onPress,
+  onOpenBonplans,
+}: Props) {
   const railColor = state === 'todo' ? colors.hair : color;
 
   return (
@@ -42,6 +53,9 @@ export function LoopStation({ station, state, color, textColor, isFirst, isLast,
         {station.name}
       </Text>
       <CorrespondenceDots items={station.correspondences} />
+      {state === 'visited' && station.bonplanCount > 0 && onOpenBonplans ? (
+        <BonplansLink count={station.bonplanCount} onPress={onOpenBonplans} />
+      ) : null}
     </Pressable>
   );
 }

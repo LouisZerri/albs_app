@@ -20,8 +20,8 @@ export function LineBadge({ number, color, textColor, size = 36 }: Props) {
       style={{ backgroundColor: color, width: size, height: size }}>
       <Text
         numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.5}
+        // Pas d'`adjustsFontSizeToFit` : iOS réduisait à tort le « 1 » à une taille illisible.
+        // La taille est déjà calculée ci-dessus selon la longueur du libellé.
         allowFontScaling={false}
         style={{
           width: size,

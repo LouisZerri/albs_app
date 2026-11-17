@@ -17,6 +17,9 @@ import { LineHeader } from './LineHeader';
 import { LoopCard } from './LoopCard';
 import { StationRow } from './StationRow';
 
+/** L'aide « Touche une station… » n'est affichée que tant que l'utilisateur a coché moins de stations que ça. */
+const HINT_UNTIL_STATIONS = 5;
+
 type RailItem =
   | { type: 'station'; station: Station; hideTop: boolean; hideBottom: boolean }
   | { type: 'fork'; station: Station }
@@ -63,6 +66,8 @@ export function LineRailScreen({ id }: { id: number }) {
       { onSuccess: (res) => celebrate(res.newBadges) },
     );
   };
+
+  const openBonplans = (station: Station) => router.push(`/bonplans/${station.id}`);
 
   if (lineQuery.isPending || progressQuery.isPending) {
     return (
@@ -142,9 +147,12 @@ export function LineRailScreen({ id }: { id: number }) {
         onBack={() => router.back()}
       />
 
-      <View className="px-5 py-2.5">
-        <Text variant="muted">Touche une station : passé → descendu → à faire 👆</Text>
-      </View>
+      {/* Aide de prise en main : disparaît une fois le geste acquis (quelques stations cochées). */}
+      {map.size < HINT_UNTIL_STATIONS ? (
+        <View className="px-5 py-2.5">
+          <Text variant="muted">Touche une station : passé → descendu → à faire 👆</Text>
+        </View>
+      ) : null}
 
       <FlatList
         data={railData}
@@ -158,6 +166,7 @@ export function LineRailScreen({ id }: { id: number }) {
                 textColor={line.textColor}
                 map={map}
                 onToggle={onToggle}
+                onOpenBonplans={openBonplans}
               />
             ) : null;
           }
@@ -169,6 +178,7 @@ export function LineRailScreen({ id }: { id: number }) {
             isFirst: index === 0,
             isLast: index === railData.length - 1,
             onPress: () => onToggle(item.station),
+            onOpenBonplans: () => openBonplans(item.station),
           };
           return item.type === 'fork' ? (
             <ForkRow

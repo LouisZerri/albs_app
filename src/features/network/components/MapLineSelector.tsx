@@ -11,37 +11,48 @@ type Props = {
   onToggle: (id: number) => void;
 };
 
-/** Bande de pastilles pour mettre une ligne en évidence sur la carte. UI pure. */
+/** Bande de pastilles pour mettre une ligne en évidence sur la carte (dans le panneau de progression). UI pure. */
 export function MapLineSelector({ lines, selectedId, onToggle }: Props) {
   return (
-    <View className="absolute inset-x-0 bottom-3">
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-2 px-3">
-        {lines.map((line) => {
-          const active = line.id === selectedId;
-          const dim = selectedId !== null && !active;
-          return (
-            <Pressable key={line.id} onPress={() => onToggle(line.id)} style={{ opacity: dim ? 0.35 : 1 }}>
-              <View
-                className={cn(
-                  'rounded-full p-0.5',
-                  active ? 'border-2 border-ink' : 'border-2 border-transparent',
-                )}
-                style={{
-                  shadowColor: '#000',
-                  shadowOpacity: 0.15,
-                  shadowRadius: 3,
-                  shadowOffset: { width: 0, height: 1 },
-                  elevation: 3,
-                }}>
-                <LineBadge number={line.number} color={line.color} textColor={line.textColor} size={38} />
-              </View>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
-    </View>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      // Un ScrollView rétrécit par défaut : sans ça, le contenu voisin rogne la bande.
+      style={{ flexGrow: 0, flexShrink: 0 }}
+      contentContainerClassName="gap-2 px-4 pb-3"
+    >
+      {lines.map((line) => {
+        const active = line.id === selectedId;
+        const dim = selectedId !== null && !active;
+        return (
+          <Pressable
+            key={line.id}
+            onPress={() => onToggle(line.id)}
+            style={{ opacity: dim ? 0.35 : 1 }}
+          >
+            <View
+              className={cn(
+                'rounded-full p-0.5',
+                active ? 'border-2 border-ink' : 'border-2 border-transparent',
+              )}
+              style={{
+                shadowColor: '#000',
+                shadowOpacity: 0.15,
+                shadowRadius: 3,
+                shadowOffset: { width: 0, height: 1 },
+                elevation: 3,
+              }}
+            >
+              <LineBadge
+                number={line.number}
+                color={line.color}
+                textColor={line.textColor}
+                size={38}
+              />
+            </View>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
   );
 }

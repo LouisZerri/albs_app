@@ -20,6 +20,7 @@ type Props = {
   isFirst: boolean;
   isLast: boolean;
   onPress: PressableProps['onPress'];
+  onOpenBonplans?: () => void;
   branches: Branch[];
   selected: string | null;
   onSelect: (key: string) => void;
@@ -36,6 +37,7 @@ export function ForkRow({
   isFirst,
   isLast,
   onPress,
+  onOpenBonplans,
   branches,
   selected,
   onSelect,
@@ -80,6 +82,7 @@ export function ForkRow({
       isFirst={isFirst}
       isLast={isLast}
       onPress={onPress}
+      onOpenBonplans={onOpenBonplans}
     />
   );
 

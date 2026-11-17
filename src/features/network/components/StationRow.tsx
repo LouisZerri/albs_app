@@ -5,6 +5,7 @@ import { Text } from '@/shared/ui';
 
 import type { StationState } from '../lib/stationState';
 import type { Station } from '../types';
+import { BonplansLink } from './BonplansLink';
 import { CorrespondenceDots } from './CorrespondenceDots';
 import { StationNode } from './StationNode';
 
@@ -18,10 +19,23 @@ type Props = {
   onPress: PressableProps['onPress'];
   hideBottom?: boolean;
   hideTop?: boolean;
+  /** Ouvre les bons plans de la station (lien affiché une fois la station visitée). */
+  onOpenBonplans?: () => void;
 };
 
 /** Une station dans le rail. Toute la ligne est tappable (cible large). */
-export function StationRow({ station, state, color, textColor, isFirst, isLast, onPress, hideBottom, hideTop }: Props) {
+export function StationRow({
+  station,
+  state,
+  color,
+  textColor,
+  isFirst,
+  isLast,
+  onPress,
+  hideBottom,
+  hideTop,
+  onOpenBonplans,
+}: Props) {
   const isTerminus = isFirst || isLast;
 
   return (
@@ -56,6 +70,11 @@ export function StationRow({ station, state, color, textColor, isFirst, isLast, 
           </Text>
         ) : null}
       </View>
+
+      {/* Récompense de la visite : on est descendu ici → on propose les adresses autour. */}
+      {state === 'visited' && station.bonplanCount > 0 && onOpenBonplans ? (
+        <BonplansLink count={station.bonplanCount} onPress={onOpenBonplans} />
+      ) : null}
     </Pressable>
   );
 }

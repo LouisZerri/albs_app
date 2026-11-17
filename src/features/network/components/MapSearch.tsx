@@ -1,10 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
-import { colors, fonts } from '@/shared/theme';
-import { Text } from '@/shared/ui';
+import { SearchInput, Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
+import { normalizeSearch } from '@/shared/utils/normalizeSearch';
 
 import type { MapStation } from '../types';
 
@@ -25,30 +24,12 @@ export function MapSearch({
   onSelect: (station: MapStation) => void;
 }) {
   const [query, setQuery] = useState('');
-  const q = query.trim().toLowerCase();
-  const results = q.length >= 1 ? stations.filter((s) => s.name.toLowerCase().includes(q)).slice(0, 8) : [];
+  const q = normalizeSearch(query);
+  const results = q.length >= 1 ? stations.filter((s) => normalizeSearch(s.name).includes(q)).slice(0, 8) : [];
 
   return (
     <View className="absolute inset-x-3 top-2">
-      <View
-        className="flex-row items-center gap-2.5 rounded-2xl border border-hair bg-surface px-4 py-3"
-        style={SHADOW}>
-        <Ionicons name="search" size={18} color={colors.muted} />
-        <TextInput
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Rechercher une station…"
-          placeholderTextColor={colors.muted}
-          autoCorrect={false}
-          className="flex-1 text-ink"
-          style={{ fontFamily: fonts.regular, fontSize: 15, padding: 0 }}
-        />
-        {query.length > 0 ? (
-          <Pressable onPress={() => setQuery('')} hitSlop={8}>
-            <Ionicons name="close-circle" size={18} color={colors.muted} />
-          </Pressable>
-        ) : null}
-      </View>
+      <SearchInput value={query} onChangeText={setQuery} placeholder="Rechercher une station…" style={SHADOW} />
 
       {results.length > 0 ? (
         <View

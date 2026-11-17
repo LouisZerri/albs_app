@@ -19,6 +19,8 @@ export const mapStationSchema = z.object({
   lat: z.number(),
   lng: z.number(),
   lines: z.array(correspondenceSchema).default([]),
+  /** Bons plans autour de la station (lien vers l'onglet Bons plans). */
+  bonplanCount: z.number().default(0),
 });
 export type MapStation = z.infer<typeof mapStationSchema>;
 
