@@ -3,6 +3,7 @@ import { RefreshControl, ScrollView, View } from 'react-native';
 
 import { ChallengesCard } from '@/features/network/components';
 import { useNetworkStats } from '@/features/network/hooks';
+import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, Screen, SkeletonList, Text } from '@/shared/ui';
 
@@ -18,10 +19,7 @@ export function DiscoverHome() {
   const ghosts = useGhostStations();
   const stats = useNetworkStats();
 
-  const refresh = () => {
-    void journeys.refetch();
-    void ghosts.refetch();
-  };
+  const { refreshing, refresh } = usePullToRefresh(journeys.refetch, ghosts.refetch);
 
   if (journeys.isPending || ghosts.isPending) {
     return (
@@ -52,7 +50,7 @@ export function DiscoverHome() {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={journeys.isRefetching || ghosts.isRefetching}
+            refreshing={refreshing}
             onRefresh={refresh}
             tintColor={colors.accent}
           />

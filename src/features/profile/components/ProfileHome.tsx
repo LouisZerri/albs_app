@@ -5,6 +5,7 @@ import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, View }
 
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
+import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
 import { Button, ErrorState, Screen, ThemeSwitch } from '@/shared/ui';
 
@@ -25,6 +26,7 @@ export function ProfileHome() {
   const { user, signOut } = useAuth();
   const stats = useNetworkStats();
   const badges = useBadges();
+  const { refreshing, refresh } = usePullToRefresh(stats.refetch, badges.refetch);
   const [tab, setTab] = useState<ProfileTab>('badges');
 
   const startedCount = useMemo(
@@ -58,17 +60,12 @@ export function ProfileHome() {
   const showcase = (user?.displayedBadges ?? [])
     .map((id) => iconById.get(id))
     .filter((icon): icon is string => Boolean(icon));
-  const refreshing = stats.isFetching || badges.isFetching;
   // Confirmation : une déconnexion accidentelle oblige à ressaisir ses identifiants.
   const confirmSignOut = () =>
     Alert.alert('Se déconnecter', 'Tu devras te reconnecter pour retrouver ta progression.', [
       { text: 'Annuler', style: 'cancel' },
       { text: 'Se déconnecter', style: 'destructive', onPress: () => void signOut() },
     ]);
-  const refresh = () => {
-    void stats.refetch();
-    void badges.refetch();
-  };
 
   return (
     <Screen padded={false}>

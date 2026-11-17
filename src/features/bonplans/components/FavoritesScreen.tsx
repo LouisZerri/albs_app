@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { FlatList, RefreshControl, View } from 'react-native';
 
+import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, ScreenHeader, SkeletonList, Text } from '@/shared/ui';
 
@@ -13,7 +14,8 @@ import { BonplanCard } from './BonplanCard';
 export function FavoritesScreen() {
   const colors = useThemeColors();
   const router = useRouter();
-  const { data, error, isPending, isError, refetch, isRefetching } = useFavorites();
+  const { data, error, isPending, isError, refetch } = useFavorites();
+  const { refreshing, refresh } = usePullToRefresh(refetch);
   const { toggleFavorite, openDirections } = useBonplanActions();
 
   return (
@@ -48,8 +50,8 @@ export function FavoritesScreen() {
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={() => void refetch()}
+              refreshing={refreshing}
+              onRefresh={refresh}
               tintColor={colors.accent}
             />
           }

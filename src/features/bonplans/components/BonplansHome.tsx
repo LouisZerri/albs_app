@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 
+import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, Screen, SearchInput, Skeleton, SkeletonList, Text } from '@/shared/ui';
 
@@ -15,7 +16,8 @@ import { StationFilters } from './StationFilters';
 export function BonplansHome() {
   const colors = useThemeColors();
   const router = useRouter();
-  const { data, error, isPending, isError, refetch, isRefetching } = useBonplanStations();
+  const { data, error, isPending, isError, refetch } = useBonplanStations();
+  const { refreshing, refresh } = usePullToRefresh(refetch);
   const visitedIds = useVisitedStationIds();
   const [query, setQuery] = useState('');
   const [lineId, setLineId] = useState<number | null>(null);
@@ -87,8 +89,8 @@ export function BonplansHome() {
         keyboardDismissMode="on-drag"
         refreshControl={
           <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={() => void refetch()}
+            refreshing={refreshing}
+            onRefresh={refresh}
             tintColor={colors.accent}
           />
         }

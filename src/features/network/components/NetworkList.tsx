@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
+import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, SearchInput, SkeletonList } from '@/shared/ui';
 
@@ -15,7 +16,8 @@ import { StationSearchResults } from './StationSearchResults';
 /** Vue Liste de l'onglet Réseau : recherche de station, progression globale, liste des lignes. */
 export function NetworkList() {
   const router = useRouter();
-  const { data, error, isPending, isError, refetch, isRefetching } = useNetworkStats();
+  const { data, error, isPending, isError, refetch } = useNetworkStats();
+  const { refreshing, refresh } = usePullToRefresh(refetch);
   const [query, setQuery] = useState('');
   const search = useStationSearch(query);
 
@@ -47,16 +49,16 @@ export function NetworkList() {
           }
         />
       ) : (
-        <LineList data={data} isRefetching={isRefetching} onRefresh={() => void refetch()} />
+        <LineList data={data} refreshing={refreshing} onRefresh={refresh} />
       )}
     </View>
   );
 }
 
-type LineListProps = { data: NetworkStats; isRefetching: boolean; onRefresh: () => void };
+type LineListProps = { data: NetworkStats; refreshing: boolean; onRefresh: () => void };
 
 /** La liste des lignes, précédée de la progression globale. */
-function LineList({ data, isRefetching, onRefresh }: LineListProps) {
+function LineList({ data, refreshing, onRefresh }: LineListProps) {
   const colors = useThemeColors();
   const router = useRouter();
 
@@ -70,7 +72,7 @@ function LineList({ data, isRefetching, onRefresh }: LineListProps) {
       contentContainerClassName="gap-3 px-5 pb-6"
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} tintColor={colors.accent} />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
       }
       ListHeaderComponent={
         <View className="pb-1 pt-1">
