@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 
 import { useThemeColors } from '@/shared/theme';
+import { MapMarkerBox } from '@/shared/ui';
 
 import type { StationState } from '../lib/stationState';
 
@@ -10,8 +11,8 @@ export function StationDot({ state, selected }: { state: StationState; selected:
   const size = selected ? 15 : 9;
 
   return (
-    // Boîte de 24 pt : zone stable autour du point, quelle que soit sa taille.
-    <View style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}>
+    // Boîte de 24 pt centrée sur la station : zone stable autour du point, quelle que soit sa taille.
+    <MapMarkerBox size={24}>
       <View
         style={{
           width: size,
@@ -22,6 +23,6 @@ export function StationDot({ state, selected }: { state: StationState; selected:
           borderColor: colors.white,
         }}
       />
-    </View>
+    </MapMarkerBox>
   );
 }

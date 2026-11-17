@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 
 import { useSyncStatus } from '@/shared/hooks/useSyncStatus';
 import { useThemeColors, useThemeMode } from '@/shared/theme';
-import { OfflineBasemap } from '@/shared/ui';
+import { MapMarkerBox, OfflineBasemap } from '@/shared/ui';
 
 import { coordinateOf, regionAround, type LatLng, type NearbyBonplan } from '../lib/distance';
 
@@ -70,16 +70,18 @@ export function BonplanMap({
       {online ? null : <OfflineBasemap />}
 
       <Marker coordinate={station} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false}>
-        <View
-          style={{
-            width: 18,
-            height: 18,
-            borderRadius: 9,
-            backgroundColor: stationColor,
-            borderWidth: 3,
-            borderColor: colors.white,
-          }}
-        />
+        <MapMarkerBox size={18}>
+          <View
+            style={{
+              width: 18,
+              height: 18,
+              borderRadius: 9,
+              backgroundColor: stationColor,
+              borderWidth: 3,
+              borderColor: colors.white,
+            }}
+          />
+        </MapMarkerBox>
       </Marker>
 
       {spots.map(({ bonplan, coordinate }) => {

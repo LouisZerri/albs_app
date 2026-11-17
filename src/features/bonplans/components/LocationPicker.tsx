@@ -2,7 +2,7 @@ import { View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 import { useThemeColors, useThemeMode } from '@/shared/theme';
-import { Text, TextLink } from '@/shared/ui';
+import { MapMarkerBox, Text, TextLink } from '@/shared/ui';
 
 import type { LatLng } from '../lib/distance';
 
@@ -35,16 +35,18 @@ export function LocationPicker({ center, value, onChange }: Props) {
           onPress={(e) => onChange(e.nativeEvent.coordinate)}
         >
           <Marker coordinate={center} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false}>
-            <View
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: 8,
-                backgroundColor: colors.ink,
-                borderWidth: 3,
-                borderColor: colors.white,
-              }}
-            />
+            <MapMarkerBox size={16}>
+              <View
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: 8,
+                  backgroundColor: colors.ink,
+                  borderWidth: 3,
+                  borderColor: colors.white,
+                }}
+              />
+            </MapMarkerBox>
           </Marker>
           {value ? <Marker coordinate={value} pinColor={colors.accent} /> : null}
         </MapView>
