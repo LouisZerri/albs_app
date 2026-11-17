@@ -2,6 +2,7 @@ import { Pressable, type PressableProps, View } from 'react-native';
 
 import { fonts } from '@/shared/theme';
 import { Text } from '@/shared/ui';
+import { cn } from '@/shared/utils/cn';
 
 import type { StationState } from '../lib/stationState';
 import type { Station } from '../types';
@@ -21,6 +22,8 @@ type Props = {
   hideTop?: boolean;
   /** Ouvre les bons plans de la station (lien affiché une fois la station visitée). */
   onOpenBonplans?: () => void;
+  /** Station visée par une recherche : fond violet clair pour la repérer. */
+  highlighted?: boolean;
 };
 
 /** Une station dans le rail. Toute la ligne est tappable (cible large). */
@@ -35,13 +38,14 @@ export function StationRow({
   hideBottom,
   hideTop,
   onOpenBonplans,
+  highlighted,
 }: Props) {
   const isTerminus = isFirst || isLast;
 
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center pr-4 active:bg-hair/40"
+      className={cn('flex-row items-center pr-4 active:bg-hair/40', highlighted && 'bg-accentSoft/60')}
       accessibilityRole="button"
       accessibilityState={{ checked: state === 'visited' }}>
       <StationNode

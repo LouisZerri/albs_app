@@ -5,7 +5,7 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 
 import { useBadgeCelebration } from '@/features/badges';
 import { colors } from '@/shared/theme';
-import { Button, Text } from '@/shared/ui';
+import { ErrorState } from '@/shared/ui';
 
 import {
   useMyProgress,
@@ -14,7 +14,7 @@ import {
   useStationFeedback,
   useToggleStation,
 } from '../hooks';
-import { progressMap, stationState, type StationState } from '../lib/stationState';
+import { progressMap, STATE_FLAGS, stationState, type StationState } from '../lib/stationState';
 import type { MapStation } from '../types';
 import { MAP_SHEET_COLLAPSED, MapProgressSheet } from './MapProgressSheet';
 import { MapSearch } from './MapSearch';
@@ -22,12 +22,6 @@ import { StationDot } from './StationDot';
 import { StationSheet } from './StationSheet';
 
 const PARIS = { latitude: 48.8566, longitude: 2.3522, latitudeDelta: 0.17, longitudeDelta: 0.17 };
-
-const FLAGS: Record<StationState, { passed: boolean; stopped: boolean }> = {
-  todo: { passed: false, stopped: false },
-  passed: { passed: true, stopped: false },
-  visited: { passed: true, stopped: true },
-};
 
 /** Onglet Réseau, vue Carte : réseau réel + stations colorées + cochage (3 états) + recherche. */
 export function MapScreen() {
@@ -60,12 +54,7 @@ export function MapScreen() {
 
   if (network.isError || !network.data) {
     return (
-      <View className="flex-1 items-center justify-center gap-4 px-6">
-        <Text variant="muted" className="text-center">
-          Impossible de charger la carte.
-        </Text>
-        <Button label="Réessayer" variant="secondary" onPress={() => network.refetch()} />
-      </View>
+      <ErrorState error={network.error} message="Impossible de charger la carte." onRetry={() => network.refetch()} />
     );
   }
 
@@ -104,7 +93,7 @@ export function MapScreen() {
     if (target === stationState(map.get(station.id))) return;
     feedback(target);
     toggle.mutate(
-      { stationId: station.id, ...FLAGS[target] },
+      { stationId: station.id, ...STATE_FLAGS[target] },
       { onSuccess: (res) => celebrate(res.newBadges) },
     );
   };

@@ -1,16 +1,15 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
 
 import { useBadgeCelebration } from '@/features/badges';
 import { colors } from '@/shared/theme';
-import { Button, Screen, Text } from '@/shared/ui';
+import { ErrorState, Screen, Text } from '@/shared/ui';
 
 import { PROGRESS_KEY, useLineDetail, useMyProgress, useStationFeedback, useToggleStation } from '../hooks';
-import { displayStations, getBranches, isForkStation } from '../lib/forkModel';
-import { getLoop, isLoopStation } from '../lib/loopModel';
-import { progressMap, stationState, type StationState } from '../lib/stationState';
+import { branchOfStation, buildRail, completesLine, railIndexOf, type RailItem } from '../lib/railModel';
+import { nextState, progressMap, STATE_FLAGS, stationState } from '../lib/stationState';
 import type { ProgressEntry, Station } from '../types';
 import { ForkRow } from './ForkRow';
 import { LineHeader } from './LineHeader';
@@ -20,13 +19,14 @@ import { StationRow } from './StationRow';
 /** L'aide « Touche une station… » n'est affichée que tant que l'utilisateur a coché moins de stations que ça. */
 const HINT_UNTIL_STATIONS = 5;
 
-type RailItem =
-  | { type: 'station'; station: Station; hideTop: boolean; hideBottom: boolean }
-  | { type: 'fork'; station: Station }
-  | { type: 'loop' };
+type Props = {
+  id: number;
+  /** Nom d'une station à atteindre à l'ouverture (venue de la recherche) : on y défile et on la surligne. */
+  focusStation?: string;
+};
 
-/** Écran « rail » d'une ligne : en-tête + liste tappable des stations + célébration badges. */
-export function LineRailScreen({ id }: { id: number }) {
+/** Écran « rail » d'une ligne : en-tête + liste tappable des stations + célébrations (badges, ligne terminée). */
+export function LineRailScreen({ id, focusStation }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { celebrate } = useBadgeCelebration();
@@ -34,6 +34,8 @@ export function LineRailScreen({ id }: { id: number }) {
   const progressQuery = useMyProgress();
   const toggle = useToggleStation();
   const feedback = useStationFeedback();
+  const listRef = useRef<FlatList<RailItem>>(null);
+  const focused = useRef(false);
   const [branch, setBranch] = useState<string | null>(null);
 
   const map = useMemo(() => progressMap(progressQuery.data ?? []), [progressQuery.data]);
@@ -44,30 +46,6 @@ export function LineRailScreen({ id }: { id: number }) {
       void queryClient.invalidateQueries({ queryKey: PROGRESS_KEY });
     }, [queryClient]),
   );
-
-  const onToggle = (station: Station) => {
-    // Lecture du cache le plus frais (et pas du `map` mémoïsé) → cycle fiable en rafale.
-    const entries = queryClient.getQueryData<ProgressEntry[]>(PROGRESS_KEY) ?? [];
-    const current = stationState(entries.find((e) => e.stationId === station.id));
-    // Cycle : à faire → passé → descendu → à faire.
-    const next: StationState =
-      current === 'todo' ? 'passed' : current === 'passed' ? 'visited' : 'todo';
-    const nextFlags =
-      next === 'passed'
-        ? { passed: true, stopped: false }
-        : next === 'visited'
-          ? { passed: true, stopped: true }
-          : { passed: false, stopped: false };
-
-    feedback(next); // son + haptique immédiats
-
-    toggle.mutate(
-      { stationId: station.id, ...nextFlags },
-      { onSuccess: (res) => celebrate(res.newBadges) },
-    );
-  };
-
-  const openBonplans = (station: Station) => router.push(`/bonplans/${station.id}`);
 
   if (lineQuery.isPending || progressQuery.isPending) {
     return (
@@ -82,60 +60,49 @@ export function LineRailScreen({ id }: { id: number }) {
   if (lineQuery.isError || !lineQuery.data) {
     return (
       <Screen>
-        <View className="flex-1 items-center justify-center gap-4">
-          <Text variant="muted" className="text-center">
-            Impossible de charger la ligne.
-          </Text>
-          <Button label="Réessayer" variant="secondary" onPress={() => lineQuery.refetch()} />
-        </View>
+        <ErrorState
+          error={lineQuery.error}
+          message="Impossible de charger la ligne."
+          onRetry={() => lineQuery.refetch()}
+        />
       </Screen>
     );
   }
 
   const line = lineQuery.data;
-  const branches = getBranches(line.stations);
-  const selectedBranch = branch ?? branches[0]?.key ?? null;
-  const shown = branches.length > 0 ? displayStations(line.stations, selectedBranch) : line.stations;
-  const forkIndex = branches.length > 0 ? shown.findIndex(isForkStation) : -1;
-  // Les branches sont-elles affichées EN DESSOUS de la fourche (ex. ligne 7) ?
-  const afterFork = forkIndex >= 0 ? shown[forkIndex + 1] : undefined;
-  const branchesBelow = afterFork != null && !isForkStation(afterFork) && afterFork.branch !== null;
+  // Tant que l'utilisateur n'a pas choisi de branche, on montre celle de la station recherchée.
+  const rail = buildRail(line, branch ?? (focusStation ? branchOfStation(line, focusStation) : null));
+  const focusIndex = focusStation ? railIndexOf(rail.items, rail.loop, focusStation) : -1;
 
-  // Compte sur les vraies stations (les deux branches), hors marqueur de fourche.
-  const realStations = line.stations.filter((s) => !isForkStation(s));
-  const total = realStations.length;
-  const visited = realStations.filter((s) => map.get(s.id)?.stopped).length;
-  const percent = total > 0 ? Math.round((visited / total) * 100) : 0;
+  const total = rail.realStations.length;
+  const visited = rail.realStations.filter((s) => map.get(s.id)?.stopped).length;
 
-  // Construit la liste à rendre : stations + une éventuelle fourche/boucle collapsée.
-  const loop = getLoop(line);
-  const railData: RailItem[] = [];
-  if (loop) {
-    let loopDone = false;
-    for (const s of shown) {
-      if (isLoopStation(s)) {
-        if (!loopDone) {
-          railData.push({ type: 'loop' });
-          loopDone = true;
-        }
-        continue;
-      }
-      railData.push({ type: 'station', station: s, hideTop: false, hideBottom: false });
+  const onToggle = (station: Station) => {
+    // Lecture du cache le plus frais (et pas du `map` mémoïsé) → cycle fiable en rafale.
+    const entries = queryClient.getQueryData<ProgressEntry[]>(PROGRESS_KEY) ?? [];
+    const next = nextState(stationState(entries.find((e) => e.stationId === station.id)));
+
+    feedback(next); // son + haptique immédiats
+
+    // Dernière station de la ligne : on fête la ligne terminée, sans attendre le serveur.
+    if (next === 'visited' && completesLine(rail.realStations, entries, station.id)) {
+      celebrate([{ name: `Ligne ${line.number}`, icon: '🎉', label: 'Ligne terminée' }]);
     }
-  } else {
-    shown.forEach((s, i) => {
-      if (isForkStation(s)) {
-        railData.push({ type: 'fork', station: s });
-      } else {
-        railData.push({
-          type: 'station',
-          station: s,
-          hideBottom: !branchesBelow && i === forkIndex - 1,
-          hideTop: branchesBelow && i === forkIndex + 1,
-        });
-      }
-    });
-  }
+
+    toggle.mutate(
+      { stationId: station.id, ...STATE_FLAGS[next] },
+      { onSuccess: (res) => celebrate(res.newBadges) },
+    );
+  };
+
+  const openBonplans = (station: Station) => router.push(`/bonplans/${station.id}`);
+
+  // Une seule fois, quand la liste est prête : on amène la station recherchée dans le tiers haut.
+  const scrollToFocus = () => {
+    if (focused.current || focusIndex < 0) return;
+    focused.current = true;
+    listRef.current?.scrollToIndex({ index: focusIndex, viewPosition: 0.3, animated: false });
+  };
 
   return (
     <View className="flex-1 bg-bg">
@@ -143,7 +110,7 @@ export function LineRailScreen({ id }: { id: number }) {
         line={line}
         visited={visited}
         total={total}
-        percent={percent}
+        percent={total > 0 ? Math.round((visited / total) * 100) : 0}
         onBack={() => router.back()}
       />
 
@@ -155,13 +122,19 @@ export function LineRailScreen({ id }: { id: number }) {
       ) : null}
 
       <FlatList
-        data={railData}
+        ref={listRef}
+        data={rail.items}
         keyExtractor={(item, index) => (item.type === 'loop' ? `loop-${index}` : String(item.station.id))}
+        onContentSizeChange={scrollToFocus}
+        // Lignes de hauteur variable (fourche, boucle) : cible pas encore mesurée → position estimée.
+        onScrollToIndexFailed={({ index, averageItemLength }) =>
+          listRef.current?.scrollToOffset({ offset: index * averageItemLength, animated: false })
+        }
         renderItem={({ item, index }) => {
           if (item.type === 'loop') {
-            return loop ? (
+            return rail.loop ? (
               <LoopCard
-                loop={loop}
+                loop={rail.loop}
                 color={line.color}
                 textColor={line.textColor}
                 map={map}
@@ -176,20 +149,25 @@ export function LineRailScreen({ id }: { id: number }) {
             color: line.color,
             textColor: line.textColor,
             isFirst: index === 0,
-            isLast: index === railData.length - 1,
+            isLast: index === rail.items.length - 1,
             onPress: () => onToggle(item.station),
             onOpenBonplans: () => openBonplans(item.station),
           };
           return item.type === 'fork' ? (
             <ForkRow
               {...common}
-              branches={branches}
-              selected={selectedBranch}
+              branches={rail.branches}
+              selected={rail.selectedBranch}
               onSelect={setBranch}
-              branchesBelow={branchesBelow}
+              branchesBelow={rail.branchesBelow}
             />
           ) : (
-            <StationRow {...common} hideTop={item.hideTop} hideBottom={item.hideBottom} />
+            <StationRow
+              {...common}
+              hideTop={item.hideTop}
+              hideBottom={item.hideBottom}
+              highlighted={index === focusIndex}
+            />
           );
         }}
         contentContainerClassName="pb-10"

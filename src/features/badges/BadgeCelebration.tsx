@@ -13,7 +13,8 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 
 import { ShineOverlay, Text } from '@/shared/ui';
 
-export type CelebrationBadge = { name: string; icon: string };
+/** Ce qu'on célèbre : un badge par défaut ; `label` permet un autre intitulé (ex. « Ligne terminée »). */
+export type CelebrationBadge = { name: string; icon: string; label?: string };
 
 const GOLD = ['#F7CE5B', '#E0A422', '#C6890F'] as const;
 const VISIBLE_MS = 4000;
@@ -78,7 +79,7 @@ function BadgeCard({ badge, onDismiss }: { badge: CelebrationBadge; onDismiss: (
         <LinearGradient colors={GOLD} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <View className="items-center gap-2 px-6 py-7">
             <Text variant="label" color="white">
-              Badge débloqué
+              {badge.label ?? 'Badge débloqué'}
             </Text>
             <Text className="text-6xl">{badge.icon}</Text>
             <Text variant="subtitle" color="white" className="text-center">
