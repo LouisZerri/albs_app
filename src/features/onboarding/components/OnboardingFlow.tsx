@@ -2,7 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRef, useState } from 'react';
-import { ScrollView, useWindowDimensions, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import {
+  ScrollView,
+  useWindowDimensions,
+  View,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  type ScrollViewInstance,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useCompleteOnboarding } from '@/features/auth/hooks';
@@ -22,7 +29,7 @@ export function OnboardingFlow() {
   const queryClient = useQueryClient();
   const toast = useToast();
   const { mutate, isPending } = useCompleteOnboarding();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const completedUser = useRef<User | null>(null);
   const [index, setIndex] = useState(0);
   const [celebrating, setCelebrating] = useState(false);

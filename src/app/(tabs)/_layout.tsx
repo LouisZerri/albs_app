@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import type { ColorValue } from 'react-native';
 
 import { colors, fonts } from '@/shared/theme';
 
@@ -7,8 +8,8 @@ type IconName = keyof typeof Ionicons.glyphMap;
 
 // Icône d'onglet : version pleine quand actif, contour sinon.
 function tabIcon(base: IconName, outline: IconName) {
-  return function TabIcon({ color, size, focused }: { color: string; size: number; focused: boolean }) {
-    return <Ionicons name={focused ? base : outline} size={size} color={color} />;
+  return function TabIcon({ color, size, focused }: { color: ColorValue; size: number; focused: boolean }) {
+    return <Ionicons name={focused ? base : outline} size={size} color={typeof color === 'number' ? undefined : (color ?? undefined)} />;
   };
 }
 
