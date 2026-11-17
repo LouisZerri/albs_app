@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
@@ -69,6 +69,12 @@ export function ProfileHome() {
     .map((id) => iconById.get(id))
     .filter((icon): icon is string => Boolean(icon));
   const refreshing = stats.isFetching || badges.isFetching;
+  // Confirmation : une déconnexion accidentelle oblige à ressaisir ses identifiants.
+  const confirmSignOut = () =>
+    Alert.alert('Se déconnecter', 'Tu devras te reconnecter pour retrouver ta progression.', [
+      { text: 'Annuler', style: 'cancel' },
+      { text: 'Se déconnecter', style: 'destructive', onPress: () => void signOut() },
+    ]);
   const refresh = () => {
     void stats.refetch();
     void badges.refetch();
@@ -91,25 +97,20 @@ export function ProfileHome() {
 
           <View>
             <Pressable
-              onPress={() => void signOut()}
-              className="absolute left-0 top-0 z-10 p-1 active:opacity-60"
-              accessibilityLabel="Se déconnecter">
-              <Ionicons name="log-out-outline" size={24} color={colors.danger} />
-            </Pressable>
-            <Pressable
               onPress={() => router.push('/profile/edit')}
+              hitSlop={10}
+              accessibilityRole="button"
               className="absolute right-0 top-0 z-10 p-1 active:opacity-60"
               accessibilityLabel="Modifier le profil">
               <Ionicons name="settings-outline" size={22} color={colors.muted} />
             </Pressable>
             <ProfileHeader
               username={user?.username ?? ''}
-              email={user?.email ?? ''}
               avatarUrl={user?.avatarUrl}
               createdAt={user?.createdAt}
               favoriteLine={user?.favoriteLine}
               showcase={showcase}
-              engagement={s.stations.passed + s.stations.visited}
+              visited={s.stations.visited}
             />
           </View>
 
@@ -137,7 +138,7 @@ export function ProfileHome() {
             <ProgressionTab lines={s.lines} />
           )}
 
-          <Button label="Se déconnecter" variant="secondary" onPress={() => void signOut()} />
+          <Button label="Se déconnecter" variant="secondary" onPress={confirmSignOut} />
         </View>
       </ScrollView>
     </Screen>

@@ -2,23 +2,22 @@ import { Text as RNText, View } from 'react-native';
 
 import { LineBadge } from '@/features/network/components';
 import { fonts } from '@/shared/theme';
-import { Text } from '@/shared/ui';
+import { ProgressBar, Text } from '@/shared/ui';
 
-import { rankFor } from '../lib/rank';
+import { nextRankFor, rankFor } from '../lib/rank';
 import { Avatar } from './Avatar';
 
 type FavoriteLine = { number: string; color: string; textColor: string | null };
 
 type Props = {
   username: string;
-  email: string;
   avatarUrl?: string | null;
   createdAt?: string;
   favoriteLine?: FavoriteLine | null;
   /** Emojis des badges mis en avant (vitrine). */
   showcase?: string[];
-  /** Engagement total (passé + descendu) → détermine le rang. */
-  engagement: number;
+  /** Stations où l'utilisateur est descendu → détermine le rang. */
+  visited: number;
 };
 
 function formatDate(iso?: string): string | null {
@@ -28,17 +27,17 @@ function formatDate(iso?: string): string | null {
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
-/** En-tête sobre du profil : avatar, pseudo, rang, date d'inscription. UI pure. */
+/** En-tête sobre du profil : avatar, pseudo, rang (+ chemin vers le suivant), date d'inscription. UI pure. */
 export function ProfileHeader({
   username,
-  email,
   avatarUrl,
   createdAt,
   favoriteLine,
   showcase,
-  engagement,
+  visited,
 }: Props) {
-  const rank = rankFor(engagement);
+  const rank = rankFor(visited);
+  const next = nextRankFor(visited);
   const since = formatDate(createdAt);
 
   return (
@@ -78,14 +77,22 @@ export function ProfileHeader({
         </View>
       </View>
 
-      <View className="items-center gap-0.5">
-        <Text variant="muted">{email}</Text>
-        {since ? (
-          <Text variant="muted" className="text-xs">
-            Membre depuis {since}
+      {next ? (
+        // Objectif suivant : ce qu'il reste avant le prochain rang.
+        <View className="w-full max-w-[280px] gap-1.5">
+          <Text variant="muted" className="text-center text-xs">
+            Encore {next.remaining} {next.remaining > 1 ? 'stations' : 'station'} avant {next.rank.icon}{' '}
+            {next.rank.label}
           </Text>
-        ) : null}
-      </View>
+          <ProgressBar percent={next.percent} />
+        </View>
+      ) : null}
+
+      {since ? (
+        <Text variant="muted" className="text-xs">
+          Membre depuis {since}
+        </Text>
+      ) : null}
     </View>
   );
 }

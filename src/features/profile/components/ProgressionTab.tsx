@@ -26,7 +26,7 @@ export function ProgressionTab({ lines }: { lines: LineStats[] }) {
           {"Prêt pour l'aventure ?"}
         </Text>
         <Text variant="muted" className="text-center">
-          {"Cochez vos premières stations dans l'onglet Réseau pour suivre votre progression ici."}
+          {"Coche tes premières stations dans l'onglet Réseau pour suivre ta progression ici."}
         </Text>
       </View>
     );

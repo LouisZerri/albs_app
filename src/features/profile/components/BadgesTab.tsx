@@ -11,7 +11,7 @@ import { BadgeStatRow } from './BadgeStatRow';
 
 type Section = 'earned' | 'locked';
 
-/** Onglet Badges : sous-filtre Débloqués / À débloquer + vitrine (max 3). */
+/** Onglet Badges : sous-filtre Débloqués / À débloquer + vitrine (max 2). */
 export function BadgesTab({ badges }: { badges: BadgeStatus[] }) {
   const { user } = useAuth();
   const toggleDisplay = useToggleDisplayBadge();

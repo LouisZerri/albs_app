@@ -1,32 +1,30 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import type { UpdateProfileInput } from '@/features/auth/api';
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
 import { colors } from '@/shared/theme';
-import { Button, Input, Screen, Text, useToast } from '@/shared/ui';
+import { Button, Card, Input, SubScreen, Text, useToast } from '@/shared/ui';
 
 import { useUpdateProfile } from '../hooks';
 import { AvatarEditor } from './AvatarEditor';
 import { DangerZone } from './DangerZone';
 import { FavoriteLinePicker } from './FavoriteLinePicker';
 
-type Field = 'username' | 'email' | 'currentPassword' | 'newPassword' | 'confirm' | 'general';
+type Field = 'username' | 'email' | 'general';
 type Errors = Partial<Record<Field, string>>;
 
 /** Associe un message d'erreur serveur au champ concerné (sinon « general »). */
 function fieldForMessage(message: string): Field {
   if (/pseudo/i.test(message)) return 'username';
   if (/mail/i.test(message)) return 'email';
-  if (/actuel/i.test(message)) return 'currentPassword';
-  if (/mot de passe/i.test(message)) return 'newPassword';
   return 'general';
 }
 
-/** Écran d'édition du profil : avatar + identité + mot de passe + suppression de compte. */
+/** Écran d'édition du profil : avatar, identité, ligne favorite ; accès au mot de passe et à la suppression. */
 export function ProfileEditScreen() {
   const router = useRouter();
   const { user } = useAuth();
@@ -36,9 +34,6 @@ export function ProfileEditScreen() {
 
   const [username, setUsername] = useState(user?.username ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
   const [favoriteLineId, setFavoriteLineId] = useState<number | null>(user?.favoriteLine?.id ?? null);
   const [errors, setErrors] = useState<Errors>({});
 
@@ -61,22 +56,6 @@ export function ProfileEditScreen() {
         errs.email = 'Email invalide.';
       } else {
         payload.email = mail;
-      }
-    }
-
-    if (newPassword) {
-      if (newPassword.length < 8) {
-        errs.newPassword = 'Le nouveau mot de passe doit faire au moins 8 caractères.';
-      }
-      if (newPassword !== confirm) {
-        errs.confirm = 'Les mots de passe ne correspondent pas.';
-      }
-      if (!currentPassword) {
-        errs.currentPassword = 'Renseigne ton mot de passe actuel.';
-      }
-      if (!errs.newPassword && !errs.confirm && !errs.currentPassword) {
-        payload.currentPassword = currentPassword;
-        payload.newPassword = newPassword;
       }
     }
 
@@ -103,14 +82,7 @@ export function ProfileEditScreen() {
   };
 
   return (
-    <Screen scroll>
-      <View className="flex-row items-center gap-3 py-2">
-        <Pressable onPress={() => router.back()} className="p-1 active:opacity-60">
-          <Ionicons name="chevron-back" size={26} color={colors.ink} />
-        </Pressable>
-        <Text variant="subtitle">Modifier le profil</Text>
-      </View>
-
+    <SubScreen title="Modifier le profil" onBack={() => router.back()}>
       <View className="gap-5 py-3 pb-10">
         <AvatarEditor username={user?.username ?? ''} avatarUrl={user?.avatarUrl} />
 
@@ -140,31 +112,6 @@ export function ProfileEditScreen() {
           />
         ) : null}
 
-        <View className="gap-3">
-          <Text variant="label">Changer le mot de passe (optionnel)</Text>
-          <Input
-            label="Mot de passe actuel"
-            value={currentPassword}
-            onChangeText={setCurrentPassword}
-            secureTextEntry
-            error={errors.currentPassword}
-          />
-          <Input
-            label="Nouveau mot de passe"
-            value={newPassword}
-            onChangeText={setNewPassword}
-            secureTextEntry
-            error={errors.newPassword}
-          />
-          <Input
-            label="Confirmer le nouveau mot de passe"
-            value={confirm}
-            onChangeText={setConfirm}
-            secureTextEntry
-            error={errors.confirm}
-          />
-        </View>
-
         {errors.general ? (
           <Text color="danger" className="text-sm">
             {errors.general}
@@ -173,8 +120,14 @@ export function ProfileEditScreen() {
 
         <Button label="Enregistrer" loading={update.isPending} onPress={save} />
 
+        <Card onPress={() => router.push('/profile/password')} className="flex-row items-center gap-3">
+          <Ionicons name="lock-closed-outline" size={20} color={colors.ink} />
+          <Text className="flex-1">Changer le mot de passe</Text>
+          <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+        </Card>
+
         <DangerZone />
       </View>
-    </Screen>
+    </SubScreen>
   );
 }

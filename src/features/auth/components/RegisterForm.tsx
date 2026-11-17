@@ -36,6 +36,7 @@ export function RegisterForm() {
       email: email.trim(),
       username: username.trim(),
       plainPassword: password,
+      acceptedTerms,
     });
 
     const errors: FieldErrors = {};
@@ -44,12 +45,12 @@ export function RegisterForm() {
       errors.email = f.email?.[0];
       errors.username = f.username?.[0];
       errors.plainPassword = f.plainPassword?.[0];
+      errors.terms = f.acceptedTerms?.[0];
     }
     if (password !== confirm) errors.confirm = 'Les mots de passe ne correspondent pas.';
-    if (!acceptedTerms) errors.terms = 'Tu dois accepter les conditions d’utilisation.';
 
     setFieldErrors(errors);
-    if (!parsed.success || errors.confirm || errors.terms) return;
+    if (!parsed.success || errors.confirm) return;
 
     mutate(parsed.data, {
       onSuccess: (_data, variables) => {

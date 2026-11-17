@@ -41,7 +41,7 @@ export function useDeleteAvatar() {
   });
 }
 
-/** Ajoute/retire un badge de la vitrine du profil (max 3). */
+/** Ajoute/retire un badge de la vitrine du profil (max 2). */
 export function useToggleDisplayBadge() {
   return useMutation({
     mutationFn: (badgeId: number) => toggleDisplayBadge(badgeId),

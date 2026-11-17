@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 
 import { colors } from '@/shared/theme';
-import { Screen, Text, useToast } from '@/shared/ui';
+import { SubScreen, Text, useToast } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
 
 import { useAcknowledgeWarning, useWarnings } from '../hooks';
@@ -34,14 +34,7 @@ export function WarningsScreen() {
   };
 
   return (
-    <Screen scroll>
-      <View className="flex-row items-center gap-3 py-2">
-        <Pressable onPress={() => router.back()} className="p-1 active:opacity-60">
-          <Ionicons name="chevron-back" size={26} color={colors.ink} />
-        </Pressable>
-        <Text variant="subtitle">Mes avertissements</Text>
-      </View>
-
+    <SubScreen title="Mes avertissements" onBack={() => router.back()}>
       {warnings.isPending ? (
         <View className="items-center py-10">
           <ActivityIndicator color={colors.accent} />
@@ -68,7 +61,7 @@ export function WarningsScreen() {
           </Text>
         </View>
       )}
-    </Screen>
+    </SubScreen>
   );
 }
 

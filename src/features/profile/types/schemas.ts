@@ -18,5 +18,8 @@ export const badgeStatusSchema = z.object({
   type: z.string(),
   earned: z.boolean(),
   progress: z.number(), // % vers le déblocage (100 si acquis)
+  /** Compteur vers le déblocage (ex. 12 sur 20) ; null si acquis ou badge sans compteur. */
+  current: z.number().nullable().default(null),
+  target: z.number().nullable().default(null),
 });
 export type BadgeStatus = z.infer<typeof badgeStatusSchema>;

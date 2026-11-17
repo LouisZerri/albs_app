@@ -1,11 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useAuth } from '@/features/auth/store';
-import { colors } from '@/shared/theme';
-import { Button, Input, Screen, Text, TextLink, useToast } from '@/shared/ui';
+import { Button, Input, SubScreen, Text, TextLink, useToast } from '@/shared/ui';
 
 import { useResendVerification, useVerifyEmail } from '../hooks';
 
@@ -43,14 +41,7 @@ export function EmailVerificationScreen() {
   };
 
   return (
-    <Screen scroll>
-      <View className="flex-row items-center gap-3 py-2">
-        <Pressable onPress={() => router.back()} className="p-1 active:opacity-60">
-          <Ionicons name="chevron-back" size={26} color={colors.ink} />
-        </Pressable>
-        <Text variant="subtitle">Vérifier mon adresse</Text>
-      </View>
-
+    <SubScreen title="Vérifier mon adresse" onBack={() => router.back()}>
       <View className="gap-5 py-3">
         <Text variant="muted">
           On envoie un code à 6 chiffres à{' '}
@@ -84,6 +75,6 @@ export function EmailVerificationScreen() {
           <TextLink label="Renvoyer le code" onPress={sendCode} />
         </View>
       </View>
-    </Screen>
+    </SubScreen>
   );
 }

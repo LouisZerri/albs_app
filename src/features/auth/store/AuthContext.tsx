@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 
-import { queryClient, tokenStore } from '@/shared/lib';
+import { onSessionExpired, queryClient, tokenStore } from '@/shared/lib';
 
 import { fetchMe } from '../api';
 import type { AuthTokens, User } from '../types';
@@ -61,8 +61,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await tokenStore.clear();
     setHasToken(false);
-    queryClient.removeQueries({ queryKey: ME_QUERY_KEY });
+    // Vide TOUT le cache : progression, favoris… appartiennent à ce compte et ne doivent pas
+    // réapparaître si un autre compte se connecte ensuite sur le même téléphone.
+    queryClient.clear();
   }, []);
+
+  // Session terminée côté serveur (refresh token refusé) → retour à la connexion.
+  useEffect(() => onSessionExpired(() => void signOut()), [signOut]);
 
   // ici le statut passe seul à « unauthenticated » via `meFailed` dans deriveStatus.
   const user = meQuery.data ?? null;

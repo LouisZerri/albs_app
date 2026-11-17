@@ -45,7 +45,6 @@ export type LoginInput = z.infer<typeof loginInputSchema>;
 
 /**
  * Corps envoyé à `/api/register` (aligné sur le groupe `user:create`).
- * La case CGU se gère au niveau du formulaire, pas dans ce payload.
  */
 export const registerInputSchema = z.object({
   email: z.email({ message: 'Email invalide.' }),
@@ -56,5 +55,7 @@ export const registerInputSchema = z.object({
   plainPassword: z
     .string()
     .refine(isPasswordValid, { message: 'Le mot de passe ne respecte pas toutes les règles.' }),
+  /** Acceptation des CGU : exigée par l'API, qui en horodate la trace (`terms_accepted_at`). */
+  acceptedTerms: z.literal(true, { message: 'Tu dois accepter les conditions d’utilisation.' }),
 });
 export type RegisterInput = z.infer<typeof registerInputSchema>;

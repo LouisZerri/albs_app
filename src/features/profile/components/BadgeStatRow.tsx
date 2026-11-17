@@ -45,7 +45,9 @@ export function BadgeStatRow({ badge, displayed, onToggleDisplay }: Props) {
           <View className="mt-1 gap-1">
             <View className="flex-row justify-end">
               <Text variant="muted" className="text-xs" style={{ color: colors.accent }}>
-                {badge.progress}%
+                {badge.current !== null && badge.target !== null
+                  ? `${badge.current} / ${badge.target}`
+                  : `${badge.progress}%`}
               </Text>
             </View>
             <ProgressBar percent={badge.progress} />
