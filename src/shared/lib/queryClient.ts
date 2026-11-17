@@ -45,8 +45,10 @@ export const isAwaitingSync = (mutation: Mutation) => mutation.state.status === 
 export const persistOptions: Omit<PersistQueryClientOptions, 'queryClient'> = {
   persister: createFilePersister(),
   maxAge: OFFLINE_MAX_AGE_MS,
-  // À changer si la forme des données en cache devient incompatible : l'ancien cache est alors ignoré.
-  buster: 'v1',
+  // À changer pour faire oublier l'ancien cache à tous les téléphones : forme des données devenue
+  // incompatible, ou donnée corrigée côté serveur qu'il ne faut pas attendre (v2 : tracés nettoyés).
+  // ⚠️ La file des cochages en attente est enregistrée avec lui : elle est oubliée aussi.
+  buster: 'v2',
   dehydrateOptions: {
     // On ne garde que des données valides (jamais une erreur ou un chargement en cours).
     shouldDehydrateQuery: (query) => query.state.status === 'success',
