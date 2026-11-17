@@ -8,7 +8,8 @@ import { Text } from './Text';
 
 /**
  * Bandeau d'état de la synchronisation, intégré à la mise en page (il ne recouvre rien).
- * - Sans réseau : « Hors ligne », avec le nombre de cochages gardés en attente.
+ * - Sans réseau : « Hors ligne », avec le nombre de cochages gardés en attente (messages courts,
+ *   pour tenir sur une ligne même sur un petit écran).
  * - Réseau revenu, envoi en cours : « Envoi de N cochages… ».
  * - Sinon : rien.
  */
@@ -23,7 +24,7 @@ export function OfflineNotice() {
     ? `Envoi de ${waiting}…`
     : pending > 0
       ? `Hors ligne · ${waiting} en attente`
-      : 'Hors ligne · tes cochages seront envoyés au retour du réseau';
+      : 'Hors ligne · tes cochages sont gardés';
 
   return (
     <View
@@ -35,7 +36,8 @@ export function OfflineNotice() {
         size={15}
         color={colors.ink}
       />
-      <Text variant="muted" color="ink" numberOfLines={1} style={{ fontSize: 13 }}>
+      {/* Pas de troncature : sur un petit écran le message passe sur deux lignes. */}
+      <Text variant="muted" color="ink" className="shrink text-center" style={{ fontSize: 13 }}>
         {message}
       </Text>
     </View>

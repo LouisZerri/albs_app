@@ -114,3 +114,45 @@ test('compteurs : par ligne on compte les quais, au global les stations physique
 test('compteurs : sans index des quais, on garde ceux du serveur', () => {
   assert.equal(deriveStats(serverStats, [], []), serverStats);
 });
+
+// ---- État des écrans hors ligne --------------------------------------------------------------
+const { withOfflineState, isNetworkError } = await import('@/shared/lib');
+const base = {
+  data: undefined,
+  error: null,
+  status: 'pending',
+  fetchStatus: 'fetching',
+  isPending: true,
+  isError: false,
+};
+
+test('écran jamais chargé + pas de réseau : erreur « pas de connexion », pas un chargement sans fin', () => {
+  const state = withOfflineState({ ...base, fetchStatus: 'paused' } as never);
+
+  assert.equal(state.isPending, false);
+  assert.equal(state.isError, true);
+  assert.equal(isNetworkError(state.error), true);
+});
+
+test('données en mémoire + rafraîchissement en échec : on continue d’afficher les données', () => {
+  const state = withOfflineState({
+    ...base,
+    data: ['ligne 1'],
+    status: 'error',
+    isPending: false,
+    isError: true,
+    error: new Error('réseau instable'),
+    fetchStatus: 'idle',
+  } as never);
+
+  assert.equal(state.isError, false);
+  assert.equal(state.isPending, false);
+  assert.deepEqual(state.data, ['ligne 1']);
+});
+
+test('premier chargement avec du réseau : toujours un chargement', () => {
+  const state = withOfflineState(base as never);
+
+  assert.equal(state.isPending, true);
+  assert.equal(state.isError, false);
+});

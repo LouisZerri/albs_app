@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useAppQuery } from '@/shared/lib';
 
 import { fetchGhostStations, fetchJourneys } from '../api';
 
@@ -8,10 +8,10 @@ export const GHOST_STATIONS_KEY = ['discover', 'ghost-stations'] as const;
 
 /** Parcours thématiques et avancement. */
 export function useJourneys() {
-  return useQuery({ queryKey: JOURNEYS_KEY, queryFn: fetchJourneys });
+  return useAppQuery({ queryKey: JOURNEYS_KEY, queryFn: fetchJourneys });
 }
 
 /** Stations fantômes et leur état (débloquée ou non). */
 export function useGhostStations() {
-  return useQuery({ queryKey: GHOST_STATIONS_KEY, queryFn: fetchGhostStations });
+  return useAppQuery({ queryKey: GHOST_STATIONS_KEY, queryFn: fetchGhostStations });
 }

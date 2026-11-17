@@ -3,3 +3,7 @@
 import { register } from 'node:module';
 
 register('./loader.mjs', import.meta.url);
+
+// Variables globales fournies par React Native / Expo, absentes de Node.
+globalThis.__DEV__ = false;
+process.env.EXPO_PUBLIC_API_URL ??= 'http://api.test';

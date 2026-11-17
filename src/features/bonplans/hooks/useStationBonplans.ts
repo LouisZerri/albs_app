@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useAppQuery } from '@/shared/lib';
 
 import { fetchStationBonplans } from '../api';
 
@@ -10,7 +10,7 @@ export const stationBonplansKey = (stationId: number) =>
 
 /** Une station et ses bons plans (carte + liste). */
 export function useStationBonplans(stationId: number) {
-  return useQuery({
+  return useAppQuery({
     queryKey: stationBonplansKey(stationId),
     queryFn: () => fetchStationBonplans(stationId),
   });

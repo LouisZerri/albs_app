@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useAppQuery } from '@/shared/lib';
 
 import { fetchPlatforms } from '../api';
 
@@ -10,7 +10,7 @@ export const PLATFORMS_KEY = ['network', 'platforms'] as const;
  * compteurs sans le serveur.
  */
 export function usePlatforms() {
-  return useQuery({
+  return useAppQuery({
     queryKey: PLATFORMS_KEY,
     queryFn: fetchPlatforms,
     staleTime: 1000 * 60 * 60 * 24,

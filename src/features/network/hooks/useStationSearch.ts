@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+
+import { useAppQuery } from '@/shared/lib';
 
 import { fetchNetwork } from '../api';
 import { searchStations } from '../lib/stationSearch';
@@ -11,7 +12,7 @@ import { NETWORK_GEO_KEY } from './useNetwork';
  */
 export function useStationSearch(query: string) {
   const searching = query.trim() !== '';
-  const network = useQuery({
+  const network = useAppQuery({
     queryKey: NETWORK_GEO_KEY,
     queryFn: fetchNetwork,
     staleTime: 1000 * 60 * 60,

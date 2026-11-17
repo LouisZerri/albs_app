@@ -2,6 +2,7 @@ export { ApiError, isNetworkError } from './ApiError';
 export { apiFetch } from './http';
 export { config } from './config';
 export { watchNetworkStatus } from './network';
+export { useAppQuery, withOfflineState } from './useAppQuery';
 export {
   createQueryClient,
   isAwaitingSync,
