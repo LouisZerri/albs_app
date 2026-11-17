@@ -6,7 +6,7 @@ const colors = {
   bg: '#F4F6F8', // fond gris-bleu froid
   surface: '#FFFFFF', // cartes
   ink: '#14161C', // texte principal
-  muted: '#8A93A2', // texte secondaire
+  muted: '#646D7D', // texte secondaire (contraste ≥ 4,5 sur le fond et sur les cartes)
   hair: '#E6E9EF', // séparateurs / rails inactifs
   accent: '#7C3AED', // violet (action)
   accentSoft: '#DDD6FE', // violet clair (boutons secondaires / fonds tonals)
