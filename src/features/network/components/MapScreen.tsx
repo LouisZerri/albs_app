@@ -67,16 +67,20 @@ export function MapScreen() {
   }
 
   const selectedState = selected ? stationState(map.get(selected.id)) : 'todo';
-  // « Ce qu'il me reste » : on masque les stations déjà visitées.
-  const shownStations = remainingOnly
-    ? stations.filter((s) => stationState(map.get(s.id)) !== 'visited')
-    : stations;
+  // Points affichés : ceux de la ligne mise en avant (s'il y en a une), et sans les stations déjà
+  // visitées en mode « Ce qu'il me reste ». La station sélectionnée reste toujours visible.
+  const shownStations = stations.filter((s) => {
+    if (s.id === selected?.id) return true;
+    if (lineId !== null && !s.lines.some((line) => line.lineId === lineId)) return false;
+    return !remainingOnly || stationState(map.get(s.id)) !== 'visited';
+  });
 
   // Tap sur la carte → sélectionne la station la plus proche (seuil = 6% du zoom visible).
   const onMapPress = (lat: number, lng: number) => {
     let best: MapStation | null = null;
     let bestDist = Infinity;
-    for (const s of stations) {
+    // Parmi les points affichés seulement : on ne sélectionne pas une station masquée.
+    for (const s of shownStations) {
       const dLat = s.lat - lat;
       const dLng = (s.lng - lng) * 0.66;
       const dist = Math.sqrt(dLat * dLat + dLng * dLng);
