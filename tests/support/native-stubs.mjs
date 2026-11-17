@@ -6,6 +6,9 @@ export const getItemAsync = async (key) => memory.get(key) ?? null;
 export const setItemAsync = async (key, value) => void memory.set(key, value);
 export const deleteItemAsync = async (key) => void memory.delete(key);
 
+// expo-localization
+export const getLocales = () => [{ languageCode: 'fr' }];
+
 // expo-file-system
 export class File {
   constructor(...parts) {

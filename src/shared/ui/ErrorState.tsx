@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { isNetworkError } from '@/shared/lib';
 import { useThemeColors } from '@/shared/theme';
 
@@ -23,6 +24,7 @@ type Props = {
  */
 export function ErrorState({ error, message, onRetry, onBack }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation();
   const offline = isNetworkError(error);
 
   return (
@@ -33,13 +35,13 @@ export function ErrorState({ error, message, onRetry, onBack }: Props) {
         color={colors.muted}
       />
       <View className="items-center gap-1">
-        {offline ? <Text variant="subtitle">Pas de connexion</Text> : null}
+        {offline ? <Text variant="subtitle">{t('offline.title')}</Text> : null}
         <Text variant="muted" className="text-center">
-          {offline ? 'Réessaie dès que tu retrouves du réseau, en station par exemple.' : message}
+          {offline ? t('offline.hint') : message}
         </Text>
       </View>
-      <Button label="Réessayer" variant="secondary" onPress={onRetry} />
-      {onBack ? <Button label="Retour" variant="ghost" onPress={onBack} /> : null}
+      <Button label={t('actions.retry')} variant="secondary" onPress={onRetry} />
+      {onBack ? <Button label={t('actions.back')} variant="ghost" onPress={onBack} /> : null}
     </View>
   );
 }

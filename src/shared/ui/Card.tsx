@@ -19,7 +19,8 @@ export function Card({ children, onPress, className }: Props) {
       <Pressable
         onPress={onPress}
         className={cn(BASE, 'active:opacity-70', className)}
-        accessibilityRole="button">
+        accessibilityRole="button"
+      >
         {children}
       </Pressable>
     );

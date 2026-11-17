@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Animated, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { cn } from '@/shared/utils/cn';
 
 /** Bloc gris qui « respire » : tient la place d'un contenu en cours de chargement. UI pure. */
@@ -26,11 +27,12 @@ export function Skeleton({ className }: { className?: string }) {
  * des écrans en liste, pour que la page ait déjà sa forme pendant le chargement.
  */
 export function SkeletonList({ count = 6, className }: { count?: number; className?: string }) {
+  const { t } = useTranslation();
   return (
     <View
       className={cn('gap-3 px-5', className)}
       accessibilityRole="progressbar"
-      accessibilityLabel="Chargement"
+      accessibilityLabel={t('a11y.loading')}
     >
       {Array.from({ length: count }, (_, i) => (
         <View

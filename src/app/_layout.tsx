@@ -16,6 +16,7 @@ import { AuthProvider, ME_QUERY_KEY, useAuth } from '@/features/auth/store';
 import { BadgeCelebrationProvider } from '@/features/badges';
 import { registerToggleFavoriteMutation } from '@/features/bonplans/hooks';
 import { registerToggleStationMutation } from '@/features/network/hooks';
+import { useRestoreLanguage } from '@/i18n';
 import { watchAppFocus } from '@/shared/lib/appFocus';
 import {
   ApiError,
@@ -37,6 +38,7 @@ registerToggleFavoriteMutation(queryClient);
 
 export default function RootLayout() {
   useRestoreThemeMode();
+  const languageReady = useRestoreLanguage();
   const { mode } = useThemeMode();
   const [fontsLoaded] = useFonts({
     Montserrat_400Regular,
@@ -46,8 +48,8 @@ export default function RootLayout() {
     Montserrat_800ExtraBold,
   });
 
-  if (!fontsLoaded) {
-    return null; // le splash reste affiché tant que les polices ne sont pas prêtes
+  if (!fontsLoaded || !languageReady) {
+    return null; // le splash reste affiché tant que les polices et la langue ne sont pas prêtes
   }
 
   return (

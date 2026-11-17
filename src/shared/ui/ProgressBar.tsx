@@ -18,7 +18,10 @@ export function ProgressBar({ percent, color, className }: Props) {
 
   return (
     <View className={cn('h-2 overflow-hidden rounded-pill bg-hair', className)}>
-      <View className="h-full rounded-pill" style={{ width, backgroundColor: color ?? colors.accent }} />
+      <View
+        className="h-full rounded-pill"
+        style={{ width, backgroundColor: color ?? colors.accent }}
+      />
     </View>
   );
 }

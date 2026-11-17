@@ -1,3 +1,5 @@
+import { i18n } from '@/i18n/instance';
+
 import { ApiError, fetchOrNetworkError } from './ApiError';
 import { config } from './config';
 import { refreshSession } from './session';
@@ -67,10 +69,7 @@ async function parseResponse<T>(response: Response): Promise<T> {
   const data = raw ? safeJsonParse(raw) : null;
 
   if (!response.ok) {
-    throw new ApiError(
-      extractErrorMessage(data) ?? 'Une erreur est survenue. Réessaie plus tard.',
-      response.status,
-    );
+    throw new ApiError(extractErrorMessage(data) ?? i18n.t('errors.generic'), response.status);
   }
 
   return data as T;

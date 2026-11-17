@@ -15,7 +15,11 @@ type Props = {
 export function TextLink({ label, onPress, className }: Props) {
   return (
     <Pressable onPress={onPress} accessibilityRole="link" hitSlop={8}>
-      <Text variant="muted" className={cn('text-accent', className)} style={{ fontFamily: fonts.semibold }}>
+      <Text
+        variant="muted"
+        className={cn('text-accent', className)}
+        style={{ fontFamily: fonts.semibold }}
+      >
         {label}
       </Text>
     </Pressable>

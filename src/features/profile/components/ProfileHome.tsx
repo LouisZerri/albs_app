@@ -7,7 +7,7 @@ import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
 import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
-import { Button, ErrorState, Screen, ThemeSwitch } from '@/shared/ui';
+import { Button, ErrorState, LanguageSwitch, Screen, ThemeSwitch } from '@/shared/ui';
 
 import { useBadges } from '../hooks';
 import { BadgesTab } from './BadgesTab';
@@ -83,8 +83,9 @@ export function ProfileHome() {
           {user?.isEmailVerified === false ? <EmailVerificationBanner /> : null}
 
           <View>
-            <View className="absolute left-0 top-0 z-10">
+            <View className="absolute left-0 top-0 z-10 gap-2">
               <ThemeSwitch />
+              <LanguageSwitch />
             </View>
             <Pressable
               onPress={() => router.push('/profile/edit')}

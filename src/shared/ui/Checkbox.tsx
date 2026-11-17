@@ -21,12 +21,14 @@ export function Checkbox({ checked, onChange, children }: Props) {
         onPress={() => onChange(!checked)}
         hitSlop={8}
         accessibilityRole="checkbox"
-        accessibilityState={{ checked }}>
+        accessibilityState={{ checked }}
+      >
         <View
           className={cn(
             'mt-0.5 h-6 w-6 items-center justify-center rounded-md border',
             checked ? 'border-accent bg-accent' : 'border-hair bg-surface',
-          )}>
+          )}
+        >
           {checked ? <Ionicons name="checkmark" size={16} color={colors.white} /> : null}
         </View>
       </Pressable>

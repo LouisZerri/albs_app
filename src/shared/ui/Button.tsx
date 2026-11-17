@@ -29,7 +29,14 @@ type Props = Omit<PressableProps, 'children'> & {
 };
 
 /** Bouton du design system. UI pure (la logique arrive via onPress). */
-export function Button({ label, variant = 'primary', loading, disabled, className, ...rest }: Props) {
+export function Button({
+  label,
+  variant = 'primary',
+  loading,
+  disabled,
+  className,
+  ...rest
+}: Props) {
   const colors = useThemeColors();
   const isDisabled = disabled || loading;
 
@@ -38,7 +45,8 @@ export function Button({ label, variant = 'primary', loading, disabled, classNam
       accessibilityRole="button"
       disabled={isDisabled}
       className={cn(BASE, CONTAINER[variant], isDisabled && 'opacity-50', className)}
-      {...rest}>
+      {...rest}
+    >
       {loading ? (
         <ActivityIndicator color={variant === 'primary' ? colors.white : colors.accent} />
       ) : (

@@ -23,7 +23,11 @@ export function Screen({ children, scroll = false, padded = true, className }: S
     <SafeAreaView className="flex-1 bg-bg" edges={['top', 'left', 'right']}>
       <OfflineNotice />
       {scroll ? (
-        <ScrollView className={content} contentContainerClassName="grow" keyboardShouldPersistTaps="handled">
+        <ScrollView
+          className={content}
+          contentContainerClassName="grow"
+          keyboardShouldPersistTaps="handled"
+        >
           {children}
         </ScrollView>
       ) : (

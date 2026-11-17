@@ -15,7 +15,15 @@ type Props = TextInputProps & {
 };
 
 /** Champ de saisie du design system. Gère l'œil afficher/masquer si `secureTextEntry`. */
-export function Input({ label, error, className, secureTextEntry, onFocus, onBlur, ...rest }: Props) {
+export function Input({
+  label,
+  error,
+  className,
+  secureTextEntry,
+  onFocus,
+  onBlur,
+  ...rest
+}: Props) {
   const colors = useThemeColors();
   const [focused, setFocused] = useState(false);
   const [hidden, setHidden] = useState(Boolean(secureTextEntry));
@@ -54,8 +62,13 @@ export function Input({ label, error, className, secureTextEntry, onFocus, onBlu
             onPress={() => setHidden((h) => !h)}
             hitSlop={8}
             accessibilityRole="button"
-            accessibilityLabel={hidden ? 'Afficher le mot de passe' : 'Masquer le mot de passe'}>
-            <Ionicons name={hidden ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.muted} />
+            accessibilityLabel={hidden ? 'Afficher le mot de passe' : 'Masquer le mot de passe'}
+          >
+            <Ionicons
+              name={hidden ? 'eye-off-outline' : 'eye-outline'}
+              size={20}
+              color={colors.muted}
+            />
           </Pressable>
         ) : null}
       </View>

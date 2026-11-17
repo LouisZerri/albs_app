@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { useSyncStatus } from '@/shared/hooks/useSyncStatus';
 import { useThemeColors } from '@/shared/theme';
 
@@ -20,6 +21,7 @@ const SENDING_NOTICE_DELAY_MS = 1500;
 
 export function OfflineNotice() {
   const colors = useThemeColors();
+  const { t } = useTranslation();
   const { online, pending } = useSyncStatus();
 
   const sendingForLong = useLasting(online && pending > 0, SENDING_NOTICE_DELAY_MS);
@@ -27,12 +29,12 @@ export function OfflineNotice() {
   if (online && !sendingForLong) return null;
 
   // « changements » : la file contient des cochages, mais aussi des favoris.
-  const waiting = pending > 1 ? `${pending} changements` : '1 changement';
+  const many = pending > 1;
   const message = online
-    ? `Envoi de ${waiting}…`
+    ? t(many ? 'offline.sendingMany' : 'offline.sendingOne', { count: pending })
     : pending > 0
-      ? `Hors ligne · ${waiting} en attente`
-      : 'Hors ligne · tes changements sont gardés';
+      ? t(many ? 'offline.waitingMany' : 'offline.waitingOne', { count: pending })
+      : t('offline.kept');
 
   return (
     <View

@@ -6,6 +6,7 @@ export { Chip } from './Chip';
 export { ErrorState } from './ErrorState';
 export { FloatingAction } from './FloatingAction';
 export { Input } from './Input';
+export { LanguageSwitch } from './LanguageSwitch';
 export { MapMarkerBox } from './MapMarkerBox';
 export { OfflineBasemap } from './OfflineBasemap';
 export { OfflineNotice } from './OfflineNotice';

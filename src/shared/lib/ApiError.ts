@@ -1,3 +1,5 @@
+import { i18n } from '@/i18n/instance';
+
 /**
  * Erreur d'API normalisée, calquée sur le format `{ message, status }`
  * renvoyé par l'ApiExceptionListener de l'API Symfony.
@@ -29,6 +31,6 @@ export async function fetchOrNetworkError(url: string, init: RequestInit): Promi
     return await fetch(url, init);
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') throw error;
-    throw new ApiError('Pas de connexion. Vérifie ton réseau et réessaie.', NETWORK_ERROR_STATUS);
+    throw new ApiError(i18n.t('errors.network'), NETWORK_ERROR_STATUS);
   }
 }

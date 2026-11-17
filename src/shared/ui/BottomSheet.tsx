@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Animated, PanResponder, View } from 'react-native';
+import { useTranslation } from '@/i18n';
 
 type Props = {
   /** Hauteur visible quand le panneau est réduit / agrandi (en points). */
@@ -31,6 +32,7 @@ export function BottomSheet({
   header,
   children,
 }: Props) {
+  const { t } = useTranslation();
   // Course du panneau : 0 = agrandi, `travel` = réduit (décalé vers le bas).
   const travel = Math.max(0, expandedHeight - collapsedHeight);
   const rest = expanded ? 0 : travel;
@@ -81,7 +83,7 @@ export function BottomSheet({
       <View
         {...pan.panHandlers}
         accessibilityRole="button"
-        accessibilityLabel={expanded ? 'Réduire la liste' : 'Agrandir la liste'}
+        accessibilityLabel={expanded ? t('a11y.collapseList') : t('a11y.expandList')}
         className="h-9 items-center justify-center"
       >
         <View className="h-1.5 w-11 rounded-full bg-hair" />

@@ -48,6 +48,13 @@ src/
 - **Variables d'env** via `expo-constants` / `.env` (ex: `API_BASE_URL`). **Jamais de secret en dur.**
 - **README** à jour expliquant l'archi et les conventions.
 
+## 4 bis. Textes et langues (i18n)
+- **Aucun texte visible en dur dans un composant** : tout passe par `useTranslation()` (`@/i18n`), ou `i18n.t()` (`@/i18n/instance`) hors de React.
+- Les textes vivent dans `src/i18n/locales/<langue>/<domaine>.ts` (un fichier par feature + `common`). **Le français est la référence** : les autres langues sont typées sur sa forme (`typeof fr`), une clé manquante ou en trop est une erreur de compilation.
+- Ajouter une langue = un dossier `locales/<code>/` + son code dans `LANGUAGES` (`src/i18n/instance.ts`). Rien d'autre.
+- Pluriels : deux clés explicites (`…One` / `…Many`) choisies dans le code, pas le pluriel automatique d'i18next (dépend d'`Intl.PluralRules`, absent de certains moteurs).
+- `src/i18n` ne dépend ni de `features` ni de `shared` (c'est une couche de base, utilisable par les deux).
+
 ## 5. Stack (rappel)
 NativeWind (Tailwind, cohérent avec le web) · React Query (données serveur) · Zod (validation) · Expo Router (nav) · `expo-secure-store` (JWT + refresh) · client http centralisé (JWT + refresh auto + header `ngrok-skip-browser-warning` en dev).
 

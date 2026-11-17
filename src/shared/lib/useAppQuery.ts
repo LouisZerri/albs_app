@@ -5,9 +5,12 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
+import { i18n } from '@/i18n/instance';
+
 import { ApiError, NETWORK_ERROR_STATUS } from './ApiError';
 
-const OFFLINE_ERROR = new ApiError('Pas de connexion.', NETWORK_ERROR_STATUS);
+/** Créée à la demande : le message suit la langue active. */
+const offlineError = () => new ApiError(i18n.t('errors.offline'), NETWORK_ERROR_STATUS);
 
 /**
  * Ajuste l'état d'une requête pour une app qui doit vivre sans réseau :
@@ -43,7 +46,7 @@ export function withOfflineState<TData>(
       isLoading: false,
       isError: true,
       isSuccess: false,
-      error: OFFLINE_ERROR,
+      error: offlineError(),
     } as UseQueryResult<TData, Error>;
   }
 

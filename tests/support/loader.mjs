@@ -9,6 +9,7 @@ const stubs = pathToFileURL(resolvePath(root, 'tests/support/native-stubs.mjs'))
 const NATIVE = new Set([
   'expo-secure-store',
   'expo-file-system',
+  'expo-localization',
   '@react-native-community/netinfo',
   'react-native',
   'nativewind',

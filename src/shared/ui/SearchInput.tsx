@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, TextInput, View, type StyleProp, type ViewStyle } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { fonts, useThemeColors } from '@/shared/theme';
 import { cn } from '@/shared/utils/cn';
 
@@ -15,6 +16,7 @@ type Props = {
 /** Champ de recherche du design system : loupe + saisie + bouton effacer. UI pure. */
 export function SearchInput({ value, onChangeText, placeholder, className, style }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation();
   return (
     <View
       className={cn(
@@ -41,7 +43,7 @@ export function SearchInput({ value, onChangeText, placeholder, className, style
           onPress={() => onChangeText('')}
           hitSlop={12}
           accessibilityRole="button"
-          accessibilityLabel="Effacer la recherche"
+          accessibilityLabel={t('a11y.clearSearch')}
         >
           <Ionicons name="close-circle" size={18} color={colors.muted} />
         </Pressable>

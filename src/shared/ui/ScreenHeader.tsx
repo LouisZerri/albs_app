@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 
 import { OfflineNotice } from './OfflineNotice';
@@ -18,6 +19,7 @@ type Props = {
 /** En-tête compact d'un sous-écran : bouton retour + titre (+ ligne de détail). UI pure. */
 export function ScreenHeader({ title, onBack, children }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   return (
@@ -28,7 +30,7 @@ export function ScreenHeader({ title, onBack, children }: Props) {
           onPress={onBack}
           hitSlop={8}
           accessibilityRole="button"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t('a11y.back')}
           className="h-9 w-7 items-center justify-center"
         >
           <Ionicons name="chevron-back" size={26} color={colors.ink} />
