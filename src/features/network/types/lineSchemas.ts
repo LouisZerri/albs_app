@@ -30,7 +30,6 @@ export const lineDetailSchema = z.object({
   name: z.string(),
   color: z.string(),
   textColor: z.string().nullable(),
-  geometry: z.unknown().nullable(), // pour la carte plus tard
   loop: z.object({ label: z.string() }).nullable(),
   stations: z.array(stationSchema),
 });

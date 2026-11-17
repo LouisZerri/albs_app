@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import type { ColorValue } from 'react-native';
 
+import { useOfflinePrefetch } from '@/features/network/hooks';
 import { fonts, useThemeColors } from '@/shared/theme';
 
 type IconName = keyof typeof Ionicons.glyphMap;
@@ -15,6 +16,9 @@ function tabIcon(base: IconName, outline: IconName) {
 
 export default function TabsLayout() {
   const colors = useThemeColors();
+  // Dès qu'on est dans l'app avec du réseau : tout le réseau est téléchargé pour le hors-ligne.
+  useOfflinePrefetch();
+
   return (
     <Tabs
       screenOptions={{
