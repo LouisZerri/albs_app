@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text as RNText, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { ProgressBar, Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
 
@@ -17,11 +17,12 @@ type Props = {
 
 /** Une carte badge : dorée + coche si acquise, grisée + progression sinon. UI pure. */
 export function BadgeStatRow({ badge, displayed, onToggleDisplay }: Props) {
+  const colors = useThemeColors();
   return (
     <View
       className={cn(
         'flex-row items-center gap-3 rounded-card border p-3.5',
-        badge.earned ? 'border-[#FBBF24] bg-[#FFFBEB]' : 'border-hair bg-surface',
+        badge.earned ? 'border-[#FBBF24] bg-goldSoft' : 'border-hair bg-surface',
       )}>
       <View className="relative h-11 w-11 items-center justify-center">
         {/* Emoji : Text brut (police système, pas de variante) sinon il rétrécit. */}

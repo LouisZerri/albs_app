@@ -1,6 +1,6 @@
 import { ActivityIndicator, Pressable, type PressableProps, Text } from 'react-native';
 
-import { colors, fonts } from '@/shared/theme';
+import { fonts, useThemeColors } from '@/shared/theme';
 import { cn } from '@/shared/utils/cn';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'inverse';
@@ -30,6 +30,7 @@ type Props = Omit<PressableProps, 'children'> & {
 
 /** Bouton du design system. UI pure (la logique arrive via onPress). */
 export function Button({ label, variant = 'primary', loading, disabled, className, ...rest }: Props) {
+  const colors = useThemeColors();
   const isDisabled = disabled || loading;
 
   return (

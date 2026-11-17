@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 
 import { isNetworkError } from '@/shared/lib';
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 
 import { Button } from './Button';
 import { Text } from './Text';
@@ -22,6 +22,7 @@ type Props = {
  * clairement plutôt que de laisser croire à une panne de l'app. UI pure.
  */
 export function ErrorState({ error, message, onRetry, onBack }: Props) {
+  const colors = useThemeColors();
   const offline = isNetworkError(error);
 
   return (

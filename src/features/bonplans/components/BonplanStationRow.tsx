@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, type PressableProps, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 
 import { bonplanCountLabel, lineNumbersLabel } from '../lib/stationSearch';
@@ -12,6 +12,7 @@ type Props = { station: BonplanStation; onPress: PressableProps['onPress'] };
 
 /** Une station dans la liste Bons plans : nom + pastilles de lignes + nombre de bons plans. UI pure. */
 export function BonplanStationRow({ station, onPress }: Props) {
+  const colors = useThemeColors();
   const label = bonplanCountLabel(station.count);
 
   return (

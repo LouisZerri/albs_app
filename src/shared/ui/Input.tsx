@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, TextInput, type TextInputProps, View } from 'react-native';
 
-import { colors, fonts } from '@/shared/theme';
+import { fonts, useThemeColors } from '@/shared/theme';
 import { cn } from '@/shared/utils/cn';
 
 import { Text } from './Text';
@@ -16,6 +16,7 @@ type Props = TextInputProps & {
 
 /** Champ de saisie du design system. Gère l'œil afficher/masquer si `secureTextEntry`. */
 export function Input({ label, error, className, secureTextEntry, onFocus, onBlur, ...rest }: Props) {
+  const colors = useThemeColors();
   const [focused, setFocused] = useState(false);
   const [hidden, setHidden] = useState(Boolean(secureTextEntry));
 

@@ -1,6 +1,7 @@
-import { colors, radius } from './tokens';
+import { palettes, radius, type Palette } from './tokens';
 
-export { colors, radius };
+export { useRestoreThemeMode, useThemeColors, useThemeMode, type ThemeMode } from './useTheme';
+export { palettes, radius, type Palette };
 
 /**
  * Familles Montserrat (chaque poids = une police à part en React Native).
@@ -14,4 +15,4 @@ export const fonts = {
   extrabold: 'Montserrat_800ExtraBold',
 } as const;
 
-export type ThemeColor = keyof typeof colors;
+export type ThemeColor = keyof Palette;

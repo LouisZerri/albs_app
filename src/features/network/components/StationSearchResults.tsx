@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { FlatList, Pressable, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { SkeletonList, Text } from '@/shared/ui';
 
 import type { StationHit } from '../lib/stationSearch';
@@ -16,6 +16,7 @@ type Props = {
 
 /** Résultats de la recherche de station : une entrée par station et par ligne. UI pure. */
 export function StationSearchResults({ hits, isPending, isError, onSelect }: Props) {
+  const colors = useThemeColors();
   if (isPending) {
     return <SkeletonList count={4} />;
   }

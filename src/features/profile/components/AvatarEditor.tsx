@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Text, useToast } from '@/shared/ui';
 
 import { useDeleteAvatar, useUploadAvatar } from '../hooks';
@@ -11,6 +11,7 @@ type Props = { username: string; avatarUrl?: string | null };
 
 /** Bloc d'édition de l'avatar : aperçu + changer la photo / supprimer. */
 export function AvatarEditor({ username, avatarUrl }: Props) {
+  const colors = useThemeColors();
   const upload = useUploadAvatar();
   const remove = useDeleteAvatar();
   const toast = useToast();

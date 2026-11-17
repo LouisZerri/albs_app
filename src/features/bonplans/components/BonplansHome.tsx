@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { ErrorState, Screen, SearchInput, Skeleton, SkeletonList, Text } from '@/shared/ui';
 
 import { useBonplanStations, useVisitedStationIds } from '../hooks';
@@ -13,6 +13,7 @@ import { StationFilters } from './StationFilters';
 
 /** Onglet Bons plans : recherche + liste des stations ayant des bons plans. */
 export function BonplansHome() {
+  const colors = useThemeColors();
   const router = useRouter();
   const { data, error, isPending, isError, refetch, isRefetching } = useBonplanStations();
   const visitedIds = useVisitedStationIds();

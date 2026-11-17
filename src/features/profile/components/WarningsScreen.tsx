@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { SubScreen, Text, useToast } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
 
@@ -24,6 +24,7 @@ function formatDate(iso: string | null): string {
 
 /** Écran des avertissements de modération : lecture + accusé de réception. */
 export function WarningsScreen() {
+  const colors = useThemeColors();
   const router = useRouter();
   const warnings = useWarnings();
   const ack = useAcknowledgeWarning();
@@ -74,6 +75,7 @@ function WarningCard({
   pending: boolean;
   onAcknowledge: () => void;
 }) {
+  const colors = useThemeColors();
   const read = Boolean(warning.acknowledgedAt);
 
   return (

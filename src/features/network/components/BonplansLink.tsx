@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable } from 'react-native';
 
-import { colors, fonts } from '@/shared/theme';
+import { fonts, useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
 
 /** Lien vers les bons plans d'une station. Cible tactile de 44 pt. UI pure. */
 export function BonplansLink({ count, onPress, variant = 'compact' }: Props) {
+  const colors = useThemeColors();
   const label = count > 1 ? `${count} bons plans autour` : `${count} bon plan autour`;
 
   return (

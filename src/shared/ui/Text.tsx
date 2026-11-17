@@ -1,6 +1,6 @@
 import { Text as RNText, type TextProps } from 'react-native';
 
-import { colors, fonts, type ThemeColor } from '@/shared/theme';
+import { fonts, type ThemeColor, useThemeColors } from '@/shared/theme';
 import { cn } from '@/shared/utils/cn';
 
 export type TextVariant = 'title' | 'subtitle' | 'body' | 'muted' | 'label';
@@ -23,6 +23,7 @@ type Props = TextProps & {
 
 /** Texte typé selon les variantes du design system. UI pure. */
 export function Text({ variant = 'body', color, className, style, ...rest }: Props) {
+  const colors = useThemeColors();
   const v = VARIANTS[variant];
   return (
     <RNText

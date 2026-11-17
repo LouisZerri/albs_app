@@ -1,17 +1,12 @@
 import { View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 
 import type { StationState } from '../lib/stationState';
 
-const DOT_COLOR: Record<StationState, string> = {
-  visited: colors.visited,
-  passed: colors.passed,
-  todo: '#C2C9D4',
-};
-
 /** Point d'une station sur la carte, coloré selon son état ; plus gros quand elle est sélectionnée. UI pure. */
 export function StationDot({ state, selected }: { state: StationState; selected: boolean }) {
+  const colors = useThemeColors();
   const size = selected ? 15 : 9;
 
   return (
@@ -22,7 +17,7 @@ export function StationDot({ state, selected }: { state: StationState; selected:
           width: size,
           height: size,
           borderRadius: 8,
-          backgroundColor: DOT_COLOR[state],
+          backgroundColor: colors[state],
           borderWidth: selected ? 2.5 : 1.5,
           borderColor: colors.white,
         }}

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 
 import { Text } from './Text';
 
@@ -16,6 +16,7 @@ type Props = {
 
 /** En-tête compact d'un sous-écran : bouton retour + titre (+ ligne de détail). UI pure. */
 export function ScreenHeader({ title, onBack, children }: Props) {
+  const colors = useThemeColors();
   const insets = useSafeAreaInsets();
 
   return (

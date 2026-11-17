@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, fonts } from '@/shared/theme';
+import { fonts, useThemeColors } from '@/shared/theme';
 
 import { Text } from './Text';
 
@@ -14,6 +14,7 @@ type Props = {
 
 /** Bouton d'action flottant (en bas à droite, au-dessus de la barre d'accueil), à portée de pouce. UI pure. */
 export function FloatingAction({ icon, label, onPress }: Props) {
+  const colors = useThemeColors();
   const insets = useSafeAreaInsets();
 
   return (

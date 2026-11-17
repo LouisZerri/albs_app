@@ -5,8 +5,8 @@ import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, View }
 
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
-import { colors } from '@/shared/theme';
-import { Button, ErrorState, Screen } from '@/shared/ui';
+import { useThemeColors } from '@/shared/theme';
+import { Button, ErrorState, Screen, ThemeSwitch } from '@/shared/ui';
 
 import { useBadges } from '../hooks';
 import { BadgesTab } from './BadgesTab';
@@ -19,6 +19,7 @@ import { StatsCard } from './StatsCard';
 
 /** Écran Profil : identité + statistiques + onglets Badges/Progression + déconnexion. */
 export function ProfileHome() {
+  const colors = useThemeColors();
   const router = useRouter();
   const { user, signOut } = useAuth();
   const stats = useNetworkStats();
@@ -84,6 +85,9 @@ export function ProfileHome() {
           {user?.isEmailVerified === false ? <EmailVerificationBanner /> : null}
 
           <View>
+            <View className="absolute left-0 top-0 z-10">
+              <ThemeSwitch />
+            </View>
             <Pressable
               onPress={() => router.push('/profile/edit')}
               hitSlop={10}

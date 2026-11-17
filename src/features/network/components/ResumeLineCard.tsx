@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, type PressableProps, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 
 import type { LineStats } from '../types';
@@ -11,6 +11,7 @@ type Props = { line: LineStats; onPress: PressableProps['onPress'] };
 
 /** Raccourci « reprendre » : la dernière ligne où l'utilisateur a coché, et ce qu'il reste à y visiter. UI pure. */
 export function ResumeLineCard({ line, onPress }: Props) {
+  const colors = useThemeColors();
   const remaining = line.total - line.visited;
 
   return (

@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Card, ProgressBar, Text } from '@/shared/ui';
 
 type Row = { icon: string; label: string; value: number; max: number; color: string };
@@ -15,6 +15,7 @@ type Props = {
 
 /** Bloc « Statistiques » du profil : 3 barres de progression. UI pure. */
 export function StatsCard({ passed, visited, totalStations, badgesEarned, badgesTotal }: Props) {
+  const colors = useThemeColors();
   const rows: Row[] = [
     { icon: '🚶', label: 'Stations passées', value: passed, max: totalStations, color: colors.passed },
     { icon: '✅', label: 'Stations descendues', value: visited, max: totalStations, color: colors.visited },

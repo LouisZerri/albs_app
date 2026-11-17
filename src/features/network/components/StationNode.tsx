@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 
 import type { StationState } from '../lib/stationState';
 
@@ -25,6 +25,7 @@ type Props = {
 
 /** La « voie » d'une station : segments de rail + nœud coloré selon l'état. UI pure. */
 export function StationNode({ state, color, textColor, isTerminus, isFirst, isLast, hideBottom, hideTop }: Props) {
+  const colors = useThemeColors();
   const railColor = state === 'todo' ? colors.hair : color;
 
   return (
@@ -52,6 +53,7 @@ function NodeCircle({
   textColor: string | null;
   big: boolean;
 }) {
+  const colors = useThemeColors();
   const size = big ? 30 : 24;
 
   if (state === 'visited') {

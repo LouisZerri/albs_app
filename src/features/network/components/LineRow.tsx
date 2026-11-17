@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, type PressableProps, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { ProgressBar, ShineOverlay, Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
 
@@ -12,6 +12,7 @@ type Props = { line: LineStats; onPress: PressableProps['onPress'] };
 
 /** Une ligne dans la liste Réseau : pastille + numéro + terminus + progression (+ reflet si 100%). UI pure. */
 export function LineRow({ line, onPress }: Props) {
+  const colors = useThemeColors();
   const complete = line.percent === 100;
 
   return (
@@ -19,7 +20,7 @@ export function LineRow({ line, onPress }: Props) {
       onPress={onPress}
       className={cn(
         'flex-row items-center gap-3 rounded-card border p-3 active:opacity-70',
-        complete ? 'overflow-hidden border-visited bg-[#F1FBF5]' : 'border-hair bg-surface',
+        complete ? 'overflow-hidden border-visited bg-visitedSoft' : 'border-hair bg-surface',
       )}>
       <LineBadge number={line.number} color={line.color} textColor={line.textColor} />
 

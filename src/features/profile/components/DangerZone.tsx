@@ -3,11 +3,12 @@ import { ActivityIndicator, Alert, Pressable, View } from 'react-native';
 
 import { deleteAccount } from '@/features/auth/api';
 import { useAuth } from '@/features/auth/store';
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Text, useToast } from '@/shared/ui';
 
 /** Zone « danger » : suppression (anonymisation) du compte, avec confirmation. */
 export function DangerZone() {
+  const colors = useThemeColors();
   const { signOut } = useAuth();
   const toast = useToast();
   const [pending, setPending] = useState(false);

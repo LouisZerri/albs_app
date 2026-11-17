@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { cn } from '@/shared/utils/cn';
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
 
 /** Barre de progression horizontale. UI pure. */
 export function ProgressBar({ percent, color, className }: Props) {
+  const colors = useThemeColors();
   const width = `${Math.max(0, Math.min(100, percent))}%` as const;
 
   return (

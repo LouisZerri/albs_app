@@ -1,7 +1,7 @@
 import { type PressableProps, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 
 import type { Branch } from '../lib/forkModel';
@@ -43,6 +43,7 @@ export function ForkRow({
   onSelect,
   branchesBelow,
 }: Props) {
+  const colors = useThemeColors();
   // Coloré seulement si la fourche est cochée (comme le reste du rail).
   const railColor = state === 'todo' ? colors.hair : color;
 

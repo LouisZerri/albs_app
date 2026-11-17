@@ -6,7 +6,7 @@ import { View } from 'react-native';
 import type { UpdateProfileInput } from '@/features/auth/api';
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Button, Card, Input, SubScreen, Text, useToast } from '@/shared/ui';
 
 import { useUpdateProfile } from '../hooks';
@@ -26,6 +26,7 @@ function fieldForMessage(message: string): Field {
 
 /** Écran d'édition du profil : avatar, identité, ligne favorite ; accès au mot de passe et à la suppression. */
 export function ProfileEditScreen() {
+  const colors = useThemeColors();
   const router = useRouter();
   const { user } = useAuth();
   const update = useUpdateProfile();

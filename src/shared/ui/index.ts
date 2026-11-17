@@ -16,4 +16,5 @@ export { Skeleton, SkeletonList } from './Skeleton';
 export { SubScreen } from './SubScreen';
 export { Text } from './Text';
 export { TextLink } from './TextLink';
+export { ThemeSwitch } from './ThemeSwitch';
 export { ToastProvider, useToast, type ToastVariant } from './toast';

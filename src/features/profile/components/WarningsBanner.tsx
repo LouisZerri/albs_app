@@ -2,13 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 
 import { useWarnings } from '../hooks';
 
 /** Bandeau affiché quand le compte a des avertissements non lus. */
 export function WarningsBanner() {
+  const colors = useThemeColors();
   const router = useRouter();
   const { data } = useWarnings();
 

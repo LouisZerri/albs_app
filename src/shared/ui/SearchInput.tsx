@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, TextInput, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, fonts } from '@/shared/theme';
+import { fonts, useThemeColors } from '@/shared/theme';
 import { cn } from '@/shared/utils/cn';
 
 type Props = {
@@ -14,6 +14,7 @@ type Props = {
 
 /** Champ de recherche du design system : loupe + saisie + bouton effacer. UI pure. */
 export function SearchInput({ value, onChangeText, placeholder, className, style }: Props) {
+  const colors = useThemeColors();
   return (
     <View
       className={cn(

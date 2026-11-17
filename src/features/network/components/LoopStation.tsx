@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, type PressableProps, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
 
@@ -39,6 +39,7 @@ export function LoopStation({
   onOpenBonplans,
   highlighted,
 }: Props) {
+  const colors = useThemeColors();
   const railColor = state === 'todo' ? colors.hair : color;
 
   return (
@@ -71,6 +72,7 @@ export function LoopStation({
 }
 
 function LoopNode({ state, color, textColor }: { state: StationState; color: string; textColor: string | null }) {
+  const colors = useThemeColors();
   if (state === 'visited') {
     return (
       <View

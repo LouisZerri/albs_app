@@ -9,16 +9,20 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 import { AuthProvider, useAuth } from '@/features/auth/store';
 import { BadgeCelebrationProvider } from '@/features/badges';
 import { queryClient } from '@/shared/lib';
+import { useRestoreThemeMode, useThemeColors, useThemeMode } from '@/shared/theme';
 import { ToastProvider } from '@/shared/ui';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  useRestoreThemeMode();
+  const { mode } = useThemeMode();
   const [fontsLoaded] = useFonts({
     Montserrat_400Regular,
     Montserrat_500Medium,
@@ -33,6 +37,8 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Heure et batterie lisibles : claires sur fond sombre, sombres sur fond clair. */}
+      <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
       <AuthProvider>
         <ToastProvider>
           <BadgeCelebrationProvider>
@@ -46,6 +52,7 @@ export default function RootLayout() {
 
 /** Redirige entre (auth), l'onboarding et (tabs) selon l'état de session. */
 function RootNavigator() {
+  const colors = useThemeColors();
   const { status, user } = useAuth();
   const segments = useSegments();
   const router = useRouter();
@@ -77,5 +84,6 @@ function RootNavigator() {
     }
   }, [status, user, segments, router]);
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  // Fond des écrans = fond du thème : pas d'éclair blanc pendant les transitions en mode sombre.
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }} />;
 }

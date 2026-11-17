@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Text, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors, useThemeMode } from '@/shared/theme';
 
 import { coordinateOf, regionAround, type LatLng, type NearbyBonplan } from '../lib/distance';
 
@@ -26,6 +26,8 @@ export function BonplanMap({
   bottomInset,
   onSelect,
 }: Props) {
+  const { mode } = useThemeMode();
+  const colors = useThemeColors();
   const mapRef = useRef<MapView>(null);
   const spots = bonplans.flatMap((b) => {
     const coordinate = coordinateOf(b);
@@ -51,6 +53,8 @@ export function BonplanMap({
 
   return (
     <MapView
+      // Fond de carte assorti au thème de l'app (iOS).
+      userInterfaceStyle={mode}
       ref={mapRef}
       style={{ flex: 1 }}
       initialRegion={regionAround([station, ...spots.map((s) => s.coordinate)])}

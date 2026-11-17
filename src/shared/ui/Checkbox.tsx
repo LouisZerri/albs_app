@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { cn } from '@/shared/utils/cn';
 
 type Props = {
@@ -14,6 +14,7 @@ type Props = {
 
 /** Case à cocher : seule la case bascule l'état (le libellé garde ses propres taps). */
 export function Checkbox({ checked, onChange, children }: Props) {
+  const colors = useThemeColors();
   return (
     <View className="flex-row items-start gap-3">
       <Pressable

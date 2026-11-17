@@ -2,11 +2,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 
 /** Bandeau d'alerte affiché quand l'adresse email n'est pas vérifiée. */
 export function EmailVerificationBanner() {
+  const colors = useThemeColors();
   const router = useRouter();
 
   return (

@@ -1,13 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 
 import { passwordRules } from '../lib/passwordRules';
 
 /** Affiche en direct quelles règles de mot de passe sont respectées. */
 export function PasswordRules({ value }: { value: string }) {
+  const colors = useThemeColors();
   return (
     <View className="gap-1.5">
       {passwordRules.map((rule) => {

@@ -4,13 +4,14 @@ import { useWindowDimensions, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Button, Text } from '@/shared/ui';
 
 const GRADIENT = ['#7C3AED', '#5B21B6'] as const;
 
 /** Célébration de fin d'onboarding : confettis + révélation du premier badge. */
 export function OnboardingCelebration({ onEnter }: { onEnter: () => void }) {
+  const colors = useThemeColors();
   const { width } = useWindowDimensions();
 
   return (

@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { FlatList, RefreshControl, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { ErrorState, ScreenHeader, SkeletonList, Text } from '@/shared/ui';
 
 import { useBonplanActions, useFavorites } from '../hooks';
@@ -11,6 +11,7 @@ import { BonplanCard } from './BonplanCard';
 
 /** Mes favoris : les bons plans enregistrés, toutes stations confondues. */
 export function FavoritesScreen() {
+  const colors = useThemeColors();
   const router = useRouter();
   const { data, error, isPending, isError, refetch, isRefetching } = useFavorites();
   const { toggleFavorite, openDirections } = useBonplanActions();

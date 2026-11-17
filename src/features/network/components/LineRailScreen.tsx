@@ -4,7 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
 
 import { useBadgeCelebration } from '@/features/badges';
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { ErrorState, Screen, Text } from '@/shared/ui';
 
 import { PROGRESS_KEY, useLineDetail, useMyProgress, useStationFeedback, useToggleStation } from '../hooks';
@@ -27,6 +27,7 @@ type Props = {
 
 /** Écran « rail » d'une ligne : en-tête + liste tappable des stations + célébrations (badges, ligne terminée). */
 export function LineRailScreen({ id, focusStation }: Props) {
+  const colors = useThemeColors();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { celebrate } = useBadgeCelebration();

@@ -1,6 +1,6 @@
 import { Pressable, View } from 'react-native';
 
-import { colors, fonts } from '@/shared/theme';
+import { fonts, useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
 
@@ -9,10 +9,10 @@ import type { MapStation } from '../types';
 import { BonplansLink } from './BonplansLink';
 import { LineBadge } from './LineBadge';
 
-const STATES: { key: StationState; label: string; color: string }[] = [
-  { key: 'todo', label: 'À faire', color: '#C2C9D4' },
-  { key: 'passed', label: 'Passé', color: colors.passed },
-  { key: 'visited', label: 'Descendu', color: colors.visited },
+const STATES: { key: StationState; label: string }[] = [
+  { key: 'todo', label: 'À faire' },
+  { key: 'passed', label: 'Passé' },
+  { key: 'visited', label: 'Descendu' },
 ];
 
 type Props = {
@@ -24,6 +24,7 @@ type Props = {
 
 /** Carte flottante d'une station sélectionnée sur la carte : nom + sélecteur d'état. UI pure. */
 export function StationSheet({ station, state, onSetState, onOpenBonplans }: Props) {
+  const colors = useThemeColors();
   return (
     <View
       className="absolute inset-x-3 bottom-3 gap-3 rounded-card bg-surface p-4"
@@ -58,8 +59,8 @@ export function StationSheet({ station, state, onSetState, onOpenBonplans }: Pro
                 'flex-1 flex-row items-center justify-center gap-2 rounded-card border py-2.5',
                 active ? 'border-transparent' : 'border-hair',
               )}
-              style={active ? { backgroundColor: `${s.color}22` } : undefined}>
-              <View className="h-3 w-3 rounded-full" style={{ backgroundColor: s.color }} />
+              style={active ? { backgroundColor: `${colors[s.key]}22` } : undefined}>
+              <View className="h-3 w-3 rounded-full" style={{ backgroundColor: colors[s.key] }} />
               <Text
                 variant="muted"
                 style={active ? { color: colors.ink, fontFamily: fonts.semibold } : undefined}>

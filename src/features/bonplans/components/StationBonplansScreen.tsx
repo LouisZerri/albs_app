@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, type FlatList, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { BottomSheet, ErrorState, FloatingAction, Screen } from '@/shared/ui';
 
 import { useBonplanActions, useStationBonplans } from '../hooks';
@@ -18,6 +18,7 @@ import { StationBonplansHeader } from './StationBonplansHeader';
  * bons plans, du plus proche au plus loin).
  */
 export function StationBonplansScreen({ id }: { id: number }) {
+  const colors = useThemeColors();
   const router = useRouter();
   const { data, error, isPending, isError, refetch } = useStationBonplans(id);
   const { toggleFavorite, openDirections } = useBonplanActions();

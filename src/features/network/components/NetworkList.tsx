@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { ErrorState, SearchInput, SkeletonList } from '@/shared/ui';
 
 import { useNetworkStats, useStationSearch } from '../hooks';
@@ -58,6 +58,7 @@ type LineListProps = { data: NetworkStats; isRefetching: boolean; onRefresh: () 
 
 /** La liste des lignes, précédée de la progression globale. */
 function LineList({ data, isRefetching, onRefresh }: LineListProps) {
+  const colors = useThemeColors();
   const router = useRouter();
   const resume = resumeLine(data);
 

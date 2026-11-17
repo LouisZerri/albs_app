@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors, useThemeMode } from '@/shared/theme';
 import { Text, TextLink } from '@/shared/ui';
 
 import type { LatLng } from '../lib/distance';
@@ -15,6 +15,8 @@ type Props = {
 
 /** Choix de l'emplacement d'un lieu : on touche la carte pour poser (ou déplacer) l'épingle. UI pure. */
 export function LocationPicker({ center, value, onChange }: Props) {
+  const { mode } = useThemeMode();
+  const colors = useThemeColors();
   return (
     <View className="gap-1.5">
       <View className="flex-row items-center justify-between">
@@ -24,6 +26,8 @@ export function LocationPicker({ center, value, onChange }: Props) {
 
       <View className="h-48 overflow-hidden rounded-card border border-hair">
         <MapView
+          // Fond de carte assorti au thème de l'app (iOS).
+          userInterfaceStyle={mode}
           style={{ flex: 1 }}
           initialRegion={{ ...center, latitudeDelta: 0.008, longitudeDelta: 0.008 }}
           showsCompass={false}

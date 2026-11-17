@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCompleteOnboarding } from '@/features/auth/hooks';
 import { ME_QUERY_KEY } from '@/features/auth/store';
 import type { User } from '@/features/auth/types';
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Button, Text, useToast } from '@/shared/ui';
 
 import { ONBOARDING_STEPS } from '../content';
@@ -25,6 +25,7 @@ const GRADIENT = ['#7C3AED', '#5B21B6'] as const;
 
 /** Onboarding bloquant en 3 étapes swipeables, suivi d'une célébration (confettis). */
 export function OnboardingFlow() {
+  const colors = useThemeColors();
   const { width } = useWindowDimensions();
   const queryClient = useQueryClient();
   const toast = useToast();

@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { ProgressBar, Text } from '@/shared/ui';
 
 import type { LineDetail } from '../types';
@@ -18,6 +18,7 @@ type Props = {
 
 /** En-tête de l'écran rail : bouton retour, pastille, noms, progression de la ligne. */
 export function LineHeader({ line, visited, total, percent, onBack }: Props) {
+  const colors = useThemeColors();
   const insets = useSafeAreaInsets();
 
   return (

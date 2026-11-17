@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, View } from 'react-native';
 
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
 
@@ -14,6 +14,7 @@ const OPTIONS: { key: ReseauMode; label: string; icon: keyof typeof Ionicons.gly
 
 /** Bascule Liste / Carte de l'onglet Réseau : pastille active en violet clair. UI pure. */
 export function ReseauToggle({ mode, onChange }: { mode: ReseauMode; onChange: (m: ReseauMode) => void }) {
+  const colors = useThemeColors();
   return (
     <View className="flex-row rounded-pill bg-hair p-1">
       {OPTIONS.map((option) => {

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { ApiError } from '@/shared/lib';
-import { colors } from '@/shared/theme';
+import { useThemeColors } from '@/shared/theme';
 import { Button, Input, Text, TextLink } from '@/shared/ui';
 
 import { useForgotPassword } from '../hooks';
@@ -12,6 +12,7 @@ import { loginInputSchema } from '../types';
 
 /** Formulaire « mot de passe oublié » : envoie l'email de réinitialisation. */
 export function ForgotPasswordForm() {
+  const colors = useThemeColors();
   const router = useRouter();
   const { mutate, isPending, isSuccess, error } = useForgotPassword();
 

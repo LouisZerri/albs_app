@@ -4,7 +4,7 @@ import { ActivityIndicator, Keyboard, View } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 
 import { useBadgeCelebration } from '@/features/badges';
-import { colors } from '@/shared/theme';
+import { useThemeColors, useThemeMode } from '@/shared/theme';
 import { ErrorState } from '@/shared/ui';
 
 import {
@@ -25,6 +25,8 @@ const PARIS = { latitude: 48.8566, longitude: 2.3522, latitudeDelta: 0.17, longi
 
 /** Onglet Réseau, vue Carte : réseau réel + stations colorées + cochage (3 états) + recherche. */
 export function MapScreen() {
+  const { mode } = useThemeMode();
+  const colors = useThemeColors();
   const router = useRouter();
   const network = useNetwork();
   const stats = useNetworkStats();
@@ -101,6 +103,8 @@ export function MapScreen() {
   return (
     <View className="flex-1 overflow-hidden" onLayout={(e) => setAreaHeight(e.nativeEvent.layout.height)}>
       <MapView
+        // Fond de carte assorti au thème de l'app (iOS).
+        userInterfaceStyle={mode}
         ref={mapRef}
         style={{ flex: 1 }}
         initialRegion={PARIS}
@@ -118,7 +122,7 @@ export function MapScreen() {
             <Polyline
               key={`${line.id}-${i}`}
               coordinates={segment.map(([lng, lat]) => ({ latitude: lat, longitude: lng }))}
-              strokeColor={dim ? '#C7CDD6' : line.color}
+              strokeColor={dim ? colors.todo : line.color}
               strokeWidth={highlighted ? 5 : dim ? 2 : 3}
               zIndex={highlighted ? 3 : 1}
             />
