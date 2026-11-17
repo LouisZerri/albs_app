@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { useSyncStatus } from '@/shared/hooks/useSyncStatus';
@@ -10,14 +11,20 @@ import { Text } from './Text';
  * Bandeau d'état de la synchronisation, intégré à la mise en page (il ne recouvre rien).
  * - Sans réseau : « Hors ligne », avec le nombre de cochages gardés en attente (messages courts,
  *   pour tenir sur une ligne même sur un petit écran).
- * - Réseau revenu, envoi en cours : « Envoi de N cochages… ».
+ * - Réseau revenu, envoi en cours : « Envoi de N cochages… » — seulement si l'envoi dure : avec du
+ *   réseau un cochage part en une fraction de seconde, et l'afficher ferait clignoter le bandeau.
  * - Sinon : rien.
  */
+/** Un envoi plus court que ça ne s'affiche pas. */
+const SENDING_NOTICE_DELAY_MS = 1500;
+
 export function OfflineNotice() {
   const colors = useThemeColors();
   const { online, pending } = useSyncStatus();
 
-  if (online && pending === 0) return null;
+  const sendingForLong = useLasting(online && pending > 0, SENDING_NOTICE_DELAY_MS);
+
+  if (online && !sendingForLong) return null;
 
   const waiting = pending > 1 ? `${pending} cochages` : '1 cochage';
   const message = online
@@ -42,4 +49,20 @@ export function OfflineNotice() {
       </Text>
     </View>
   );
+}
+
+/** Vrai seulement quand `active` l'est resté sans interruption pendant `delayMs`. */
+function useLasting(active: boolean, delayMs: number): boolean {
+  const [lasting, setLasting] = useState(false);
+
+  useEffect(() => {
+    if (!active) return;
+    const timer = setTimeout(() => setLasting(true), delayMs);
+    return () => {
+      clearTimeout(timer);
+      setLasting(false);
+    };
+  }, [active, delayMs]);
+
+  return active && lasting;
 }
