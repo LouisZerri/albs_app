@@ -1,5 +1,6 @@
 export { useBadges, BADGES_KEY } from './useBadges';
 export { useHistory, HISTORY_KEY } from './useHistory';
+export { useShareImage } from './useShareImage';
 export {
   useUpdateProfile,
   useUploadAvatar,

@@ -92,6 +92,16 @@ export function formatDay(day: string): string {
   });
 }
 
+/** « 2026-07-07 » → « 7 juillet 2026 ». */
+export function formatDate(day: string): string {
+  const [year, month, date] = day.split('-').map(Number);
+  return new Date(year, month - 1, date).toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
 /** Ancienneté d'un jour : « aujourd'hui », « il y a 3 jours », « il y a 4 mois », « il y a 2 ans ». */
 export function timeAgo(day: string, now: Date): string {
   const [year, month, date] = day.split('-').map(Number);
