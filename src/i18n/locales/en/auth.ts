@@ -50,8 +50,8 @@ export const auth: typeof fr = {
   },
   forgot: {
     title: 'Forgot your password',
-    subtitle: 'Enter your email and we’ll send you a link to choose a new one.',
-    submit: 'Send the link',
+    subtitle: 'Enter your email and we’ll send you a code to choose a new one.',
+    submit: 'Send the code',
     remember: 'Remember it after all?',
     failed: 'Could not send it. Try again.',
     sentTitle: 'Check your inbox',

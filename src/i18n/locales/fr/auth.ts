@@ -50,8 +50,8 @@ export const auth = {
   },
   forgot: {
     title: 'Mot de passe oublié',
-    subtitle: 'Indique ton e-mail, on t’envoie un lien pour en choisir un nouveau.',
-    submit: 'Envoyer le lien',
+    subtitle: 'Indique ton e-mail, on t’envoie un code pour en choisir un nouveau.',
+    submit: 'Envoyer le code',
     remember: 'Tu t’en souviens ?',
     failed: 'Envoi impossible. Réessaie.',
     sentTitle: 'Vérifie tes emails',
