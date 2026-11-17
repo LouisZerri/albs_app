@@ -16,6 +16,7 @@ import { AuthProvider, ME_QUERY_KEY, useAuth } from '@/features/auth/store';
 import { BadgeCelebrationProvider } from '@/features/badges';
 import { registerToggleFavoriteMutation } from '@/features/bonplans/hooks';
 import { registerToggleStationMutation } from '@/features/network/hooks';
+import { watchAppFocus } from '@/shared/lib/appFocus';
 import {
   ApiError,
   persistOptions,
@@ -30,6 +31,7 @@ SplashScreen.preventAutoHideAsync();
 
 // Hors-ligne : suivi du réseau + déclaration des actions rejouables après un redémarrage.
 watchNetworkStatus();
+watchAppFocus();
 registerToggleStationMutation(queryClient);
 registerToggleFavoriteMutation(queryClient);
 
