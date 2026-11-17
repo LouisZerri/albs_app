@@ -8,10 +8,8 @@ import { ErrorState, SearchInput, SkeletonList } from '@/shared/ui';
 import { useNetworkStats, useStationSearch } from '../hooks';
 import { resumeLine } from '../lib/resumeLine';
 import type { NetworkStats } from '../types';
-import { ChallengesCard } from './ChallengesCard';
 import { LineRow } from './LineRow';
 import { NetworkProgressCard } from './NetworkProgressCard';
-import { ResumeLineCard } from './ResumeLineCard';
 import { StationSearchResults } from './StationSearchResults';
 
 /** Vue Liste de l'onglet Réseau : recherche de station, progression globale, liste des lignes. */
@@ -61,7 +59,6 @@ type LineListProps = { data: NetworkStats; isRefetching: boolean; onRefresh: () 
 function LineList({ data, isRefetching, onRefresh }: LineListProps) {
   const colors = useThemeColors();
   const router = useRouter();
-  const resume = resumeLine(data);
 
   return (
     <FlatList
@@ -76,16 +73,14 @@ function LineList({ data, isRefetching, onRefresh }: LineListProps) {
         <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} tintColor={colors.accent} />
       }
       ListHeaderComponent={
-        <View className="gap-3 pb-1 pt-1">
+        <View className="pb-1 pt-1">
           <NetworkProgressCard
             percent={data.percent}
             visited={data.stations.visited}
             total={data.stations.total}
+            resume={resumeLine(data)}
+            onResume={(lineId) => router.push(`/line/${lineId}`)}
           />
-          {resume ? <ResumeLineCard line={resume} onPress={() => router.push(`/line/${resume.id}`)} /> : null}
-          {data.challenges.length > 0 ? (
-            <ChallengesCard challenges={data.challenges} onOpenLine={(id) => router.push(`/line/${id}`)} />
-          ) : null}
         </View>
       }
     />

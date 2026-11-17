@@ -1,3 +1,4 @@
+export { ChallengesCard } from './ChallengesCard';
 export { ForkRow } from './ForkRow';
 export { LineBadge } from './LineBadge';
 export { LineBadges } from './LineBadges';

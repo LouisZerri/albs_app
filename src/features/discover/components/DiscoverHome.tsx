@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
+import { ChallengesCard } from '@/features/network/components';
+import { useNetworkStats } from '@/features/network/hooks';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, Screen, SkeletonList, Text } from '@/shared/ui';
 
@@ -8,12 +10,13 @@ import { useGhostStations, useJourneys } from '../hooks';
 import { GhostStationCard } from './GhostStationCard';
 import { JourneyCard } from './JourneyCard';
 
-/** Onglet Découvrir : parcours thématiques et stations fantômes. */
+/** Onglet Découvrir : défis en cours, parcours thématiques et stations fantômes. */
 export function DiscoverHome() {
   const router = useRouter();
   const colors = useThemeColors();
   const journeys = useJourneys();
   const ghosts = useGhostStations();
+  const stats = useNetworkStats();
 
   const refresh = () => {
     void journeys.refetch();
@@ -57,10 +60,20 @@ export function DiscoverHome() {
       >
         <View className="gap-1 pb-1">
           <Text variant="title">Découvrir</Text>
-          <Text variant="muted">Des idées de parcours et les secrets du réseau.</Text>
+          <Text variant="muted">Tes défis, des idées de parcours et les secrets du réseau.</Text>
         </View>
 
-        <Text variant="label">Parcours</Text>
+        {/* Les défis viennent des statistiques du Réseau ; s'ils ne sont pas chargés, on s'en passe. */}
+        {stats.data && stats.data.challenges.length > 0 ? (
+          <ChallengesCard
+            challenges={stats.data.challenges}
+            onOpenLine={(lineId) => router.push(`/line/${lineId}`)}
+          />
+        ) : null}
+
+        <Text variant="label" className="pt-2">
+          Parcours
+        </Text>
         {journeys.data.map((journey) => (
           <JourneyCard
             key={journey.key}
