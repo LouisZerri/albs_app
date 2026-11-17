@@ -7,6 +7,7 @@ import { discover } from './discover';
 import { network } from './network';
 import { onboarding } from './onboarding';
 import { profile } from './profile';
+import { reminders } from './reminders';
 
 export const en: typeof fr = {
   auth,
@@ -17,4 +18,5 @@ export const en: typeof fr = {
   network,
   onboarding,
   profile,
+  reminders,
 };

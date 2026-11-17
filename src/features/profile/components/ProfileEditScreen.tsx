@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import type { UpdateProfileInput } from '@/features/auth/api';
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
+import { RemindersCard } from '@/features/reminders/components';
 import { useTranslation } from '@/i18n';
 import { ApiError } from '@/shared/lib';
 import { useThemeColors } from '@/shared/theme';
@@ -133,6 +134,8 @@ export function ProfileEditScreen() {
           <Text className="flex-1">{t('edit.changePassword')}</Text>
           <Ionicons name="chevron-forward" size={20} color={colors.muted} />
         </Card>
+
+        <RemindersCard />
 
         <DangerZone />
       </View>

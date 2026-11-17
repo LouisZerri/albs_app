@@ -6,6 +6,7 @@ import { bonplansOfflineQueries } from '@/features/bonplans/hooks';
 import { discoverOfflineQueries } from '@/features/discover/hooks';
 import { prefetchNetwork } from '@/features/network/lib/offlinePrefetch';
 import { profileOfflineQueries } from '@/features/profile/hooks';
+import { useReminderSync } from '@/features/reminders/hooks';
 import { useTranslation } from '@/i18n';
 import { useOfflinePrefetch } from '@/shared/hooks/useOfflinePrefetch';
 import { prefetchQueries, type OfflineTask } from '@/shared/lib';
@@ -46,6 +47,8 @@ export default function TabsLayout() {
   const { t } = useTranslation();
   // Dès qu'on est dans l'app avec du réseau : de quoi tout utiliser sous terre est téléchargé.
   useOfflinePrefetch(OFFLINE_TASKS);
+  // Rappels du téléphone (si l'utilisateur les a activés) : recalculés quand la progression change.
+  useReminderSync();
 
   return (
     <Tabs
