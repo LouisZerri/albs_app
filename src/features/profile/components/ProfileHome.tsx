@@ -6,7 +6,7 @@ import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, View }
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
 import { colors } from '@/shared/theme';
-import { Button, Screen, Text } from '@/shared/ui';
+import { Button, ErrorState, Screen } from '@/shared/ui';
 
 import { useBadges } from '../hooks';
 import { BadgesTab } from './BadgesTab';
@@ -43,19 +43,7 @@ export function ProfileHome() {
   if (stats.isError || !stats.data || badges.isError || !badges.data) {
     return (
       <Screen>
-        <View className="flex-1 items-center justify-center gap-4">
-          <Text variant="muted" className="text-center">
-            Impossible de charger le profil.
-          </Text>
-          <Button
-            label="Réessayer"
-            variant="secondary"
-            onPress={() => {
-              void stats.refetch();
-              void badges.refetch();
-            }}
-          />
-        </View>
+        <ErrorState error={stats.error ?? badges.error} message="Impossible de charger le profil." onRetry={() => { void stats.refetch(); void badges.refetch(); }} />
       </Screen>
     );
   }

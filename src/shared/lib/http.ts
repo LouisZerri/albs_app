@@ -1,4 +1,4 @@
-import { ApiError } from './ApiError';
+import { ApiError, fetchOrNetworkError } from './ApiError';
 import { config } from './config';
 import { refreshSession } from './session';
 import { tokenStore } from './tokenStore';
@@ -50,7 +50,7 @@ async function send(path: string, options: Options): Promise<Response> {
     }
   }
 
-  return fetch(`${config.apiBaseUrl}${path}`, {
+  return fetchOrNetworkError(`${config.apiBaseUrl}${path}`, {
     method,
     headers,
     body: body === undefined ? undefined : isForm ? (body as FormData) : JSON.stringify(body),

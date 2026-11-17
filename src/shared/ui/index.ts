@@ -3,6 +3,7 @@ export { Button } from './Button';
 export { Card } from './Card';
 export { Checkbox } from './Checkbox';
 export { Chip } from './Chip';
+export { ErrorState } from './ErrorState';
 export { FloatingAction } from './FloatingAction';
 export { Input } from './Input';
 export { Placeholder } from './Placeholder';

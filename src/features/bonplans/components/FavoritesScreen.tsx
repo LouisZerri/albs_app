@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { FlatList, RefreshControl, View } from 'react-native';
 
 import { colors } from '@/shared/theme';
-import { Button, ScreenHeader, SkeletonList, Text } from '@/shared/ui';
+import { ErrorState, ScreenHeader, SkeletonList, Text } from '@/shared/ui';
 
 import { useBonplanActions, useFavorites } from '../hooks';
 import { coordinateOf } from '../lib/distance';
@@ -12,7 +12,7 @@ import { BonplanCard } from './BonplanCard';
 /** Mes favoris : les bons plans enregistrés, toutes stations confondues. */
 export function FavoritesScreen() {
   const router = useRouter();
-  const { data, isPending, isError, refetch, isRefetching } = useFavorites();
+  const { data, error, isPending, isError, refetch, isRefetching } = useFavorites();
   const { toggleFavorite, openDirections } = useBonplanActions();
 
   return (
@@ -24,12 +24,11 @@ export function FavoritesScreen() {
       {isPending ? (
         <SkeletonList count={4} className="pt-4" />
       ) : isError ? (
-        <View className="flex-1 items-center justify-center gap-4 px-6">
-          <Text variant="muted" className="text-center">
-            Impossible de charger tes favoris.
-          </Text>
-          <Button label="Réessayer" variant="secondary" onPress={() => refetch()} />
-        </View>
+        <ErrorState
+          error={error}
+          message="Impossible de charger tes favoris."
+          onRetry={() => refetch()}
+        />
       ) : (
         <FlatList
           data={data}

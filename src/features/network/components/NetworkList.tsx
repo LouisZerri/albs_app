@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
 import { colors } from '@/shared/theme';
-import { Button, SearchInput, SkeletonList, Text } from '@/shared/ui';
+import { ErrorState, SearchInput, SkeletonList } from '@/shared/ui';
 
 import { useNetworkStats, useStationSearch } from '../hooks';
 import { resumeLine } from '../lib/resumeLine';
@@ -16,7 +16,7 @@ import { StationSearchResults } from './StationSearchResults';
 /** Vue Liste de l'onglet Réseau : recherche de station, progression globale, liste des lignes. */
 export function NetworkList() {
   const router = useRouter();
-  const { data, isPending, isError, refetch, isRefetching } = useNetworkStats();
+  const { data, error, isPending, isError, refetch, isRefetching } = useNetworkStats();
   const [query, setQuery] = useState('');
   const search = useStationSearch(query);
 
@@ -28,12 +28,7 @@ export function NetworkList() {
 
   if (isError) {
     return (
-      <View className="flex-1 items-center justify-center gap-4 px-6">
-        <Text variant="muted" className="text-center">
-          Impossible de charger le réseau.
-        </Text>
-        <Button label="Réessayer" variant="secondary" onPress={() => refetch()} />
-      </View>
+      <ErrorState error={error} message="Impossible de charger le réseau." onRetry={() => refetch()} />
     );
   }
 
@@ -48,7 +43,9 @@ export function NetworkList() {
           hits={search.hits}
           isPending={search.isPending}
           isError={search.isError}
-          onSelect={(hit) => router.push(`/line/${hit.line.lineId}`)}
+          onSelect={(hit) =>
+            router.push({ pathname: '/line/[id]', params: { id: hit.line.lineId, station: hit.name } })
+          }
         />
       ) : (
         <LineList data={data} isRefetching={isRefetching} onRefresh={() => void refetch()} />

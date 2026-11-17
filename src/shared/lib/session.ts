@@ -1,3 +1,4 @@
+import { fetchOrNetworkError } from './ApiError';
 import { config } from './config';
 import { tokenStore } from './tokenStore';
 
@@ -39,8 +40,8 @@ async function renew(): Promise<boolean> {
   }
 
   // Appel direct (pas `apiFetch`) : ce module est utilisé PAR `apiFetch`.
-  // Une panne réseau lève ici et remonte telle quelle : la session n'est pas perdue pour autant.
-  const response = await fetch(`${config.apiBaseUrl}/api/token/refresh`, {
+  // Une panne réseau lève ici (ApiError de statut 0) : la session n'est pas perdue pour autant.
+  const response = await fetchOrNetworkError(`${config.apiBaseUrl}/api/token/refresh`, {
     method: 'POST',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh_token: refreshToken }),

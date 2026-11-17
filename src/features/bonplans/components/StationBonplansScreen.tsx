@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, type FlatList, View } from 'react-native';
 
 import { colors } from '@/shared/theme';
-import { BottomSheet, Button, FloatingAction, Screen, Text } from '@/shared/ui';
+import { BottomSheet, ErrorState, FloatingAction, Screen } from '@/shared/ui';
 
 import { useBonplanActions, useStationBonplans } from '../hooks';
 import { categoriesOf } from '../lib/categories';
@@ -19,7 +19,7 @@ import { StationBonplansHeader } from './StationBonplansHeader';
  */
 export function StationBonplansScreen({ id }: { id: number }) {
   const router = useRouter();
-  const { data, isPending, isError, refetch } = useStationBonplans(id);
+  const { data, error, isPending, isError, refetch } = useStationBonplans(id);
   const { toggleFavorite, openDirections } = useBonplanActions();
   const listRef = useRef<FlatList<NearbyBonplan>>(null);
   const [category, setCategory] = useState<string | null>(null);
@@ -54,13 +54,12 @@ export function StationBonplansScreen({ id }: { id: number }) {
   if (isError || !station) {
     return (
       <Screen>
-        <View className="flex-1 items-center justify-center gap-4">
-          <Text variant="muted" className="text-center">
-            Impossible de charger les bons plans de cette station.
-          </Text>
-          <Button label="Réessayer" variant="secondary" onPress={() => refetch()} />
-          <Button label="Retour" variant="ghost" onPress={() => router.back()} />
-        </View>
+        <ErrorState
+          error={error}
+          message="Impossible de charger les bons plans de cette station."
+          onRetry={() => refetch()}
+          onBack={() => router.back()}
+        />
       </Screen>
     );
   }

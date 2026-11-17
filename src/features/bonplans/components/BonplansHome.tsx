@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 
 import { colors } from '@/shared/theme';
-import { Button, Screen, SearchInput, Skeleton, SkeletonList, Text } from '@/shared/ui';
+import { ErrorState, Screen, SearchInput, Skeleton, SkeletonList, Text } from '@/shared/ui';
 
 import { useBonplanStations, useVisitedStationIds } from '../hooks';
 import { filterStations, linesOf } from '../lib/stationSearch';
@@ -14,7 +14,7 @@ import { StationFilters } from './StationFilters';
 /** Onglet Bons plans : recherche + liste des stations ayant des bons plans. */
 export function BonplansHome() {
   const router = useRouter();
-  const { data, isPending, isError, refetch, isRefetching } = useBonplanStations();
+  const { data, error, isPending, isError, refetch, isRefetching } = useBonplanStations();
   const visitedIds = useVisitedStationIds();
   const [query, setQuery] = useState('');
   const [lineId, setLineId] = useState<number | null>(null);
@@ -35,12 +35,11 @@ export function BonplansHome() {
   if (isError) {
     return (
       <Screen>
-        <View className="flex-1 items-center justify-center gap-4">
-          <Text variant="muted" className="text-center">
-            Impossible de charger les bons plans.
-          </Text>
-          <Button label="Réessayer" variant="secondary" onPress={() => refetch()} />
-        </View>
+        <ErrorState
+          error={error}
+          message="Impossible de charger les bons plans."
+          onRetry={() => refetch()}
+        />
       </Screen>
     );
   }
