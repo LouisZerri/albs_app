@@ -7,7 +7,7 @@ const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
 
 if (!apiBaseUrl && __DEV__) {
   console.warn(
-    "[config] EXPO_PUBLIC_API_URL manquant — vérifie le .env (et relance `expo start -c`).",
+    '[config] EXPO_PUBLIC_API_URL manquant — vérifie le .env (et relance `expo start -c`).',
   );
 }
 

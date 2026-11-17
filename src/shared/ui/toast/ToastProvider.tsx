@@ -27,9 +27,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hide = useCallback(() => {
-    Animated.timing(anim, { toValue: 0, duration: 200, useNativeDriver: true }).start(({ finished }) => {
-      if (finished) setToast(null);
-    });
+    Animated.timing(anim, { toValue: 0, duration: 200, useNativeDriver: true }).start(
+      ({ finished }) => {
+        if (finished) setToast(null);
+      },
+    );
   }, [anim]);
 
   const show = useCallback(

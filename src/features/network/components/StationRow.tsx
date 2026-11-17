@@ -1,5 +1,6 @@
 import { Pressable, type PressableProps, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { fonts } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
@@ -40,14 +41,19 @@ export function StationRow({
   onOpenBonplans,
   highlighted,
 }: Props) {
+  const { t } = useTranslation('network');
   const isTerminus = isFirst || isLast;
 
   return (
     <Pressable
       onPress={onPress}
-      className={cn('flex-row items-center pr-4 active:bg-hair/40', highlighted && 'bg-accentSoft/60')}
+      className={cn(
+        'flex-row items-center pr-4 active:bg-hair/40',
+        highlighted && 'bg-accentSoft/60',
+      )}
       accessibilityRole="button"
-      accessibilityState={{ checked: state === 'visited' }}>
+      accessibilityState={{ checked: state === 'visited' }}
+    >
       <StationNode
         state={state}
         color={color}
@@ -64,13 +70,14 @@ export function StationRow({
           variant={isTerminus ? 'subtitle' : 'body'}
           numberOfLines={1}
           className="shrink"
-          style={isTerminus ? { fontFamily: fonts.extrabold } : undefined}>
+          style={isTerminus ? { fontFamily: fonts.extrabold } : undefined}
+        >
           {station.name}
         </Text>
         <CorrespondenceDots items={station.correspondences} />
         {state === 'passed' ? (
           <Text variant="label" color="passed">
-            Passé
+            {t('states.passed')}
           </Text>
         ) : null}
       </View>

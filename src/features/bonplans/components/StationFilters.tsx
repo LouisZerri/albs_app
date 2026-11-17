@@ -2,6 +2,7 @@ import { Pressable, ScrollView, View } from 'react-native';
 
 import { LineBadge } from '@/features/network/components';
 import type { Correspondence } from '@/features/network/types';
+import { useTranslation } from '@/i18n';
 import { Chip } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
 
@@ -21,6 +22,8 @@ export function StationFilters({
   visitedOnly,
   onVisitedOnlyChange,
 }: Props) {
+  const { t } = useTranslation('bonplans');
+
   return (
     <ScrollView
       horizontal
@@ -30,7 +33,7 @@ export function StationFilters({
       contentContainerClassName="items-center gap-2 px-5 pb-3"
     >
       <Chip
-        label="✓ Mes stations"
+        label={t('filters.myStations')}
         active={visitedOnly}
         onPress={() => onVisitedOnlyChange(!visitedOnly)}
       />
@@ -42,7 +45,7 @@ export function StationFilters({
             key={line.lineId}
             onPress={() => onLineChange(active ? null : line.lineId)}
             accessibilityRole="button"
-            accessibilityLabel={`Ligne ${line.number}`}
+            accessibilityLabel={t('filters.lineA11y', { number: line.number })}
             accessibilityState={{ selected: active }}
             // Estompe les autres lignes quand une est choisie (comme sur la carte du Réseau).
             style={{ opacity: lineId !== null && !active ? 0.35 : 1 }}

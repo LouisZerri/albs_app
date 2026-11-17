@@ -17,7 +17,8 @@ export function Avatar({ username, avatarUrl, size = 96 }: Props) {
   return (
     <View
       className="items-center justify-center overflow-hidden rounded-full bg-accent"
-      style={{ width: size, height: size }}>
+      style={{ width: size, height: size }}
+    >
       {avatarUrl ? (
         <Image
           source={{ uri: `${config.apiBaseUrl}/uploads/avatars/${avatarUrl}` }}
@@ -37,7 +38,8 @@ export function Avatar({ username, avatarUrl, size = 96 }: Props) {
             lineHeight: size,
             textAlignVertical: 'center',
             includeFontPadding: false,
-          }}>
+          }}
+        >
           {initials(username)}
         </Text>
       )}

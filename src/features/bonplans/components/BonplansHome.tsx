@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, Screen, SearchInput, Skeleton, SkeletonList, Text } from '@/shared/ui';
@@ -15,6 +16,7 @@ import { StationFilters } from './StationFilters';
 /** Onglet Bons plans : recherche + liste des stations ayant des bons plans. */
 export function BonplansHome() {
   const colors = useThemeColors();
+  const { t } = useTranslation('bonplans');
   const router = useRouter();
   const { data, error, isPending, isError, refetch } = useBonplanStations();
   const { refreshing, refresh } = usePullToRefresh(refetch);
@@ -38,11 +40,7 @@ export function BonplansHome() {
   if (isError) {
     return (
       <Screen>
-        <ErrorState
-          error={error}
-          message="Impossible de charger les bons plans."
-          onRetry={() => refetch()}
-        />
+        <ErrorState error={error} message={t('home.loadError')} onRetry={() => refetch()} />
       </Screen>
     );
   }
@@ -54,19 +52,23 @@ export function BonplansHome() {
       <View className="gap-3 px-5 pb-3 pt-1">
         <View className="flex-row items-start gap-3">
           <View className="flex-1 gap-1">
-            <Text variant="title">Bons plans</Text>
-            <Text variant="muted">Les bonnes adresses à deux pas des stations.</Text>
+            <Text variant="title">{t('home.title')}</Text>
+            <Text variant="muted">{t('home.subtitle')}</Text>
           </View>
           <Pressable
             onPress={() => router.push('/bonplans/favorites')}
             accessibilityRole="button"
-            accessibilityLabel="Mes favoris"
+            accessibilityLabel={t('home.favoritesA11y')}
             className="h-11 w-11 items-center justify-center rounded-full border border-hair bg-surface active:opacity-70"
           >
             <Ionicons name="star" size={20} color={colors.passed} />
           </Pressable>
         </View>
-        <SearchInput value={query} onChangeText={setQuery} placeholder="Rechercher une station…" />
+        <SearchInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t('home.searchPlaceholder')}
+        />
       </View>
 
       <StationFilters
@@ -88,28 +90,21 @@ export function BonplansHome() {
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={refresh}
-            tintColor={colors.accent}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.accent} />
         }
+        // Message de liste vide, selon la cause (aucune donnée, « Mes stations », autres filtres).
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center px-6">
             <Text variant="muted" className="text-center">
-              {emptyMessage(data.length, visitedOnly)}
+              {data.length === 0
+                ? t('home.emptyNone')
+                : visitedOnly
+                  ? t('home.emptyVisited')
+                  : t('home.emptySearch')}
             </Text>
           </View>
         }
       />
     </Screen>
   );
-}
-
-/** Message de liste vide, selon la cause (aucune donnée, filtre « Mes stations », autres filtres). */
-function emptyMessage(total: number, visitedOnly: boolean): string {
-  if (total === 0) return 'Aucun bon plan pour le moment.';
-  if (visitedOnly)
-    return 'Aucune station visitée ne correspond. Descends à une station pour la retrouver ici.';
-  return 'Aucune station ne correspond à ta recherche.';
 }

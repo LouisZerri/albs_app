@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
+import { useTranslation } from '@/i18n';
 import { useThemeColors, useThemeMode } from '@/shared/theme';
 import { MapMarkerBox, Text, TextLink } from '@/shared/ui';
 
@@ -17,11 +18,13 @@ type Props = {
 export function LocationPicker({ center, value, onChange }: Props) {
   const { mode } = useThemeMode();
   const colors = useThemeColors();
+  const { t } = useTranslation('bonplans');
+
   return (
     <View className="gap-1.5">
       <View className="flex-row items-center justify-between">
-        <Text variant="label">Emplacement (facultatif)</Text>
-        {value ? <TextLink label="Retirer l’épingle" onPress={() => onChange(null)} /> : null}
+        <Text variant="label">{t('form.locationLabel')}</Text>
+        {value ? <TextLink label={t('form.removePin')} onPress={() => onChange(null)} /> : null}
       </View>
 
       <View className="h-48 overflow-hidden rounded-card border border-hair">
@@ -52,11 +55,7 @@ export function LocationPicker({ center, value, onChange }: Props) {
         </MapView>
       </View>
 
-      <Text variant="muted">
-        {value
-          ? 'Épingle posée. Touche la carte pour la déplacer.'
-          : 'Touche la carte pour indiquer où se trouve le lieu (le point noir est la station).'}
-      </Text>
+      <Text variant="muted">{value ? t('form.pinPlaced') : t('form.pinHint')}</Text>
     </View>
   );
 }

@@ -25,7 +25,8 @@ export function BranchSelector({ branches, selected, onSelect, lineColor }: Prop
             className={cn(
               'flex-1 flex-row items-center justify-center gap-1.5 rounded-2xl px-3 py-2',
               active && 'bg-surface',
-            )}>
+            )}
+          >
             {active ? (
               <View className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: lineColor }} />
             ) : null}

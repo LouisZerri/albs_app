@@ -1,2 +1,93 @@
 /** Textes de la fonctionnalité « bonplans ». */
-export const bonplans = {};
+export const bonplans = {
+  // « 1 bon plan » / « 12 bons plans » (zéro : au singulier en français, au pluriel en anglais).
+  countZero: '{{count}} bon plan',
+  countOne: '{{count}} bon plan',
+  countMany: '{{count}} bons plans',
+  // Pour les lecteurs d'écran : « ligne 6 » / « lignes 1, 4, 7 ».
+  lineOne: 'ligne {{numbers}}',
+  lineMany: 'lignes {{numbers}}',
+  categories: {
+    restaurant: 'Restaurants',
+    bar: 'Bars',
+    cafe: 'Cafés',
+    monument: 'Monuments',
+    shop: 'Boutiques',
+    culture: 'Culture',
+    park: 'Parcs & jardins',
+    other: 'Autres',
+  },
+  home: {
+    title: 'Bons plans',
+    subtitle: 'Les bonnes adresses à deux pas des stations.',
+    favoritesA11y: 'Mes favoris',
+    searchPlaceholder: 'Rechercher une station…',
+    loadError: 'Impossible de charger les bons plans.',
+    emptyNone: 'Aucun bon plan pour le moment.',
+    emptyVisited:
+      'Aucune station visitée ne correspond. Descends à une station pour la retrouver ici.',
+    emptySearch: 'Aucune station ne correspond à ta recherche.',
+  },
+  filters: {
+    myStations: '✓ Mes stations',
+    lineA11y: 'Ligne {{number}}',
+    allCategories: 'Tout',
+  },
+  card: {
+    proposedBy: 'Proposé par {{name}}',
+    aMember: 'un membre',
+    nearStation: 'près de {{name}}',
+    walk: '{{distance}} · {{minutes}} min à pied',
+    decimalSeparator: ',',
+    directions: 'Y aller',
+    directionsA11y: 'Itinéraire vers {{name}}',
+    addFavorite: 'Ajouter aux favoris',
+    removeFavorite: 'Retirer des favoris',
+  },
+  station: {
+    loadError: 'Impossible de charger les bons plans de cette station.',
+    empty: 'Aucun bon plan autour de cette station pour le moment.',
+    suggest: 'Proposer',
+  },
+  favorites: {
+    title: 'Mes favoris',
+    loadError: 'Impossible de charger tes favoris.',
+    emptyTitle: 'Aucun favori pour le moment',
+    emptyHint: 'Touche l’étoile d’un bon plan pour le retrouver ici.',
+  },
+  toasts: {
+    favoriteAdded: 'Ajouté à tes favoris',
+    favoriteRemoved: 'Retiré de tes favoris',
+    favoriteError: 'Impossible de modifier ce favori.',
+    directionsError: "Impossible d'ouvrir l'itinéraire.",
+  },
+  submit: {
+    title: 'Proposer un bon plan',
+    nearStation: 'Près de {{name}}',
+    intro:
+      'Partage une bonne adresse à deux pas de la station. Elle sera vérifiée par l’équipe avant d’être publiée.',
+    success: 'Merci ! Ton bon plan sera visible après validation.',
+    sendError: 'Envoi impossible. Réessaie.',
+  },
+  form: {
+    nameLabel: 'Nom du lieu',
+    namePlaceholder: 'Ex. Café des Phares',
+    categoryLabel: 'Catégorie',
+    addressLabel: 'Adresse (facultatif)',
+    addressPlaceholder: 'Ex. 7 place de la Bastille',
+    descriptionLabel: 'Pourquoi y aller ? (facultatif)',
+    descriptionPlaceholder: 'Ce qui rend ce lieu spécial…',
+    submit: 'Envoyer ma proposition',
+    locationLabel: 'Emplacement (facultatif)',
+    removePin: 'Retirer l’épingle',
+    pinPlaced: 'Épingle posée. Touche la carte pour la déplacer.',
+    pinHint: 'Touche la carte pour indiquer où se trouve le lieu (le point noir est la station).',
+    errors: {
+      titleMin: 'Le nom doit faire au moins 3 caractères.',
+      titleMax: 'Le nom ne peut pas dépasser 150 caractères.',
+      category: 'Choisis une catégorie.',
+      addressMax: "L'adresse ne peut pas dépasser 255 caractères.",
+      descriptionMax: 'La description ne peut pas dépasser 1000 caractères.',
+    },
+  },
+};

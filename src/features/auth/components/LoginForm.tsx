@@ -1,35 +1,42 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
+import { useLanguage, useTranslation } from '@/i18n';
+import { i18n } from '@/i18n/instance';
 import { ApiError } from '@/shared/lib';
 import { Button, Input, Text, TextLink } from '@/shared/ui';
 
 import { useLogin } from '../hooks';
-import { loginInputSchema } from '../types';
+import { createLoginSchema } from '../types';
 
 type FieldErrors = { email?: string; password?: string };
 
 function messageFor(error: unknown): string {
   if (error instanceof ApiError) {
     return error.message === 'Invalid credentials.'
-      ? 'E-mail ou mot de passe incorrect.'
+      ? i18n.t('auth:login.invalidCredentials')
       : error.message;
   }
-  return 'Connexion impossible. Réessaie.';
+  return i18n.t('auth:login.failed');
 }
 
 /** Formulaire de connexion. La redirection après succès est gérée par le routing racine. */
 export function LoginForm() {
   const router = useRouter();
   const { mutate, isPending, error } = useLogin();
+  const { t } = useTranslation('auth');
+  const { language } = useLanguage();
+  // Reconstruit à chaque changement de langue : les messages de validation la suivent.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loginSchema = useMemo(() => createLoginSchema(), [language]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const submit = () => {
-    const parsed = loginInputSchema.safeParse({ email: email.trim(), password });
+    const parsed = loginSchema.safeParse({ email: email.trim(), password });
     if (!parsed.success) {
       const f = parsed.error.flatten().fieldErrors;
       setFieldErrors({ email: f.email?.[0], password: f.password?.[0] });
@@ -45,11 +52,11 @@ export function LoginForm() {
     <View className="gap-6">
       <View className="gap-4">
         <Input
-          label="E-mail"
+          label={t('fields.email')}
           value={email}
           onChangeText={setEmail}
           error={fieldErrors.email}
-          placeholder="toi@exemple.fr"
+          placeholder={t('fields.emailPlaceholder')}
           keyboardType="email-address"
           autoCapitalize="none"
           autoComplete="email"
@@ -57,7 +64,7 @@ export function LoginForm() {
           returnKeyType="next"
         />
         <Input
-          label="Mot de passe"
+          label={t('fields.password')}
           value={password}
           onChangeText={setPassword}
           error={fieldErrors.password}
@@ -77,13 +84,16 @@ export function LoginForm() {
         </Text>
       ) : null}
 
-      <Button label="Se connecter" onPress={submit} loading={isPending} />
+      <Button label={t('actions.signIn')} onPress={submit} loading={isPending} />
 
       <View className="items-center gap-3">
-        <TextLink label="Mot de passe oublié ?" onPress={() => router.push('/forgot-password')} />
+        <TextLink
+          label={t('login.forgotPassword')}
+          onPress={() => router.push('/forgot-password')}
+        />
         <View className="flex-row items-center gap-1.5">
-          <Text variant="muted">Pas encore de compte ?</Text>
-          <TextLink label="S'inscrire" onPress={() => router.push('/register')} />
+          <Text variant="muted">{t('login.noAccount')}</Text>
+          <TextLink label={t('login.signUp')} onPress={() => router.push('/register')} />
         </View>
       </View>
     </View>

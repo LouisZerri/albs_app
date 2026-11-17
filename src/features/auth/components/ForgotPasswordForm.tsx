@@ -1,26 +1,32 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
+import { useLanguage, useTranslation } from '@/i18n';
 import { ApiError } from '@/shared/lib';
 import { useThemeColors } from '@/shared/theme';
 import { Button, Input, Text, TextLink } from '@/shared/ui';
 
 import { useForgotPassword } from '../hooks';
-import { loginInputSchema } from '../types';
+import { createEmailSchema } from '../types';
 
 /** Formulaire « mot de passe oublié » : envoie l'email de réinitialisation. */
 export function ForgotPasswordForm() {
   const colors = useThemeColors();
   const router = useRouter();
   const { mutate, isPending, isSuccess, error } = useForgotPassword();
+  const { t } = useTranslation('auth');
+  const { language } = useLanguage();
+  // Reconstruit à chaque changement de langue : les messages de validation la suivent.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const emailSchema = useMemo(() => createEmailSchema(), [language]);
 
   const [email, setEmail] = useState('');
   const [fieldError, setFieldError] = useState<string>();
 
   const submit = () => {
-    const parsed = loginInputSchema.shape.email.safeParse(email.trim());
+    const parsed = emailSchema.safeParse(email.trim());
     if (!parsed.success) {
       setFieldError(parsed.error.issues[0]?.message);
       return;
@@ -38,24 +44,23 @@ export function ForgotPasswordForm() {
           </View>
           <View className="items-center gap-1.5">
             <Text variant="subtitle" className="text-center">
-              Vérifie tes emails
+              {t('forgot.sentTitle')}
             </Text>
             <Text variant="muted" className="text-center">
-              Si un compte existe pour cette adresse, un code de réinitialisation vient d’être envoyé.
-              Pense à regarder tes spams.
+              {t('forgot.sentBody')}
             </Text>
           </View>
         </View>
 
         <View className="gap-3">
           <Button
-            label="J’ai reçu mon code"
+            label={t('forgot.gotCode')}
             onPress={() =>
               router.push({ pathname: '/reset-password', params: { email: email.trim() } })
             }
           />
           <View className="items-center">
-            <TextLink label="Retour à la connexion" onPress={() => router.replace('/login')} />
+            <TextLink label={t('forgot.backToLogin')} onPress={() => router.replace('/login')} />
           </View>
         </View>
       </View>
@@ -65,17 +70,17 @@ export function ForgotPasswordForm() {
   const apiMessage = error
     ? error instanceof ApiError
       ? error.message
-      : 'Envoi impossible. Réessaie.'
+      : t('forgot.failed')
     : null;
 
   return (
     <View className="gap-6">
       <Input
-        label="E-mail"
+        label={t('fields.email')}
         value={email}
         onChangeText={setEmail}
         error={fieldError}
-        placeholder="toi@exemple.fr"
+        placeholder={t('fields.emailPlaceholder')}
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
@@ -90,11 +95,11 @@ export function ForgotPasswordForm() {
         </Text>
       ) : null}
 
-      <Button label="Envoyer le lien" onPress={submit} loading={isPending} />
+      <Button label={t('forgot.submit')} onPress={submit} loading={isPending} />
 
       <View className="flex-row items-center justify-center gap-1.5">
-        <Text variant="muted">Tu t’en souviens ?</Text>
-        <TextLink label="Se connecter" onPress={() => router.replace('/login')} />
+        <Text variant="muted">{t('forgot.remember')}</Text>
+        <TextLink label={t('actions.signIn')} onPress={() => router.replace('/login')} />
       </View>
     </View>
   );

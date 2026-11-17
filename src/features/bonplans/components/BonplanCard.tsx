@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { fonts, useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
@@ -29,9 +30,10 @@ export function BonplanCard({
   onDirections,
 }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation('bonplans');
   const community = isCommunity(bonplan);
   const source = community
-    ? `Proposé par ${bonplan.author ?? 'un membre'}`
+    ? t('card.proposedBy', { name: bonplan.author ?? t('card.aMember') })
     : bonplan.source === 'osm'
       ? 'OpenStreetMap'
       : null;
@@ -53,7 +55,7 @@ export function BonplanCard({
         <Text variant="muted" numberOfLines={1}>
           {categoryLabel(bonplan.category)}
           {bonplan.distance !== null ? ` · ${walkLabel(bonplan.distance)}` : ''}
-          {showStation ? ` · près de ${bonplan.stationName}` : ''}
+          {showStation ? ` · ${t('card.nearStation', { name: bonplan.stationName })}` : ''}
         </Text>
         {bonplan.address ? (
           <Text variant="muted" numberOfLines={1}>
@@ -77,12 +79,12 @@ export function BonplanCard({
             <Pressable
               onPress={onDirections}
               accessibilityRole="button"
-              accessibilityLabel={`Itinéraire vers ${bonplan.title}`}
+              accessibilityLabel={t('card.directionsA11y', { name: bonplan.title })}
               className="h-11 flex-row items-center gap-1.5 rounded-full bg-accent px-4 active:opacity-70"
             >
               <Ionicons name="navigate" size={15} color={colors.white} />
               <Text variant="muted" color="white" style={{ fontFamily: fonts.semibold }}>
-                Y aller
+                {t('card.directions')}
               </Text>
             </Pressable>
           ) : null}
@@ -94,7 +96,7 @@ export function BonplanCard({
         hitSlop={8}
         accessibilityRole="button"
         accessibilityState={{ selected: bonplan.isFavorite }}
-        accessibilityLabel={bonplan.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+        accessibilityLabel={bonplan.isFavorite ? t('card.removeFavorite') : t('card.addFavorite')}
         className="h-9 w-9 items-center justify-center"
       >
         <Ionicons

@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { Text } from '@/shared/ui';
 
 import type { LoopData } from '../lib/loopModel';
@@ -20,24 +21,35 @@ type Props = {
 };
 
 /** Bloc « Boucle » (ex. Boucle d'Auteuil, ligne 10) : deux groupes de stations par sens. */
-export function LoopCard({ loop, color, textColor, map, onToggle, onOpenBonplans, highlightedName }: Props) {
+export function LoopCard({
+  loop,
+  color,
+  textColor,
+  map,
+  onToggle,
+  onOpenBonplans,
+  highlightedName,
+}: Props) {
+  const { t } = useTranslation('network');
+
   return (
     <View
       className="my-1 ml-2 mr-4 rounded-card border p-3"
-      style={{ backgroundColor: `${color}1A`, borderColor: `${color}66` }}>
+      style={{ backgroundColor: `${color}1A`, borderColor: `${color}66` }}
+    >
       <View className="flex-row items-center gap-2">
         <Ionicons name="sync" size={18} color={color} />
         <Text variant="subtitle">{loop.label}</Text>
         <Text variant="muted" className="ml-auto">
-          sens unique
+          {t('rail.oneWay')}
         </Text>
       </View>
 
       {loop.groups.map((group) => (
-        <View key={group.directionLabel} className="mt-3 gap-0.5">
+        <View key={group.directionLabel ?? 'loop'} className="mt-3 gap-0.5">
           <View className="flex-row items-center gap-1">
             <Ionicons name="arrow-forward" size={13} color={color} />
-            <Text variant="muted">{group.directionLabel}</Text>
+            <Text variant="muted">{group.directionLabel ?? t('rail.loopFallback')}</Text>
           </View>
 
           <View className="pl-1">

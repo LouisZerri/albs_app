@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text as RNText, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { ProgressBar, Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
@@ -18,12 +19,14 @@ type Props = {
 /** Une carte badge : dorée + coche si acquise, grisée + progression sinon. UI pure. */
 export function BadgeStatRow({ badge, displayed, onToggleDisplay }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation('profile');
   return (
     <View
       className={cn(
         'flex-row items-center gap-3 rounded-card border p-3.5',
         badge.earned ? 'border-[#FBBF24] bg-goldSoft' : 'border-hair bg-surface',
-      )}>
+      )}
+    >
       <View className="relative h-11 w-11 items-center justify-center">
         {/* Emoji : Text brut (police système, pas de variante) sinon il rétrécit. */}
         <RNText className={cn('text-4xl', !badge.earned && 'opacity-30')}>{badge.icon}</RNText>
@@ -61,7 +64,10 @@ export function BadgeStatRow({ badge, displayed, onToggleDisplay }: Props) {
           onPress={onToggleDisplay}
           hitSlop={8}
           className="p-1 active:opacity-60"
-          accessibilityLabel={displayed ? 'Retirer de la vitrine' : 'Mettre en vitrine'}>
+          accessibilityLabel={
+            displayed ? t('badges.removeFromShowcase') : t('badges.addToShowcase')
+          }
+        >
           <Ionicons
             name={displayed ? 'star' : 'star-outline'}
             size={22}

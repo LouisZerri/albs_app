@@ -14,7 +14,9 @@ export function getBranches(stations: Station[]): Branch[] {
   if (!hasFork(stations)) return []; // pas de fourche → pas de branches (évite de confondre avec une boucle)
 
   const forkPos = stations.find((s) => s.branch === FORK)?.position ?? 0;
-  const keys = [...new Set(stations.map((s) => s.branch).filter((b): b is string => b !== null && b !== FORK))];
+  const keys = [
+    ...new Set(stations.map((s) => s.branch).filter((b): b is string => b !== null && b !== FORK)),
+  ];
 
   return keys.map((key) => {
     const inBranch = stations.filter((s) => s.branch === key);

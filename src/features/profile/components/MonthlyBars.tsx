@@ -1,5 +1,6 @@
 import { View } from 'react-native';
 
+import { isPlural, useTranslation } from '@/i18n';
 import { Text } from '@/shared/ui';
 
 import type { MonthCount } from '../lib/history';
@@ -8,6 +9,7 @@ const MAX_BAR = 72;
 
 /** Petit histogramme : une barre par mois, hauteur proportionnelle au mois le plus actif. UI pure. */
 export function MonthlyBars({ months }: { months: MonthCount[] }) {
+  const { t } = useTranslation('profile');
   const max = Math.max(1, ...months.map((m) => m.count));
 
   return (
@@ -16,7 +18,13 @@ export function MonthlyBars({ months }: { months: MonthCount[] }) {
         <View
           key={month.key}
           className="flex-1 items-center gap-1"
-          accessibilityLabel={`${month.label} : ${month.count} stations`}
+          accessibilityLabel={t(
+            isPlural(month.count) ? 'history.monthA11yMany' : 'history.monthA11yOne',
+            {
+              month: month.label,
+              count: month.count,
+            },
+          )}
         >
           <Text variant="muted" style={{ fontSize: 12 }}>
             {month.count}

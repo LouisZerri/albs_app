@@ -30,4 +30,3 @@ export {
   type NetworkGeo,
   type Platform,
 } from './mapSchemas';
-

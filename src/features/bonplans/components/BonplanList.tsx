@@ -1,6 +1,7 @@
 import type { RefObject } from 'react';
 import { FlatList } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { Text } from '@/shared/ui';
 
 import { coordinateOf, type NearbyBonplan } from '../lib/distance';
@@ -28,6 +29,8 @@ export function BonplanList({
   onToggleFavorite,
   onDirections,
 }: Props) {
+  const { t } = useTranslation('bonplans');
+
   return (
     <FlatList
       ref={listRef}
@@ -54,7 +57,7 @@ export function BonplanList({
       showsVerticalScrollIndicator={false}
       ListEmptyComponent={
         <Text variant="muted" className="py-6 text-center">
-          Aucun bon plan autour de cette station pour le moment.
+          {t('station.empty')}
         </Text>
       }
     />

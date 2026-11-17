@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { Card, ProgressBar, Text } from '@/shared/ui';
 
@@ -15,10 +16,11 @@ type Props = {
 /** Défis en cours (semaine, mois, ligne presque finie) avec leur avancement. UI pure. */
 export function ChallengesCard({ challenges, onOpenLine }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation('network');
 
   return (
     <Card className="gap-3">
-      <Text variant="label">Défis</Text>
+      <Text variant="label">{t('challenges.title')}</Text>
 
       {challenges.map((challenge) => {
         const done = challenge.current >= challenge.target;
@@ -29,7 +31,11 @@ export function ChallengesCard({ challenges, onOpenLine }: Props) {
             // Seul un défi lié à une ligne mène quelque part.
             disabled={lineId === null}
             onPress={lineId !== null ? () => onOpenLine(lineId) : undefined}
-            accessibilityLabel={`${challenge.title} : ${challenge.current} sur ${challenge.target}`}
+            accessibilityLabel={t('challenges.a11y', {
+              title: challenge.title,
+              current: challenge.current,
+              target: challenge.target,
+            })}
             className="gap-1.5 active:opacity-70"
           >
             <View className="flex-row items-center gap-2">

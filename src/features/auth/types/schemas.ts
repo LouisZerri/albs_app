@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { i18n } from '@/i18n/instance';
+
 import { isPasswordValid } from '../lib/passwordRules';
 
 /**
@@ -36,26 +38,34 @@ export const authTokensSchema = z.object({
 });
 export type AuthTokens = z.infer<typeof authTokensSchema>;
 
+/**
+ * Les schémas de saisie sont des fabriques : leurs messages sont lus dans la langue active au
+ * moment de l'appel. Dans un composant : `useMemo(() => createLoginSchema(), [language])`.
+ */
+export const createEmailSchema = () => z.email({ message: i18n.t('auth:validation.emailInvalid') });
+
 /** Corps envoyé à `/api/login`. */
-export const loginInputSchema = z.object({
-  email: z.email({ message: 'Email invalide.' }),
-  password: z.string().min(1, 'Mot de passe requis.'),
-});
-export type LoginInput = z.infer<typeof loginInputSchema>;
+export const createLoginSchema = () =>
+  z.object({
+    email: createEmailSchema(),
+    password: z.string().min(1, i18n.t('auth:validation.passwordRequired')),
+  });
+export type LoginInput = z.infer<ReturnType<typeof createLoginSchema>>;
 
 /**
  * Corps envoyé à `/api/register` (aligné sur le groupe `user:create`).
  */
-export const registerInputSchema = z.object({
-  email: z.email({ message: 'Email invalide.' }),
-  username: z
-    .string()
-    .min(3, 'Le pseudo doit faire au moins 3 caractères.')
-    .max(30, 'Le pseudo ne peut pas dépasser 30 caractères.'),
-  plainPassword: z
-    .string()
-    .refine(isPasswordValid, { message: 'Le mot de passe ne respecte pas toutes les règles.' }),
-  /** Acceptation des CGU : exigée par l'API, qui en horodate la trace (`terms_accepted_at`). */
-  acceptedTerms: z.literal(true, { message: 'Tu dois accepter les conditions d’utilisation.' }),
-});
-export type RegisterInput = z.infer<typeof registerInputSchema>;
+export const createRegisterSchema = () =>
+  z.object({
+    email: createEmailSchema(),
+    username: z
+      .string()
+      .min(3, i18n.t('auth:validation.usernameMin'))
+      .max(30, i18n.t('auth:validation.usernameMax')),
+    plainPassword: z
+      .string()
+      .refine(isPasswordValid, { message: i18n.t('auth:validation.passwordAllRules') }),
+    /** Acceptation des CGU : exigée par l'API, qui en horodate la trace (`terms_accepted_at`). */
+    acceptedTerms: z.literal(true, { message: i18n.t('auth:validation.termsRequired') }),
+  });
+export type RegisterInput = z.infer<ReturnType<typeof createRegisterSchema>>;

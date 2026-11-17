@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { Card, Text } from '@/shared/ui';
 
@@ -9,9 +10,10 @@ type Props = { onOpenHistory: () => void; onOpenShare: () => void };
 /** Raccourcis du profil : historique des visites et carte-souvenir à partager. UI pure. */
 export function ProfileShortcuts({ onOpenHistory, onOpenShare }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation('profile');
   const items: { label: string; icon: keyof typeof Ionicons.glyphMap; onPress: () => void }[] = [
-    { label: 'Historique', icon: 'time-outline', onPress: onOpenHistory },
-    { label: 'Partager', icon: 'share-outline', onPress: onOpenShare },
+    { label: t('shortcuts.history'), icon: 'time-outline', onPress: onOpenHistory },
+    { label: t('shortcuts.share'), icon: 'share-outline', onPress: onOpenShare },
   ];
 
   return (

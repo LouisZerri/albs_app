@@ -41,7 +41,11 @@ async function send(path: string, options: Options): Promise<Response> {
   // FormData (upload de fichier) : on laisse fetch poser le Content-Type + boundary.
   const isForm = typeof FormData !== 'undefined' && body instanceof FormData;
 
-  const headers: Record<string, string> = { Accept: 'application/json' };
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    // L'API répond dans cette langue (contenu éditorial, badges, messages d'erreur).
+    'Accept-Language': i18n.language,
+  };
   if (body !== undefined && !isForm) {
     headers['Content-Type'] = 'application/json';
   }
@@ -69,7 +73,11 @@ async function parseResponse<T>(response: Response): Promise<T> {
   const data = raw ? safeJsonParse(raw) : null;
 
   if (!response.ok) {
-    throw new ApiError(extractErrorMessage(data) ?? i18n.t('errors.generic'), response.status);
+    throw new ApiError(
+      extractErrorMessage(data) ?? i18n.t('errors.generic'),
+      response.status,
+      extractField(data),
+    );
   }
 
   return data as T;
@@ -98,6 +106,13 @@ function extractErrorMessage(data: unknown): string | null {
   }
 
   return null;
+}
+
+/** Champ visé par l'erreur (`{ field }`), que l'API renseigne pour les refus liés à un champ. */
+function extractField(data: unknown): string | undefined {
+  return data && typeof data === 'object' && 'field' in data && typeof data.field === 'string'
+    ? data.field
+    : undefined;
 }
 
 function safeJsonParse(raw: string): unknown {

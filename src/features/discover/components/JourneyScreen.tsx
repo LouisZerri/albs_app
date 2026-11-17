@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
 import { LineBadges } from '@/features/network/components';
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { Card, ErrorState, ProgressBar, SkeletonList, SubScreen, Text } from '@/shared/ui';
 
@@ -12,23 +13,24 @@ import { useJourneys } from '../hooks';
 export function JourneyScreen({ journeyKey }: { journeyKey: string }) {
   const router = useRouter();
   const colors = useThemeColors();
+  const { t } = useTranslation('discover');
   const { data, error, isPending, isError, refetch } = useJourneys();
   const journey = data?.find((j) => j.key === journeyKey);
 
   return (
     <SubScreen
-      title={journey ? `${journey.icon} ${journey.title}` : 'Parcours'}
-      subtitle={journey ? `${journey.visited}/${journey.total} stations visitées` : undefined}
+      title={journey ? `${journey.icon} ${journey.title}` : t('journey.fallbackTitle')}
+      subtitle={
+        journey
+          ? t('journey.progress', { visited: journey.visited, total: journey.total })
+          : undefined
+      }
       onBack={() => router.back()}
     >
       {isPending ? (
         <SkeletonList className="px-0 pt-3" />
       ) : isError || !journey ? (
-        <ErrorState
-          error={error}
-          message="Impossible de charger ce parcours."
-          onRetry={() => refetch()}
-        />
+        <ErrorState error={error} message={t('journey.loadError')} onRetry={() => refetch()} />
       ) : (
         <View className="gap-4 py-3">
           <Text variant="muted">{journey.pitch}</Text>
@@ -43,7 +45,10 @@ export function JourneyScreen({ journeyKey }: { journeyKey: string }) {
                 key={stop.name}
                 onPress={() => router.push(`/bonplans/${stop.stationId}`)}
                 accessibilityRole="button"
-                accessibilityLabel={`${stop.name}${stop.visited ? ', visitée' : ', à visiter'}`}
+                accessibilityLabel={t(
+                  stop.visited ? 'journey.stopVisitedA11y' : 'journey.stopToVisitA11y',
+                  { name: stop.name },
+                )}
                 // Chaque étape mène aux bons plans de la station.
                 className="min-h-[52px] flex-row items-center gap-3 py-2 active:opacity-60"
               >
@@ -66,7 +71,7 @@ export function JourneyScreen({ journeyKey }: { journeyKey: string }) {
           </Card>
 
           <Text variant="muted" className="text-center">
-            Coche les stations depuis le Réseau : le parcours se met à jour tout seul.
+            {t('journey.footer')}
           </Text>
         </View>
       )}

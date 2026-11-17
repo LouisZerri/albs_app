@@ -24,7 +24,8 @@ export function AuthScreenLayout({ title, subtitle, children }: Props) {
         contentContainerStyle={CONTENT_STYLE}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <View className="gap-9 py-10">
           <View className="items-center gap-4">
             <Image source={LOGO} className="h-20 w-20 rounded-card" resizeMode="cover" />

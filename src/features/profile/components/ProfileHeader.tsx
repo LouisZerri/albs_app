@@ -1,6 +1,7 @@
 import { Text as RNText, View } from 'react-native';
 
 import { LineBadge } from '@/features/network/components';
+import { dateLocale, isPlural, useTranslation } from '@/i18n';
 import { fonts } from '@/shared/theme';
 import { ProgressBar, Text } from '@/shared/ui';
 
@@ -24,7 +25,7 @@ function formatDate(iso?: string): string | null {
   if (!iso) return null;
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+  return d.toLocaleDateString(dateLocale(), { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
 /** En-tête sobre du profil : avatar, pseudo, rang (+ chemin vers le suivant), date d'inscription. UI pure. */
@@ -36,6 +37,7 @@ export function ProfileHeader({
   showcase,
   visited,
 }: Props) {
+  const { t } = useTranslation('profile');
   const rank = rankFor(visited);
   const next = nextRankFor(visited);
   const since = formatDate(createdAt);
@@ -57,11 +59,13 @@ export function ProfileHeader({
 
           <View
             className="flex-row items-center gap-1.5 rounded-pill px-4 py-1.5"
-            style={{ backgroundColor: rank.bg }}>
+            style={{ backgroundColor: rank.bg }}
+          >
             <Text className="text-sm">{rank.icon}</Text>
             <Text
               className="text-xs tracking-wide"
-              style={{ color: rank.fg, fontFamily: fonts.bold }}>
+              style={{ color: rank.fg, fontFamily: fonts.bold }}
+            >
               {rank.label}
             </Text>
           </View>
@@ -81,8 +85,10 @@ export function ProfileHeader({
         // Objectif suivant : ce qu'il reste avant le prochain rang.
         <View className="w-full max-w-[280px] gap-1.5">
           <Text variant="muted" className="text-center text-xs">
-            Encore {next.remaining} {next.remaining > 1 ? 'stations' : 'station'} avant {next.rank.icon}{' '}
-            {next.rank.label}
+            {t(isPlural(next.remaining) ? 'header.nextRankMany' : 'header.nextRankOne', {
+              count: next.remaining,
+              rank: `${next.rank.icon} ${next.rank.label}`,
+            })}
           </Text>
           <ProgressBar percent={next.percent} />
         </View>
@@ -90,7 +96,7 @@ export function ProfileHeader({
 
       {since ? (
         <Text variant="muted" className="text-xs">
-          Membre depuis {since}
+          {t('header.memberSince', { date: since })}
         </Text>
       ) : null}
     </View>

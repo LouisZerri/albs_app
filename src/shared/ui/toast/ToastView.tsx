@@ -2,18 +2,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { Animated, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-
-
 import { useThemeColors, type ThemeColor } from '@/shared/theme';
 
 import { Text } from '../Text';
 import type { ToastState, ToastVariant } from './types';
 
-const VARIANTS: Record<ToastVariant, { icon: keyof typeof Ionicons.glyphMap; color: ThemeColor }> = {
-  success: { icon: 'checkmark-circle', color: 'visited' },
-  error: { icon: 'alert-circle', color: 'danger' },
-  info: { icon: 'information-circle', color: 'accent' },
-};
+const VARIANTS: Record<ToastVariant, { icon: keyof typeof Ionicons.glyphMap; color: ThemeColor }> =
+  {
+    success: { icon: 'checkmark-circle', color: 'visited' },
+    error: { icon: 'alert-circle', color: 'danger' },
+    info: { icon: 'information-circle', color: 'accent' },
+  };
 
 type Props = {
   toast: ToastState;
@@ -36,8 +35,11 @@ export function ToastView({ toast, anim, onPress }: Props) {
         left: 16,
         right: 16,
         opacity: anim,
-        transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [-16, 0] }) }],
-      }}>
+        transform: [
+          { translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [-16, 0] }) },
+        ],
+      }}
+    >
       <Pressable
         onPress={onPress}
         accessibilityRole="alert"
@@ -50,7 +52,8 @@ export function ToastView({ toast, anim, onPress }: Props) {
           shadowRadius: 12,
           shadowOffset: { width: 0, height: 4 },
           elevation: 4,
-        }}>
+        }}
+      >
         <Ionicons name={cfg.icon} size={22} color={colors[cfg.color]} />
         <Text variant="body" className="flex-1">
           {toast.message}

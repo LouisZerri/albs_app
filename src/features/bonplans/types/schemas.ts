@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { i18n } from '@/i18n/instance';
 import { correspondenceSchema } from '@/features/network/types';
 
 /**
@@ -62,18 +63,22 @@ export const BONPLAN_CATEGORY_KEYS = [
   'other',
 ] as const;
 
-/** Saisie du formulaire « Proposer un bon plan » (limites = celles de l'API). */
-export const bonplanInputSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(3, 'Le nom doit faire au moins 3 caractères.')
-    .max(150, 'Le nom ne peut pas dépasser 150 caractères.'),
-  category: z.enum(BONPLAN_CATEGORY_KEYS, { message: 'Choisis une catégorie.' }),
-  address: z.string().trim().max(255, "L'adresse ne peut pas dépasser 255 caractères."),
-  description: z.string().trim().max(1000, 'La description ne peut pas dépasser 1000 caractères.'),
-  /** Position choisie sur la carte (facultative) : donne un point sur la carte et « Y aller ». */
-  latitude: z.number().nullable(),
-  longitude: z.number().nullable(),
-});
-export type BonplanInput = z.infer<typeof bonplanInputSchema>;
+/**
+ * Saisie du formulaire « Proposer un bon plan » (limites = celles de l'API).
+ * Fabrique : les messages sont lus dans la langue active au moment de l'appel.
+ */
+export const createBonplanInputSchema = () =>
+  z.object({
+    title: z
+      .string()
+      .trim()
+      .min(3, i18n.t('bonplans:form.errors.titleMin'))
+      .max(150, i18n.t('bonplans:form.errors.titleMax')),
+    category: z.enum(BONPLAN_CATEGORY_KEYS, { message: i18n.t('bonplans:form.errors.category') }),
+    address: z.string().trim().max(255, i18n.t('bonplans:form.errors.addressMax')),
+    description: z.string().trim().max(1000, i18n.t('bonplans:form.errors.descriptionMax')),
+    /** Position choisie sur la carte (facultative) : donne un point sur la carte et « Y aller ». */
+    latitude: z.number().nullable(),
+    longitude: z.number().nullable(),
+  });
+export type BonplanInput = z.infer<ReturnType<typeof createBonplanInputSchema>>;

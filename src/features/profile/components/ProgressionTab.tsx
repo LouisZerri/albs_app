@@ -4,17 +4,16 @@ import { View } from 'react-native';
 
 import { LineRow } from '@/features/network/components';
 import type { LineStats } from '@/features/network/types';
+import { useTranslation } from '@/i18n';
 import { Text } from '@/shared/ui';
 
 /** Onglet Progression : les lignes entamées, triées par complétion. UI pure (sauf navigation). */
 export function ProgressionTab({ lines }: { lines: LineStats[] }) {
   const router = useRouter();
+  const { t } = useTranslation('profile');
 
   const started = useMemo(
-    () =>
-      lines
-        .filter((l) => l.passed > 0 || l.visited > 0)
-        .sort((a, b) => b.percent - a.percent),
+    () => lines.filter((l) => l.passed > 0 || l.visited > 0).sort((a, b) => b.percent - a.percent),
     [lines],
   );
 
@@ -23,10 +22,10 @@ export function ProgressionTab({ lines }: { lines: LineStats[] }) {
       <View className="items-center gap-2 py-10">
         <Text className="text-5xl">🚇</Text>
         <Text variant="subtitle" className="text-center">
-          {"Prêt pour l'aventure ?"}
+          {t('progression.emptyTitle')}
         </Text>
         <Text variant="muted" className="text-center">
-          {"Coche tes premières stations dans l'onglet Réseau pour suivre ta progression ici."}
+          {t('progression.emptyHint')}
         </Text>
       </View>
     );

@@ -17,9 +17,9 @@ export function createQueryClient(): QueryClient {
       queries: {
         staleTime: 30_000, // 30 s : évite les refetch trop agressifs sur mobile
         // Jamais purgées de la mémoire : c'est ce qui permet de les relire (et de les enregistrer) hors
-      // ligne. ⚠️ Ne pas mettre une durée ici : au-delà de ~24 jours elle dépasse la limite des
-      // minuteries JavaScript et les données seraient effacées AUSSITÔT (bug attrapé par les tests).
-      gcTime: Infinity,
+        // ligne. ⚠️ Ne pas mettre une durée ici : au-delà de ~24 jours elle dépasse la limite des
+        // minuteries JavaScript et les données seraient effacées AUSSITÔT (bug attrapé par les tests).
+        gcTime: Infinity,
         retry: (failureCount, error) => {
           // Inutile de réessayer sur une erreur client (4xx) : ça ne changera rien.
           if (error instanceof ApiError && error.status >= 400 && error.status < 500) {

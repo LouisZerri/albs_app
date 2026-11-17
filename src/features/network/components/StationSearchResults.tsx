@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { FlatList, Pressable, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { SkeletonList, Text } from '@/shared/ui';
 
@@ -17,6 +18,7 @@ type Props = {
 /** Résultats de la recherche de station : une entrée par station et par ligne. UI pure. */
 export function StationSearchResults({ hits, isPending, isError, onSelect }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation('network');
   if (isPending) {
     return <SkeletonList count={4} />;
   }
@@ -29,7 +31,7 @@ export function StationSearchResults({ hits, isPending, isError, onSelect }: Pro
         <Pressable
           onPress={() => onSelect(item)}
           accessibilityRole="button"
-          accessibilityLabel={`${item.name}, ligne ${item.line.number}`}
+          accessibilityLabel={t('search.resultA11y', { name: item.name, number: item.line.number })}
           className="flex-row items-center gap-3 rounded-card border border-hair bg-surface p-3 active:opacity-70"
         >
           <LineBadge
@@ -41,7 +43,7 @@ export function StationSearchResults({ hits, isPending, isError, onSelect }: Pro
             <Text variant="subtitle" numberOfLines={1}>
               {item.name}
             </Text>
-            <Text variant="muted">Ligne {item.line.number}</Text>
+            <Text variant="muted">{t('lineName', { number: item.line.number })}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.muted} />
         </Pressable>
@@ -53,9 +55,7 @@ export function StationSearchResults({ hits, isPending, isError, onSelect }: Pro
       ListEmptyComponent={
         <View className="flex-1 items-center justify-center px-6">
           <Text variant="muted" className="text-center">
-            {isError
-              ? 'Recherche indisponible pour le moment.'
-              : 'Aucune station ne correspond à ta recherche.'}
+            {isError ? t('search.unavailable') : t('search.empty')}
           </Text>
         </View>
       }

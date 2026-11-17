@@ -1,6 +1,7 @@
 import { type PressableProps, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 
@@ -44,6 +45,7 @@ export function ForkRow({
   branchesBelow,
 }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation('network');
   // Coloré seulement si la fourche est cochée (comme le reste du rail).
   const railColor = state === 'todo' ? colors.hair : color;
 
@@ -53,23 +55,62 @@ export function ForkRow({
         <Svg width={52} height={BLOCK_H}>
           {branchesBelow ? (
             <>
-              <Path d={`M26 0 L26 ${BLOCK_H - 30}`} stroke={railColor} strokeWidth={4} strokeLinecap="round" />
-              <Path d={`M26 ${BLOCK_H - 30} Q18 ${BLOCK_H - 16} 18 ${BLOCK_H - 12} L18 ${BLOCK_H}`} stroke={railColor} strokeWidth={4} strokeLinecap="round" fill="none" />
-              <Path d={`M26 ${BLOCK_H - 30} Q34 ${BLOCK_H - 16} 34 ${BLOCK_H - 12} L34 ${BLOCK_H}`} stroke={railColor} strokeWidth={4} strokeLinecap="round" fill="none" />
+              <Path
+                d={`M26 0 L26 ${BLOCK_H - 30}`}
+                stroke={railColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+              />
+              <Path
+                d={`M26 ${BLOCK_H - 30} Q18 ${BLOCK_H - 16} 18 ${BLOCK_H - 12} L18 ${BLOCK_H}`}
+                stroke={railColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+                fill="none"
+              />
+              <Path
+                d={`M26 ${BLOCK_H - 30} Q34 ${BLOCK_H - 16} 34 ${BLOCK_H - 12} L34 ${BLOCK_H}`}
+                stroke={railColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+                fill="none"
+              />
             </>
           ) : (
             <>
-              <Path d="M18 0 L18 12 Q18 26 26 30" stroke={railColor} strokeWidth={4} strokeLinecap="round" fill="none" />
-              <Path d="M34 0 L34 12 Q34 26 26 30" stroke={railColor} strokeWidth={4} strokeLinecap="round" fill="none" />
-              <Path d={`M26 30 L26 ${BLOCK_H}`} stroke={railColor} strokeWidth={4} strokeLinecap="round" />
+              <Path
+                d="M18 0 L18 12 Q18 26 26 30"
+                stroke={railColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+                fill="none"
+              />
+              <Path
+                d="M34 0 L34 12 Q34 26 26 30"
+                stroke={railColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+                fill="none"
+              />
+              <Path
+                d={`M26 30 L26 ${BLOCK_H}`}
+                stroke={railColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+              />
             </>
           )}
         </Svg>
       </View>
 
       <View className="flex-1 justify-center gap-2 pr-4">
-        <Text variant="muted">La ligne se sépare — choisis ta branche</Text>
-        <BranchSelector branches={branches} selected={selected} onSelect={onSelect} lineColor={color} />
+        <Text variant="muted">{t('rail.forkHint')}</Text>
+        <BranchSelector
+          branches={branches}
+          selected={selected}
+          onSelect={onSelect}
+          lineColor={color}
+        />
       </View>
     </View>
   );

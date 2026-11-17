@@ -1,3 +1,4 @@
+import { i18n, isPlural } from '@/i18n/instance';
 import type { Correspondence } from '@/features/network/types';
 import { normalizeSearch } from '@/shared/utils/normalizeSearch';
 
@@ -37,13 +38,14 @@ export function linesOf(stations: BonplanStation[]): Correspondence[] {
   return [...byId.values()].sort((a, b) => a.lineId - b.lineId);
 }
 
-/** « 1 bon plan » / « 12 bons plans ». */
+/** « 1 bon plan » / « 12 bons plans » (zéro a sa propre clé : il s'accorde autrement en anglais). */
 export function bonplanCountLabel(count: number): string {
-  return count > 1 ? `${count} bons plans` : `${count} bon plan`;
+  const key = isPlural(count) ? 'countMany' : count === 1 ? 'countOne' : 'countZero';
+  return i18n.t(`bonplans:${key}`, { count });
 }
 
 /** « ligne 6 » / « lignes 1, 4, 7 » (pour les lecteurs d'écran). */
 export function lineNumbersLabel(lines: Correspondence[]): string {
   const numbers = lines.map((l) => l.number).join(', ');
-  return lines.length > 1 ? `lignes ${numbers}` : `ligne ${numbers}`;
+  return i18n.t(isPlural(lines.length) ? 'bonplans:lineMany' : 'bonplans:lineOne', { numbers });
 }

@@ -1,6 +1,7 @@
 import { Pressable, View } from 'react-native';
 
 import { LineBadge } from '@/features/network/components';
+import { useTranslation } from '@/i18n';
 import { Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
 
@@ -14,9 +15,11 @@ type Props = {
 
 /** Sélecteur de ligne favorite : grille de pastilles + option « Aucune ». UI pure. */
 export function FavoriteLinePicker({ lines, selectedId, onSelect }: Props) {
+  const { t } = useTranslation('profile');
+
   return (
     <View className="gap-3">
-      <Text variant="label">Ligne favorite</Text>
+      <Text variant="label">{t('edit.favoriteLine')}</Text>
 
       <View className="flex-row flex-wrap gap-2.5">
         <Pressable
@@ -24,12 +27,14 @@ export function FavoriteLinePicker({ lines, selectedId, onSelect }: Props) {
           className={cn(
             'items-center justify-center rounded-pill border px-4',
             selectedId === null ? 'border-accent bg-accentSoft' : 'border-hair bg-surface',
-          )}>
+          )}
+        >
           <Text
             variant={selectedId === null ? 'subtitle' : 'muted'}
             color={selectedId === null ? 'accent' : undefined}
-            className="text-sm">
-            Aucune
+            className="text-sm"
+          >
+            {t('edit.noFavoriteLine')}
           </Text>
         </Pressable>
 
@@ -42,8 +47,14 @@ export function FavoriteLinePicker({ lines, selectedId, onSelect }: Props) {
               className={cn(
                 'rounded-full border-2',
                 active ? 'border-accent' : 'border-transparent',
-              )}>
-              <LineBadge number={line.number} color={line.color} textColor={line.textColor} size={38} />
+              )}
+            >
+              <LineBadge
+                number={line.number}
+                color={line.color}
+                textColor={line.textColor}
+                size={38}
+              />
             </Pressable>
           );
         })}

@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { FlatList, RefreshControl, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, ScreenHeader, SkeletonList, Text } from '@/shared/ui';
@@ -13,6 +14,7 @@ import { BonplanCard } from './BonplanCard';
 /** Mes favoris : les bons plans enregistrés, toutes stations confondues. */
 export function FavoritesScreen() {
   const colors = useThemeColors();
+  const { t } = useTranslation('bonplans');
   const router = useRouter();
   const { data, error, isPending, isError, refetch } = useFavorites();
   const { refreshing, refresh } = usePullToRefresh(refetch);
@@ -20,18 +22,14 @@ export function FavoritesScreen() {
 
   return (
     <View className="flex-1 bg-bg">
-      <ScreenHeader title="Mes favoris" onBack={() => router.back()}>
+      <ScreenHeader title={t('favorites.title')} onBack={() => router.back()}>
         {data ? <Text variant="muted">{bonplanCountLabel(data.length)}</Text> : null}
       </ScreenHeader>
 
       {isPending ? (
         <SkeletonList count={4} className="pt-4" />
       ) : isError ? (
-        <ErrorState
-          error={error}
-          message="Impossible de charger tes favoris."
-          onRetry={() => refetch()}
-        />
+        <ErrorState error={error} message={t('favorites.loadError')} onRetry={() => refetch()} />
       ) : (
         <FlatList
           data={data}
@@ -49,19 +47,15 @@ export function FavoritesScreen() {
           contentContainerClassName="grow gap-3 px-5 py-4"
           showsVerticalScrollIndicator={false}
           refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={refresh}
-              tintColor={colors.accent}
-            />
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.accent} />
           }
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center gap-1.5 px-6">
               <Text variant="subtitle" className="text-center">
-                Aucun favori pour le moment
+                {t('favorites.emptyTitle')}
               </Text>
               <Text variant="muted" className="text-center">
-                Touche l’étoile d’un bon plan pour le retrouver ici.
+                {t('favorites.emptyHint')}
               </Text>
             </View>
           }

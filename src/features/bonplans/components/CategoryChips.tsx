@@ -1,5 +1,6 @@
 import { ScrollView } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { Chip } from '@/shared/ui';
 
 import type { CategoryOption } from '../lib/categories';
@@ -13,6 +14,8 @@ type Props = {
 
 /** Filtres par catégorie, en bande horizontale défilante. UI pure. */
 export function CategoryChips({ categories, selected, onSelect }: Props) {
+  const { t } = useTranslation('bonplans');
+
   return (
     <ScrollView
       horizontal
@@ -21,7 +24,11 @@ export function CategoryChips({ categories, selected, onSelect }: Props) {
       style={{ flexGrow: 0, flexShrink: 0 }}
       contentContainerClassName="gap-2 px-5 py-3"
     >
-      <Chip label="Tout" active={selected === null} onPress={() => onSelect(null)} />
+      <Chip
+        label={t('filters.allCategories')}
+        active={selected === null}
+        onPress={() => onSelect(null)}
+      />
       {categories.map((c) => (
         <Chip
           key={c.key}

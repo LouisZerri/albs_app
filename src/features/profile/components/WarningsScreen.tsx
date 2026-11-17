@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 
+import { dateLocale, useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { SubScreen, Text, useToast } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
@@ -13,7 +14,7 @@ function formatDate(iso: string | null): string {
   if (!iso) return '';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('fr-FR', {
+  return d.toLocaleDateString(dateLocale(), {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -25,6 +26,7 @@ function formatDate(iso: string | null): string {
 /** Écran des avertissements de modération : lecture + accusé de réception. */
 export function WarningsScreen() {
   const colors = useThemeColors();
+  const { t } = useTranslation('profile');
   const router = useRouter();
   const warnings = useWarnings();
   const ack = useAcknowledgeWarning();
@@ -35,7 +37,7 @@ export function WarningsScreen() {
   };
 
   return (
-    <SubScreen title="Mes avertissements" onBack={() => router.back()}>
+    <SubScreen title={t('warnings.title')} onBack={() => router.back()}>
       {warnings.isPending ? (
         <View className="items-center py-10">
           <ActivityIndicator color={colors.accent} />
@@ -55,10 +57,10 @@ export function WarningsScreen() {
         <View className="items-center gap-2 py-16">
           <Text className="text-5xl">🎉</Text>
           <Text variant="subtitle" className="text-center">
-            Aucun avertissement
+            {t('warnings.emptyTitle')}
           </Text>
           <Text variant="muted" className="text-center">
-            Continue comme ça, tout est en règle.
+            {t('warnings.emptyHint')}
           </Text>
         </View>
       )}
@@ -76,6 +78,7 @@ function WarningCard({
   onAcknowledge: () => void;
 }) {
   const colors = useThemeColors();
+  const { t } = useTranslation('profile');
   const read = Boolean(warning.acknowledgedAt);
 
   return (
@@ -83,7 +86,8 @@ function WarningCard({
       className={cn(
         'gap-2 rounded-card border p-4',
         read ? 'border-hair bg-surface' : 'border-danger/40 bg-danger/5',
-      )}>
+      )}
+    >
       <View className="flex-row items-center justify-between">
         <Text variant="muted" className="text-xs">
           {formatDate(warning.createdAt)}
@@ -92,13 +96,13 @@ function WarningCard({
           <View className="flex-row items-center gap-1">
             <Ionicons name="checkmark-circle" size={14} color={colors.visited} />
             <Text variant="muted" color="visited" className="text-xs">
-              Lu
+              {t('warnings.read')}
             </Text>
           </View>
         ) : (
           <View className="rounded-pill bg-danger px-2 py-0.5">
             <Text variant="label" color="white" className="text-[10px]">
-              Non lu
+              {t('warnings.unread')}
             </Text>
           </View>
         )}
@@ -112,12 +116,13 @@ function WarningCard({
         <Pressable
           onPress={onAcknowledge}
           disabled={pending}
-          className="mt-1 items-center rounded-card border border-danger/40 py-2.5 active:opacity-70">
+          className="mt-1 items-center rounded-card border border-danger/40 py-2.5 active:opacity-70"
+        >
           {pending ? (
             <ActivityIndicator color={colors.danger} />
           ) : (
             <Text variant="subtitle" color="danger" className="text-sm">
-              J&apos;ai pris connaissance
+              {t('warnings.acknowledge')}
             </Text>
           )}
         </Pressable>

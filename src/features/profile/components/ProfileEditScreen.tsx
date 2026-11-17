@@ -6,6 +6,8 @@ import { View } from 'react-native';
 import type { UpdateProfileInput } from '@/features/auth/api';
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
+import { useTranslation } from '@/i18n';
+import { ApiError } from '@/shared/lib';
 import { useThemeColors } from '@/shared/theme';
 import { Button, Card, Input, SubScreen, Text, useToast } from '@/shared/ui';
 
@@ -17,16 +19,16 @@ import { FavoriteLinePicker } from './FavoriteLinePicker';
 type Field = 'username' | 'email' | 'general';
 type Errors = Partial<Record<Field, string>>;
 
-/** Associe un message d'erreur serveur au champ concerné (sinon « general »). */
-function fieldForMessage(message: string): Field {
-  if (/pseudo/i.test(message)) return 'username';
-  if (/mail/i.test(message)) return 'email';
-  return 'general';
+/** Champ sous lequel afficher un refus du serveur : celui que l'API désigne, sinon « general ». */
+function fieldOf(error: Error): Field {
+  const field = error instanceof ApiError ? error.field : undefined;
+  return field === 'username' || field === 'email' ? field : 'general';
 }
 
 /** Écran d'édition du profil : avatar, identité, ligne favorite ; accès au mot de passe et à la suppression. */
 export function ProfileEditScreen() {
   const colors = useThemeColors();
+  const { t } = useTranslation('profile');
   const router = useRouter();
   const { user } = useAuth();
   const update = useUpdateProfile();
@@ -35,7 +37,9 @@ export function ProfileEditScreen() {
 
   const [username, setUsername] = useState(user?.username ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
-  const [favoriteLineId, setFavoriteLineId] = useState<number | null>(user?.favoriteLine?.id ?? null);
+  const [favoriteLineId, setFavoriteLineId] = useState<number | null>(
+    user?.favoriteLine?.id ?? null,
+  );
   const [errors, setErrors] = useState<Errors>({});
 
   const save = () => {
@@ -45,7 +49,7 @@ export function ProfileEditScreen() {
     const name = username.trim();
     if (name !== user?.username) {
       if (name.length < 3 || name.length > 30) {
-        errs.username = 'Le pseudo doit faire entre 3 et 30 caractères.';
+        errs.username = t('edit.usernameLength');
       } else {
         payload.username = name;
       }
@@ -54,7 +58,7 @@ export function ProfileEditScreen() {
     const mail = email.trim();
     if (mail !== user?.email) {
       if (!/^\S+@\S+\.\S+$/.test(mail)) {
-        errs.email = 'Email invalide.';
+        errs.email = t('edit.emailInvalid');
       } else {
         payload.email = mail;
       }
@@ -70,33 +74,33 @@ export function ProfileEditScreen() {
     setErrors({});
 
     if (Object.keys(payload).length === 0) {
-      return toast.show('Aucune modification.', 'info');
+      return toast.show(t('edit.noChange'), 'info');
     }
 
     update.mutate(payload, {
       onSuccess: () => {
-        toast.show('Profil mis à jour ✅', 'success');
+        toast.show(t('edit.saved'), 'success');
         router.back();
       },
-      onError: (e) => setErrors({ [fieldForMessage(e.message)]: e.message }),
+      onError: (e) => setErrors({ [fieldOf(e)]: e.message }),
     });
   };
 
   return (
-    <SubScreen title="Modifier le profil" onBack={() => router.back()}>
+    <SubScreen title={t('edit.title')} onBack={() => router.back()}>
       <View className="gap-5 py-3 pb-10">
         <AvatarEditor username={user?.username ?? ''} avatarUrl={user?.avatarUrl} />
 
         <View className="gap-3">
           <Input
-            label="Pseudo"
+            label={t('edit.username')}
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
             error={errors.username}
           />
           <Input
-            label="Email"
+            label={t('edit.email')}
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -119,11 +123,14 @@ export function ProfileEditScreen() {
           </Text>
         ) : null}
 
-        <Button label="Enregistrer" loading={update.isPending} onPress={save} />
+        <Button label={t('edit.save')} loading={update.isPending} onPress={save} />
 
-        <Card onPress={() => router.push('/profile/password')} className="flex-row items-center gap-3">
+        <Card
+          onPress={() => router.push('/profile/password')}
+          className="flex-row items-center gap-3"
+        >
           <Ionicons name="lock-closed-outline" size={20} color={colors.ink} />
-          <Text className="flex-1">Changer le mot de passe</Text>
+          <Text className="flex-1">{t('edit.changePassword')}</Text>
           <Ionicons name="chevron-forward" size={20} color={colors.muted} />
         </Card>
 

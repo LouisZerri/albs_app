@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, type PressableProps, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { ProgressBar, ShineOverlay, Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
@@ -13,6 +14,7 @@ type Props = { line: LineStats; onPress: PressableProps['onPress'] };
 /** Une ligne dans la liste Réseau : pastille + numéro + terminus + progression (+ reflet si 100%). UI pure. */
 export function LineRow({ line, onPress }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation('network');
   const complete = line.percent === 100;
 
   return (
@@ -21,13 +23,14 @@ export function LineRow({ line, onPress }: Props) {
       className={cn(
         'flex-row items-center gap-3 rounded-card border p-3 active:opacity-70',
         complete ? 'overflow-hidden border-visited bg-visitedSoft' : 'border-hair bg-surface',
-      )}>
+      )}
+    >
       <LineBadge number={line.number} color={line.color} textColor={line.textColor} />
 
       <View className="flex-1 gap-2">
         {/* Titre court + terminus sur une ligne : toutes les cartes ont la même hauteur, sans vide. */}
         <View>
-          <Text variant="subtitle">Ligne {line.number}</Text>
+          <Text variant="subtitle">{t('lineName', { number: line.number })}</Text>
           <Text variant="muted" numberOfLines={1}>
             {line.name}
           </Text>
@@ -37,7 +40,7 @@ export function LineRow({ line, onPress }: Props) {
 
         <View className="flex-row items-center justify-between">
           <Text variant="muted">
-            {line.visited}/{line.total} stations
+            {t('list.stationsCount', { visited: line.visited, total: line.total })}
           </Text>
           {complete ? (
             <View className="flex-row items-center gap-1">

@@ -1,14 +1,14 @@
 import { useLocalSearchParams } from 'expo-router';
 
 import { AuthScreenLayout, VerifyEmailForm } from '@/features/auth/components';
+import { useTranslation } from '@/i18n';
 
 export default function VerifyEmailScreen() {
+  const { t } = useTranslation('auth');
   const { email } = useLocalSearchParams<{ email?: string }>();
 
   return (
-    <AuthScreenLayout
-      title="Confirme ton adresse"
-      subtitle="Saisis le code à 6 chiffres qu’on vient de t’envoyer par email.">
+    <AuthScreenLayout title={t('verify.title')} subtitle={t('verify.subtitle')}>
       <VerifyEmailForm initialEmail={email ?? ''} />
     </AuthScreenLayout>
   );

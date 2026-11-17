@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, type FlatList, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { StationFact } from '@/features/network/components';
 import { BottomSheet, ErrorState, FloatingAction, Screen } from '@/shared/ui';
@@ -20,6 +21,7 @@ import { StationBonplansHeader } from './StationBonplansHeader';
  */
 export function StationBonplansScreen({ id }: { id: number }) {
   const colors = useThemeColors();
+  const { t } = useTranslation('bonplans');
   const router = useRouter();
   const { data, error, isPending, isError, refetch } = useStationBonplans(id);
   const { toggleFavorite, openDirections } = useBonplanActions();
@@ -58,7 +60,7 @@ export function StationBonplansScreen({ id }: { id: number }) {
       <Screen>
         <ErrorState
           error={error}
-          message="Impossible de charger les bons plans de cette station."
+          message={t('station.loadError')}
           onRetry={() => refetch()}
           onBack={() => router.back()}
         />
@@ -142,7 +144,7 @@ export function StationBonplansScreen({ id }: { id: number }) {
 
         <FloatingAction
           icon="add"
-          label="Proposer"
+          label={t('station.suggest')}
           onPress={() => router.push(`/bonplans/${id}/new`)}
         />
       </View>

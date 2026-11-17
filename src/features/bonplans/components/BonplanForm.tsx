@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
+import { useLanguage, useTranslation } from '@/i18n';
 import { Button, Chip, Input, Text } from '@/shared/ui';
 
-import { ALL_CATEGORIES } from '../lib/categories';
+import { allCategories } from '../lib/categories';
 import type { LatLng } from '../lib/distance';
-import { bonplanInputSchema, type BonplanInput } from '../types';
+import { createBonplanInputSchema, type BonplanInput } from '../types';
 import { LocationPicker } from './LocationPicker';
 
 type FieldErrors = Partial<Record<'title' | 'category' | 'address' | 'description', string>>;
@@ -21,6 +22,11 @@ type Props = {
 
 /** Formulaire « Proposer un bon plan » : nom, catégorie, adresse, description. Validé avec Zod. */
 export function BonplanForm({ onSubmit, loading, stationPoint, apiError }: Props) {
+  const { t } = useTranslation('bonplans');
+  const { language } = useLanguage();
+  // Reconstruit au changement de langue : les messages de validation suivent la langue active.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const schema = useMemo(() => createBonplanInputSchema(), [language]);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<string | null>(null);
   const [address, setAddress] = useState('');
@@ -29,7 +35,7 @@ export function BonplanForm({ onSubmit, loading, stationPoint, apiError }: Props
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const submit = () => {
-    const parsed = bonplanInputSchema.safeParse({
+    const parsed = schema.safeParse({
       title,
       category,
       address,
@@ -54,19 +60,19 @@ export function BonplanForm({ onSubmit, loading, stationPoint, apiError }: Props
   return (
     <View className="gap-5">
       <Input
-        label="Nom du lieu"
+        label={t('form.nameLabel')}
         value={title}
         onChangeText={setTitle}
         error={errors.title}
-        placeholder="Ex. Café des Phares"
+        placeholder={t('form.namePlaceholder')}
         maxLength={150}
         returnKeyType="next"
       />
 
       <View className="gap-1.5">
-        <Text variant="label">Catégorie</Text>
+        <Text variant="label">{t('form.categoryLabel')}</Text>
         <View className="flex-row flex-wrap gap-2">
-          {ALL_CATEGORIES.map((c) => (
+          {allCategories().map((c) => (
             <Chip
               key={c.key}
               label={`${c.icon} ${c.label}`}
@@ -83,11 +89,11 @@ export function BonplanForm({ onSubmit, loading, stationPoint, apiError }: Props
       </View>
 
       <Input
-        label="Adresse (facultatif)"
+        label={t('form.addressLabel')}
         value={address}
         onChangeText={setAddress}
         error={errors.address}
-        placeholder="Ex. 7 place de la Bastille"
+        placeholder={t('form.addressPlaceholder')}
         maxLength={255}
         autoComplete="street-address"
         returnKeyType="next"
@@ -98,11 +104,11 @@ export function BonplanForm({ onSubmit, loading, stationPoint, apiError }: Props
       ) : null}
 
       <Input
-        label="Pourquoi y aller ? (facultatif)"
+        label={t('form.descriptionLabel')}
         value={description}
         onChangeText={setDescription}
         error={errors.description}
-        placeholder="Ce qui rend ce lieu spécial…"
+        placeholder={t('form.descriptionPlaceholder')}
         maxLength={1000}
         multiline
         // Champ multiligne : hauteur confortable, texte aligné en haut.
@@ -115,7 +121,7 @@ export function BonplanForm({ onSubmit, loading, stationPoint, apiError }: Props
         </Text>
       ) : null}
 
-      <Button label="Envoyer ma proposition" onPress={submit} loading={loading} />
+      <Button label={t('form.submit')} onPress={submit} loading={loading} />
     </View>
   );
 }

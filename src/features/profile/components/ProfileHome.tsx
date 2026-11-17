@@ -1,10 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  View,
+} from 'react-native';
 
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
+import { useTranslation } from '@/i18n';
 import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
 import { Button, ErrorState, LanguageSwitch, Screen, ThemeSwitch } from '@/shared/ui';
@@ -22,6 +30,7 @@ import { StatsCard } from './StatsCard';
 /** Écran Profil : identité + statistiques + onglets Badges/Progression + déconnexion. */
 export function ProfileHome() {
   const colors = useThemeColors();
+  const { t } = useTranslation(['profile', 'common']);
   const router = useRouter();
   const { user, signOut } = useAuth();
   const stats = useNetworkStats();
@@ -47,7 +56,14 @@ export function ProfileHome() {
   if (stats.isError || !stats.data || badges.isError || !badges.data) {
     return (
       <Screen>
-        <ErrorState error={stats.error ?? badges.error} message="Impossible de charger le profil." onRetry={() => { void stats.refetch(); void badges.refetch(); }} />
+        <ErrorState
+          error={stats.error ?? badges.error}
+          message={t('home.loadError')}
+          onRetry={() => {
+            void stats.refetch();
+            void badges.refetch();
+          }}
+        />
       </Screen>
     );
   }
@@ -62,9 +78,9 @@ export function ProfileHome() {
     .filter((icon): icon is string => Boolean(icon));
   // Confirmation : une déconnexion accidentelle oblige à ressaisir ses identifiants.
   const confirmSignOut = () =>
-    Alert.alert('Se déconnecter', 'Tu devras te reconnecter pour retrouver ta progression.', [
-      { text: 'Annuler', style: 'cancel' },
-      { text: 'Se déconnecter', style: 'destructive', onPress: () => void signOut() },
+    Alert.alert(t('home.signOut'), t('home.signOutMessage'), [
+      { text: t('common:actions.cancel'), style: 'cancel' },
+      { text: t('home.signOut'), style: 'destructive', onPress: () => void signOut() },
     ]);
 
   return (
@@ -77,7 +93,8 @@ export function ProfileHome() {
         stickyHeaderIndices={[1]}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.accent} />
-        }>
+        }
+      >
         <View className="gap-4 pt-4">
           <WarningsBanner />
           {user?.isEmailVerified === false ? <EmailVerificationBanner /> : null}
@@ -92,7 +109,8 @@ export function ProfileHome() {
               hitSlop={10}
               accessibilityRole="button"
               className="absolute right-0 top-0 z-10 p-1 active:opacity-60"
-              accessibilityLabel="Modifier le profil">
+              accessibilityLabel={t('home.editA11y')}
+            >
               <Ionicons name="settings-outline" size={22} color={colors.muted} />
             </Pressable>
             <ProfileHeader
@@ -134,7 +152,7 @@ export function ProfileHome() {
             <ProgressionTab lines={s.lines} />
           )}
 
-          <Button label="Se déconnecter" variant="secondary" onPress={confirmSignOut} />
+          <Button label={t('home.signOut')} variant="secondary" onPress={confirmSignOut} />
         </View>
       </ScrollView>
     </Screen>

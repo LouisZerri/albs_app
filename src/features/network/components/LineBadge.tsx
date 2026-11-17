@@ -17,7 +17,8 @@ export function LineBadge({ number, color, textColor, size = 36 }: Props) {
   return (
     <View
       className="items-center justify-center rounded-full"
-      style={{ backgroundColor: color, width: size, height: size }}>
+      style={{ backgroundColor: color, width: size, height: size }}
+    >
       <Text
         numberOfLines={1}
         // Pas d'`adjustsFontSizeToFit` : iOS réduisait à tort le « 1 » à une taille illisible.
@@ -32,7 +33,8 @@ export function LineBadge({ number, color, textColor, size = 36 }: Props) {
           textAlign: 'center',
           textAlignVertical: 'center',
           includeFontPadding: false,
-        }}>
+        }}
+      >
         {number}
       </Text>
     </View>

@@ -3,6 +3,7 @@ import { RefreshControl, ScrollView, View } from 'react-native';
 
 import { ChallengesCard } from '@/features/network/components';
 import { useNetworkStats } from '@/features/network/hooks';
+import { useTranslation } from '@/i18n';
 import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, Screen, SkeletonList, Text } from '@/shared/ui';
@@ -15,6 +16,7 @@ import { JourneyCard } from './JourneyCard';
 export function DiscoverHome() {
   const router = useRouter();
   const colors = useThemeColors();
+  const { t } = useTranslation('discover');
   const journeys = useJourneys();
   const ghosts = useGhostStations();
   const stats = useNetworkStats();
@@ -34,7 +36,7 @@ export function DiscoverHome() {
       <Screen>
         <ErrorState
           error={journeys.error ?? ghosts.error}
-          message="Impossible de charger les parcours."
+          message={t('home.loadError')}
           onRetry={refresh}
         />
       </Screen>
@@ -49,16 +51,12 @@ export function DiscoverHome() {
         contentContainerClassName="gap-3 px-5 pb-8 pt-1"
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={refresh}
-            tintColor={colors.accent}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.accent} />
         }
       >
         <View className="gap-1 pb-1">
-          <Text variant="title">Découvrir</Text>
-          <Text variant="muted">Tes défis, des idées de parcours et les secrets du réseau.</Text>
+          <Text variant="title">{t('home.title')}</Text>
+          <Text variant="muted">{t('home.subtitle')}</Text>
         </View>
 
         {/* Les défis viennent des statistiques du Réseau ; s'ils ne sont pas chargés, on s'en passe. */}
@@ -70,7 +68,7 @@ export function DiscoverHome() {
         ) : null}
 
         <Text variant="label" className="pt-2">
-          Parcours
+          {t('home.journeysLabel')}
         </Text>
         {journeys.data.map((journey) => (
           <JourneyCard
@@ -82,12 +80,9 @@ export function DiscoverHome() {
 
         <View className="pt-3">
           <Text variant="label">
-            Stations fantômes · {unlocked}/{ghosts.data.length}
+            {t('home.ghostsLabel', { unlocked, total: ghosts.data.length })}
           </Text>
-          <Text variant="muted">
-            Fermées ou jamais ouvertes, on les traverse sans les voir. Descends aux stations qui les
-            encadrent pour découvrir leur histoire.
-          </Text>
+          <Text variant="muted">{t('home.ghostsIntro')}</Text>
         </View>
         {ghosts.data.map((ghost) => (
           <GhostStationCard key={ghost.key} ghost={ghost} />

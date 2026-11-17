@@ -9,11 +9,14 @@ export const NETWORK_ERROR_STATUS = 0;
 
 export class ApiError extends Error {
   readonly status: number;
+  /** Champ du formulaire visé par le refus, quand l'API le précise (ex. `username`). */
+  readonly field?: string;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, field?: string) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
+    this.field = field;
   }
 }
 

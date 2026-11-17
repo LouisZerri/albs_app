@@ -3,6 +3,7 @@ import { Image, View, type HostInstance } from 'react-native';
 
 import { LineBadge } from '@/features/network/components';
 import type { NetworkStats } from '@/features/network/types';
+import { isPlural, useTranslation } from '@/i18n';
 import { Text } from '@/shared/ui';
 
 import { rankFor } from '../lib/rank';
@@ -11,6 +12,8 @@ import { rankFor } from '../lib/rank';
 const LOGO = require('../../../../assets/images/icon.png');
 // Couleurs FIXES : l'image partagée est la même en thème clair et sombre. Fond presque noir pour
 // laisser ressortir les couleurs des lignes ; le violet de la marque ne sert qu'au grand chiffre.
+// Nom de l'app : jamais traduit.
+const APP_NAME = 'À la bonne station';
 const BACKGROUND = '#14161C';
 const HIGHLIGHT = '#A78BFA';
 
@@ -25,6 +28,7 @@ type Props = {
 
 /** La carte-souvenir à partager : progression globale, rang et état de chaque ligne. UI pure. */
 export function ShareCard({ captureRef, username, stats, since }: Props) {
+  const { t } = useTranslation('profile');
   const rank = rankFor(stats.stations.visited);
 
   return (
@@ -35,7 +39,7 @@ export function ShareCard({ captureRef, username, stats, since }: Props) {
           <View className="flex-row items-center gap-3">
             <Image source={LOGO} className="h-10 w-10 rounded-md" />
             <Text variant="subtitle" color="white">
-              À la bonne station
+              {APP_NAME}
             </Text>
           </View>
 
@@ -44,10 +48,13 @@ export function ShareCard({ captureRef, username, stats, since }: Props) {
               {stats.stations.visited}
             </Text>
             <Text variant="subtitle" color="white">
-              {stats.stations.visited > 1 ? 'stations visitées' : 'station visitée'}
+              {isPlural(stats.stations.visited) ? t('share.visitedMany') : t('share.visitedOne')}
             </Text>
             <Text color="white" style={{ opacity: 0.85 }}>
-              {stats.percent} % du métro parisien · {rank.icon} {rank.label}
+              {t('share.summary', {
+                percent: stats.percent,
+                rank: `${rank.icon} ${rank.label}`,
+              })}
             </Text>
           </View>
 
@@ -66,7 +73,7 @@ export function ShareCard({ captureRef, username, stats, since }: Props) {
                   size={34}
                 />
                 <Text color="white" style={{ fontSize: 12 }}>
-                  {line.percent} %
+                  {t('share.linePercent', { percent: line.percent })}
                 </Text>
               </View>
             ))}
@@ -74,7 +81,7 @@ export function ShareCard({ captureRef, username, stats, since }: Props) {
 
           <Text color="white" style={{ fontSize: 12, opacity: 0.75 }}>
             {username}
-            {since ? ` · depuis le ${since}` : ''}
+            {since ? ` · ${t('share.since', { date: since })}` : ''}
           </Text>
         </View>
       </View>

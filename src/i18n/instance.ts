@@ -21,6 +21,14 @@ export function deviceLanguage(): Language {
 export const dateLocale = (): string => (i18n.language === 'en' ? 'en-GB' : 'fr-FR');
 
 /**
+ * Faut-il la forme plurielle pour ce nombre ? La règle dépend de la langue : en français 0 et 1
+ * sont au singulier (« 0 station »), en anglais seul 1 l'est (« 0 stations »).
+ * À utiliser pour choisir entre les clés `…One` et `…Many`.
+ */
+export const isPlural = (count: number): boolean =>
+  i18n.language === 'en' ? count !== 1 : count > 1;
+
+/**
  * L'instance de traduction, utilisable hors de React (`i18n.t('common:errors.network')`).
  * Les deux langues sont embarquées dans l'app : aucune traduction ne dépend du réseau.
  * Dans les composants, passer par `useTranslation` (voir `./index.ts`).

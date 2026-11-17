@@ -1,3 +1,5 @@
+import { i18n } from '@/i18n/instance';
+
 import type { Bonplan } from '../types';
 
 export type LatLng = { latitude: number; longitude: number };
@@ -53,9 +55,9 @@ export function walkLabel(meters: number): string {
   const distance =
     meters < 1000
       ? `${Math.round(meters / 10) * 10} m`
-      : `${(meters / 1000).toFixed(1).replace('.', ',')} km`;
+      : `${(meters / 1000).toFixed(1).replace('.', i18n.t('bonplans:card.decimalSeparator'))} km`;
   const minutes = Math.max(1, Math.round(meters / WALK_METERS_PER_MIN));
-  return `${distance} · ${minutes} min à pied`;
+  return i18n.t('bonplans:card.walk', { distance, minutes });
 }
 
 /** Région de carte englobant tous les points, avec une marge. */

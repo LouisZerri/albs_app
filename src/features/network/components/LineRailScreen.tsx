@@ -4,11 +4,24 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
 
 import { useBadgeCelebration } from '@/features/badges';
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, Screen, Text } from '@/shared/ui';
 
-import { PROGRESS_KEY, useLineDetail, useMyProgress, useStationFeedback, useToggleStation } from '../hooks';
-import { branchOfStation, buildRail, completesLine, railIndexOf, type RailItem } from '../lib/railModel';
+import {
+  PROGRESS_KEY,
+  useLineDetail,
+  useMyProgress,
+  useStationFeedback,
+  useToggleStation,
+} from '../hooks';
+import {
+  branchOfStation,
+  buildRail,
+  completesLine,
+  railIndexOf,
+  type RailItem,
+} from '../lib/railModel';
 import { nextState, progressMap, STATE_FLAGS, stationState } from '../lib/stationState';
 import type { ProgressEntry, Station } from '../types';
 import { ForkRow } from './ForkRow';
@@ -28,6 +41,7 @@ type Props = {
 /** Écran « rail » d'une ligne : en-tête + liste tappable des stations + célébrations (badges, ligne terminée). */
 export function LineRailScreen({ id, focusStation }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation('network');
   const router = useRouter();
   const queryClient = useQueryClient();
   const { celebrate } = useBadgeCelebration();
@@ -64,7 +78,7 @@ export function LineRailScreen({ id, focusStation }: Props) {
       <Screen>
         <ErrorState
           error={lineQuery.error}
-          message="Impossible de charger la ligne."
+          message={t('rail.loadError')}
           onRetry={() => lineQuery.refetch()}
         />
       </Screen>
@@ -73,7 +87,10 @@ export function LineRailScreen({ id, focusStation }: Props) {
 
   const line = lineQuery.data;
   // Tant que l'utilisateur n'a pas choisi de branche, on montre celle de la station recherchée.
-  const rail = buildRail(line, branch ?? (focusStation ? branchOfStation(line, focusStation) : null));
+  const rail = buildRail(
+    line,
+    branch ?? (focusStation ? branchOfStation(line, focusStation) : null),
+  );
   const focusIndex = focusStation ? railIndexOf(rail.items, rail.loop, focusStation) : -1;
 
   const total = rail.realStations.length;
@@ -88,7 +105,13 @@ export function LineRailScreen({ id, focusStation }: Props) {
 
     // Dernière station de la ligne : on fête la ligne terminée, sans attendre le serveur.
     if (next === 'visited' && completesLine(rail.realStations, entries, station.id)) {
-      celebrate([{ name: `Ligne ${line.number}`, icon: '🎉', label: 'Ligne terminée' }]);
+      celebrate([
+        {
+          name: t('lineName', { number: line.number }),
+          icon: '🎉',
+          label: t('rail.lineCompleted'),
+        },
+      ]);
     }
 
     toggle.mutate(
@@ -123,14 +146,16 @@ export function LineRailScreen({ id, focusStation }: Props) {
       {/* Aide de prise en main : disparaît une fois le geste acquis (quelques stations cochées). */}
       {map.size < HINT_UNTIL_STATIONS ? (
         <View className="px-5 py-2.5">
-          <Text variant="muted">Touche une station : passé → descendu → à faire 👆</Text>
+          <Text variant="muted">{t('rail.hint')}</Text>
         </View>
       ) : null}
 
       <FlatList
         ref={listRef}
         data={rail.items}
-        keyExtractor={(item, index) => (item.type === 'loop' ? `loop-${index}` : String(item.station.id))}
+        keyExtractor={(item, index) =>
+          item.type === 'loop' ? `loop-${index}` : String(item.station.id)
+        }
         // Une ligne compte au plus quelques dizaines de stations : on les rend toutes d'emblée,
         // sinon la station visée n'existe pas encore à l'écran et le défilement ne peut pas l'atteindre.
         initialNumToRender={rail.items.length}

@@ -1,8 +1,11 @@
 import { AuthScreenLayout, RegisterForm } from '@/features/auth/components';
+import { useTranslation } from '@/i18n';
 
 export default function RegisterScreen() {
+  const { t } = useTranslation('auth');
+
   return (
-    <AuthScreenLayout title="Bienvenue à bord" subtitle="Crée ton compte pour commencer à explorer le réseau.">
+    <AuthScreenLayout title={t('register.title')} subtitle={t('register.subtitle')}>
       <RegisterForm />
     </AuthScreenLayout>
   );

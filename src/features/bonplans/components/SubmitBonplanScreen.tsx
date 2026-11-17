@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { ApiError } from '@/shared/lib';
 import { SubScreen, Text, useToast } from '@/shared/ui';
 
@@ -12,6 +13,7 @@ import { BonplanForm } from './BonplanForm';
 export function SubmitBonplanScreen({ stationId }: { stationId: number }) {
   const router = useRouter();
   const toast = useToast();
+  const { t } = useTranslation('bonplans');
   // Même requête que l'écran de la station → déjà en cache, sert juste à afficher son nom.
   const station = useStationBonplans(stationId).data?.station;
   const stationPoint =
@@ -23,7 +25,7 @@ export function SubmitBonplanScreen({ stationId }: { stationId: number }) {
   const submit = (input: BonplanInput) =>
     mutate(input, {
       onSuccess: () => {
-        toast.show('Merci ! Ton bon plan sera visible après validation.', 'success');
+        toast.show(t('submit.success'), 'success');
         router.back();
       },
     });
@@ -31,20 +33,17 @@ export function SubmitBonplanScreen({ stationId }: { stationId: number }) {
   const apiError = error
     ? error instanceof ApiError
       ? error.message
-      : 'Envoi impossible. Réessaie.'
+      : t('submit.sendError')
     : null;
 
   return (
     <SubScreen
-      title="Proposer un bon plan"
-      subtitle={station ? `Près de ${station.name}` : undefined}
+      title={t('submit.title')}
+      subtitle={station ? t('submit.nearStation', { name: station.name }) : undefined}
       onBack={() => router.back()}
     >
       <View className="gap-5 py-5">
-        <Text variant="muted">
-          Partage une bonne adresse à deux pas de la station. Elle sera vérifiée par l’équipe avant
-          d’être publiée.
-        </Text>
+        <Text variant="muted">{t('submit.intro')}</Text>
         <BonplanForm
           onSubmit={submit}
           loading={isPending}

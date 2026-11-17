@@ -1,5 +1,6 @@
 import { View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { Card, ProgressBar, Text } from '@/shared/ui';
 
@@ -16,15 +17,34 @@ type Props = {
 /** Bloc « Statistiques » du profil : 3 barres de progression. UI pure. */
 export function StatsCard({ passed, visited, totalStations, badgesEarned, badgesTotal }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation('profile');
   const rows: Row[] = [
-    { icon: '🚶', label: 'Stations passées', value: passed, max: totalStations, color: colors.passed },
-    { icon: '✅', label: 'Stations descendues', value: visited, max: totalStations, color: colors.visited },
-    { icon: '🏆', label: 'Badges', value: badgesEarned, max: badgesTotal, color: colors.accent },
+    {
+      icon: '🚶',
+      label: t('stats.passed'),
+      value: passed,
+      max: totalStations,
+      color: colors.passed,
+    },
+    {
+      icon: '✅',
+      label: t('stats.visited'),
+      value: visited,
+      max: totalStations,
+      color: colors.visited,
+    },
+    {
+      icon: '🏆',
+      label: t('stats.badges'),
+      value: badgesEarned,
+      max: badgesTotal,
+      color: colors.accent,
+    },
   ];
 
   return (
     <Card className="gap-4">
-      <Text variant="label">Statistiques</Text>
+      <Text variant="label">{t('stats.title')}</Text>
 
       {rows.map((row) => {
         const percent = row.max > 0 ? Math.round((row.value / row.max) * 100) : 0;

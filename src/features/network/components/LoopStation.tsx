@@ -49,13 +49,30 @@ export function LoopStation({
         'flex-row items-center gap-2 rounded-md active:opacity-60',
         highlighted && 'bg-accentSoft/60',
       )}
-      style={{ height: ROW_H }}>
+      style={{ height: ROW_H }}
+    >
       <View style={{ width: SIZE, height: ROW_H }} className="items-center justify-center">
         {!isFirst ? (
-          <View style={{ position: 'absolute', top: 0, height: HALF, width: 3, backgroundColor: railColor }} />
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              height: HALF,
+              width: 3,
+              backgroundColor: railColor,
+            }}
+          />
         ) : null}
         {!isLast ? (
-          <View style={{ position: 'absolute', bottom: 0, height: HALF, width: 3, backgroundColor: railColor }} />
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              height: HALF,
+              width: 3,
+              backgroundColor: railColor,
+            }}
+          />
         ) : null}
         <LoopNode state={state} color={color} textColor={textColor} />
       </View>
@@ -71,13 +88,22 @@ export function LoopStation({
   );
 }
 
-function LoopNode({ state, color, textColor }: { state: StationState; color: string; textColor: string | null }) {
+function LoopNode({
+  state,
+  color,
+  textColor,
+}: {
+  state: StationState;
+  color: string;
+  textColor: string | null;
+}) {
   const colors = useThemeColors();
   if (state === 'visited') {
     return (
       <View
         className="items-center justify-center"
-        style={{ width: SIZE, height: SIZE, borderRadius: SIZE / 2, backgroundColor: color }}>
+        style={{ width: SIZE, height: SIZE, borderRadius: SIZE / 2, backgroundColor: color }}
+      >
         <Ionicons name="checkmark" size={11} color={textColor ?? '#FFFFFF'} />
       </View>
     );

@@ -1,12 +1,13 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
+import { useLanguage, useTranslation } from '@/i18n';
 import { ApiError } from '@/shared/lib';
 import { Button, Input, Text, TextLink, useToast } from '@/shared/ui';
 
 import { useVerifyEmail } from '../hooks';
-import { loginInputSchema } from '../types';
+import { createEmailSchema } from '../types';
 
 type FieldErrors = { email?: string; code?: string };
 
@@ -15,6 +16,11 @@ export function VerifyEmailForm({ initialEmail = '' }: { initialEmail?: string }
   const router = useRouter();
   const toast = useToast();
   const { mutate, isPending, error } = useVerifyEmail();
+  const { t } = useTranslation('auth');
+  const { language } = useLanguage();
+  // Reconstruit à chaque changement de langue : les messages de validation la suivent.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const emailSchema = useMemo(() => createEmailSchema(), [language]);
 
   const [email, setEmail] = useState(initialEmail);
   const [code, setCode] = useState('');
@@ -22,10 +28,10 @@ export function VerifyEmailForm({ initialEmail = '' }: { initialEmail?: string }
 
   const submit = () => {
     const errors: FieldErrors = {};
-    if (!loginInputSchema.shape.email.safeParse(email.trim()).success) {
-      errors.email = 'Email invalide.';
+    if (!emailSchema.safeParse(email.trim()).success) {
+      errors.email = t('validation.emailInvalid');
     }
-    if (!/^\d{6}$/.test(code)) errors.code = 'Le code fait 6 chiffres.';
+    if (!/^\d{6}$/.test(code)) errors.code = t('validation.codeLength');
 
     setFieldErrors(errors);
     if (Object.values(errors).some(Boolean)) return;
@@ -34,7 +40,7 @@ export function VerifyEmailForm({ initialEmail = '' }: { initialEmail?: string }
       { email: email.trim(), code },
       {
         onSuccess: () => {
-          toast.show('Adresse confirmée, ton compte est activé.', 'success');
+          toast.show(t('verify.success'), 'success');
           router.replace('/login');
         },
       },
@@ -44,24 +50,24 @@ export function VerifyEmailForm({ initialEmail = '' }: { initialEmail?: string }
   const apiMessage = error
     ? error instanceof ApiError
       ? error.message
-      : 'Vérification impossible. Réessaie.'
+      : t('verify.failed')
     : null;
 
   return (
     <View className="gap-6">
       <View className="gap-4">
         <Input
-          label="E-mail"
+          label={t('fields.email')}
           value={email}
           onChangeText={setEmail}
           error={fieldErrors.email}
-          placeholder="toi@exemple.fr"
+          placeholder={t('fields.emailPlaceholder')}
           keyboardType="email-address"
           autoCapitalize="none"
           textContentType="emailAddress"
         />
         <Input
-          label="Code reçu par email"
+          label={t('fields.code')}
           value={code}
           onChangeText={setCode}
           error={fieldErrors.code}
@@ -78,10 +84,10 @@ export function VerifyEmailForm({ initialEmail = '' }: { initialEmail?: string }
         </Text>
       ) : null}
 
-      <Button label="Confirmer mon adresse" onPress={submit} loading={isPending} />
+      <Button label={t('verify.submit')} onPress={submit} loading={isPending} />
 
       <View className="items-center">
-        <TextLink label="Plus tard" onPress={() => router.replace('/login')} />
+        <TextLink label={t('verify.later')} onPress={() => router.replace('/login')} />
       </View>
     </View>
   );

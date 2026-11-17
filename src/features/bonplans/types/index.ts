@@ -1,8 +1,8 @@
 export {
   BONPLAN_CATEGORY_KEYS,
-  bonplanInputSchema,
   bonplanSchema,
   bonplanStationSchema,
+  createBonplanInputSchema,
   stationBonplansSchema,
   type Bonplan,
   type BonplanInput,

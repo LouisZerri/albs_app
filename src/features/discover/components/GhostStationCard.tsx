@@ -1,11 +1,14 @@
 import { View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { Card, Text } from '@/shared/ui';
 
 import type { GhostStation } from '../types';
 
 /** Une station fantôme : son histoire si elle est débloquée, sinon l'indice pour y arriver. UI pure. */
 export function GhostStationCard({ ghost }: { ghost: GhostStation }) {
+  const { t } = useTranslation('discover');
+
   return (
     <Card className="flex-row gap-3">
       <Text style={{ fontSize: 26, lineHeight: 32, opacity: ghost.unlocked ? 1 : 0.4 }}>
@@ -19,9 +22,11 @@ export function GhostStationCard({ ghost }: { ghost: GhostStation }) {
           <Text>{ghost.story}</Text>
         ) : (
           <Text variant="muted">
-            Pour la débloquer, descends à {ghost.unlockedBy.join(' et à ')}.
+            {t('ghost.unlockHint', {
+              stations: ghost.unlockedBy.join(` ${t('ghost.unlockJoin')} `),
+            })}
             {ghost.missing.length < ghost.unlockedBy.length
-              ? ` Il te manque ${ghost.missing.join(' et ')}.`
+              ? ` ${t('ghost.missing', { stations: ghost.missing.join(` ${t('ghost.missingJoin')} `) })}`
               : ''}
           </Text>
         )}

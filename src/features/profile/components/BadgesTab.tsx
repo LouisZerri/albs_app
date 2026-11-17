@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
 import { useAuth } from '@/features/auth/store';
+import { useTranslation } from '@/i18n';
 import { Text, useToast } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
 
@@ -13,6 +14,7 @@ type Section = 'earned' | 'locked';
 
 /** Onglet Badges : sous-filtre Débloqués / À débloquer + vitrine (max 2). */
 export function BadgesTab({ badges }: { badges: BadgeStatus[] }) {
+  const { t } = useTranslation('profile');
   const { user } = useAuth();
   const toggleDisplay = useToggleDisplayBadge();
   const toast = useToast();
@@ -39,12 +41,12 @@ export function BadgesTab({ badges }: { badges: BadgeStatus[] }) {
     <View className="gap-3">
       <View className="flex-row gap-2">
         <SubTab
-          label={`✅ Débloqués (${earned.length})`}
+          label={t('badges.earnedTab', { count: earned.length })}
           active={section === 'earned'}
           onPress={() => setSection('earned')}
         />
         <SubTab
-          label={`🔒 À débloquer (${locked.length})`}
+          label={t('badges.lockedTab', { count: locked.length })}
           active={section === 'locked'}
           onPress={() => setSection('locked')}
         />
@@ -52,7 +54,7 @@ export function BadgesTab({ badges }: { badges: BadgeStatus[] }) {
 
       {section === 'earned' && earned.length > 0 ? (
         <Text variant="muted" className="text-xs">
-          Touche l&apos;étoile ⭐ pour mettre jusqu&apos;à 2 badges en avant sur ton profil.
+          {t('badges.showcaseHint')}
         </Text>
       ) : null}
 
@@ -67,25 +69,35 @@ export function BadgesTab({ badges }: { badges: BadgeStatus[] }) {
         ))
       ) : (
         <Text variant="muted" className="py-6 text-center">
-          {section === 'earned' ? 'Aucun badge débloqué pour le moment.' : 'Tous les badges sont débloqués ! 🎉'}
+          {section === 'earned' ? t('badges.noneEarned') : t('badges.allEarned')}
         </Text>
       )}
     </View>
   );
 }
 
-function SubTab({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+function SubTab({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}) {
   return (
     <Pressable
       onPress={onPress}
       className={cn(
         'flex-1 items-center rounded-card border py-2',
         active ? 'border-transparent bg-accentSoft' : 'border-hair bg-surface',
-      )}>
+      )}
+    >
       <Text
         variant={active ? 'subtitle' : 'muted'}
         color={active ? 'accent' : undefined}
-        className="text-xs">
+        className="text-xs"
+      >
         {label}
       </Text>
     </Pressable>

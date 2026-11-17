@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCompleteOnboarding } from '@/features/auth/hooks';
 import { ME_QUERY_KEY } from '@/features/auth/store';
 import type { User } from '@/features/auth/types';
+import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { Button, Text, useToast } from '@/shared/ui';
 
@@ -29,6 +30,7 @@ export function OnboardingFlow() {
   const { width } = useWindowDimensions();
   const queryClient = useQueryClient();
   const toast = useToast();
+  const { t } = useTranslation('onboarding');
   const { mutate, isPending } = useCompleteOnboarding();
   const scrollRef = useRef<ScrollViewInstance>(null);
   const completedUser = useRef<User | null>(null);
@@ -51,7 +53,7 @@ export function OnboardingFlow() {
         completedUser.current = user;
         setCelebrating(true);
       },
-      onError: () => toast.show('Impossible de valider. Réessaie.', 'error'),
+      onError: () => toast.show(t('error'), 'error'),
     });
   };
 
@@ -67,7 +69,12 @@ export function OnboardingFlow() {
   }
 
   return (
-    <LinearGradient colors={GRADIENT} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
+    <LinearGradient
+      colors={GRADIENT}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{ flex: 1 }}
+    >
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
         <ScrollView
           ref={scrollRef}
@@ -75,19 +82,29 @@ export function OnboardingFlow() {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           onMomentumScrollEnd={onScrollEnd}
-          className="flex-1">
+          className="flex-1"
+        >
           {ONBOARDING_STEPS.map((step) => (
-            <View key={step.title} style={{ width }} className="flex-1 items-center justify-center px-8">
+            <View
+              key={step.key}
+              style={{ width }}
+              className="flex-1 items-center justify-center px-8"
+            >
               <View className="items-center gap-6">
                 <View className="h-24 w-24 items-center justify-center rounded-full bg-white/15">
                   <Ionicons name={step.icon} size={46} color={colors.white} />
                 </View>
                 <View className="items-center gap-3">
                   <Text variant="title" color="white" className="text-center">
-                    {step.title}
+                    {t(`steps.${step.key}.title`)}
                   </Text>
-                  <Text variant="body" color="white" className="text-center" style={{ opacity: 0.85 }}>
-                    {step.body}
+                  <Text
+                    variant="body"
+                    color="white"
+                    className="text-center"
+                    style={{ opacity: 0.85 }}
+                  >
+                    {t(`steps.${step.key}.body`)}
                   </Text>
                 </View>
               </View>
@@ -99,16 +116,18 @@ export function OnboardingFlow() {
           <View className="flex-row justify-center gap-2.5">
             {ONBOARDING_STEPS.map((s, i) => (
               <View
-                key={s.title}
+                key={s.key}
                 className={
-                  i === index ? 'h-3 w-3 rounded-full bg-white' : 'h-2.5 w-2.5 rounded-full bg-white/40'
+                  i === index
+                    ? 'h-3 w-3 rounded-full bg-white'
+                    : 'h-2.5 w-2.5 rounded-full bg-white/40'
                 }
               />
             ))}
           </View>
 
           <Button
-            label={isLast ? 'Je m’engage' : 'Continuer'}
+            label={isLast ? t('commit') : t('continue')}
             variant="inverse"
             onPress={next}
             loading={isLast && isPending}

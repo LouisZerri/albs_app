@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 
+import { isPlural, useTranslation } from '@/i18n';
 import { BottomSheet, Chip, ProgressBar, Text } from '@/shared/ui';
 
 import type { LineGeo, NetworkStats } from '../types';
@@ -35,6 +36,7 @@ export function MapProgressSheet({
   remainingOnly,
   onRemainingOnlyChange,
 }: Props) {
+  const { t } = useTranslation('network');
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -50,16 +52,19 @@ export function MapProgressSheet({
               {stats ? (
                 <>
                   <Text variant="subtitle" color="accent">
-                    {stats.percent}% du réseau
+                    {t('map.percent', { percent: stats.percent })}
                   </Text>
                   <Text variant="muted">
-                    {stats.stations.visited} / {stats.stations.total} stations visitées
+                    {t('stationsVisited', {
+                      visited: stats.stations.visited,
+                      total: stats.stations.total,
+                    })}
                   </Text>
                 </>
               ) : null}
             </View>
             <Chip
-              label="Ce qu’il me reste"
+              label={t('map.remaining')}
               active={remainingOnly}
               onPress={() => onRemainingOnlyChange(!remainingOnly)}
             />
@@ -75,7 +80,11 @@ export function MapProgressSheet({
             onPress={() => onToggleLine(line.id)}
             accessibilityRole="button"
             accessibilityState={{ selected: line.id === lineId }}
-            accessibilityLabel={`Ligne ${line.number}, ${line.visited} stations sur ${line.total}`}
+            accessibilityLabel={t(isPlural(line.visited) ? 'map.lineA11yMany' : 'map.lineA11yOne', {
+              number: line.number,
+              visited: line.visited,
+              total: line.total,
+            })}
             // Estompe les autres lignes quand une est mise en évidence (comme sur la carte).
             style={{ opacity: lineId !== null && line.id !== lineId ? 0.4 : 1 }}
             className="h-11 flex-row items-center gap-3 active:opacity-60"

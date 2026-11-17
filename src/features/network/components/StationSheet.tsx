@@ -1,5 +1,6 @@
 import { Pressable, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { fonts, useThemeColors } from '@/shared/theme';
 import { Text } from '@/shared/ui';
 import { cn } from '@/shared/utils/cn';
@@ -10,11 +11,7 @@ import { BonplansLink } from './BonplansLink';
 import { LineBadge } from './LineBadge';
 import { StationFact } from './StationFact';
 
-const STATES: { key: StationState; label: string }[] = [
-  { key: 'todo', label: 'À faire' },
-  { key: 'passed', label: 'Passé' },
-  { key: 'visited', label: 'Descendu' },
-];
+const STATES: StationState[] = ['todo', 'passed', 'visited'];
 
 type Props = {
   station: MapStation;
@@ -26,6 +23,7 @@ type Props = {
 /** Carte flottante d'une station sélectionnée sur la carte : nom + sélecteur d'état. UI pure. */
 export function StationSheet({ station, state, onSetState, onOpenBonplans }: Props) {
   const colors = useThemeColors();
+  const { t } = useTranslation('network');
   return (
     <View
       className="absolute inset-x-3 bottom-3 gap-3 rounded-card bg-surface p-4"
@@ -35,7 +33,8 @@ export function StationSheet({ station, state, onSetState, onOpenBonplans }: Pro
         shadowRadius: 12,
         shadowOffset: { width: 0, height: 4 },
         elevation: 6,
-      }}>
+      }}
+    >
       <View className="flex-row flex-wrap items-center gap-2">
         <Text variant="subtitle">{station.name}</Text>
         {station.lines.map((c) => (
@@ -52,22 +51,24 @@ export function StationSheet({ station, state, onSetState, onOpenBonplans }: Pro
       {station.fact ? <StationFact fact={station.fact} /> : null}
 
       <View className="flex-row gap-2">
-        {STATES.map((s) => {
-          const active = s.key === state;
+        {STATES.map((key) => {
+          const active = key === state;
           return (
             <Pressable
-              key={s.key}
-              onPress={() => onSetState(s.key)}
+              key={key}
+              onPress={() => onSetState(key)}
               className={cn(
                 'flex-1 flex-row items-center justify-center gap-2 rounded-card border py-2.5',
                 active ? 'border-transparent' : 'border-hair',
               )}
-              style={active ? { backgroundColor: `${colors[s.key]}22` } : undefined}>
-              <View className="h-3 w-3 rounded-full" style={{ backgroundColor: colors[s.key] }} />
+              style={active ? { backgroundColor: `${colors[key]}22` } : undefined}
+            >
+              <View className="h-3 w-3 rounded-full" style={{ backgroundColor: colors[key] }} />
               <Text
                 variant="muted"
-                style={active ? { color: colors.ink, fontFamily: fonts.semibold } : undefined}>
-                {s.label}
+                style={active ? { color: colors.ink, fontFamily: fonts.semibold } : undefined}
+              >
+                {t(`states.${key}`)}
               </Text>
             </Pressable>
           );

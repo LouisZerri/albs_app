@@ -11,6 +11,7 @@ import {
 import { Animated, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 
+import { useTranslation } from '@/i18n';
 import { ShineOverlay, Text } from '@/shared/ui';
 
 /** Ce qu'on célèbre : un badge par défaut ; `label` permet un autre intitulé (ex. « Ligne terminée »). */
@@ -49,11 +50,20 @@ export function BadgeCelebrationProvider({ children }: { children: ReactNode }) 
     <BadgeCelebrationContext.Provider value={value}>
       <View className="flex-1">{children}</View>
 
-      {current ? <BadgeCard key={current.name + queue.length} badge={current} onDismiss={dismiss} /> : null}
+      {current ? (
+        <BadgeCard key={current.name + queue.length} badge={current} onDismiss={dismiss} />
+      ) : null}
 
       {burst > 0 ? (
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-          <ConfettiCannon key={burst} count={140} origin={{ x: width / 2, y: 0 }} autoStart fadeOut fallSpeed={2600} />
+          <ConfettiCannon
+            key={burst}
+            count={140}
+            origin={{ x: width / 2, y: 0 }}
+            autoStart
+            fadeOut
+            fallSpeed={2600}
+          />
         </View>
       ) : null}
     </BadgeCelebrationContext.Provider>
@@ -61,6 +71,7 @@ export function BadgeCelebrationProvider({ children }: { children: ReactNode }) 
 }
 
 function BadgeCard({ badge, onDismiss }: { badge: CelebrationBadge; onDismiss: () => void }) {
+  const { t } = useTranslation('badges');
   const [scale] = useState(() => new Animated.Value(0.8));
   const [opacity] = useState(() => new Animated.Value(0));
 
@@ -72,14 +83,20 @@ function BadgeCard({ badge, onDismiss }: { badge: CelebrationBadge; onDismiss: (
   }, [scale, opacity]);
 
   return (
-    <Animated.View style={[StyleSheet.absoluteFill, { opacity }]} className="items-center justify-center">
+    <Animated.View
+      style={[StyleSheet.absoluteFill, { opacity }]}
+      className="items-center justify-center"
+    >
       <Pressable className="absolute inset-0 bg-black/40" onPress={onDismiss} />
 
-      <Animated.View style={{ transform: [{ scale }] }} className="w-72 overflow-hidden rounded-card">
+      <Animated.View
+        style={{ transform: [{ scale }] }}
+        className="w-72 overflow-hidden rounded-card"
+      >
         <LinearGradient colors={GOLD} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <View className="items-center gap-2 px-6 py-7">
             <Text variant="label" color="white">
-              {badge.label ?? 'Badge débloqué'}
+              {badge.label ?? t('celebration.unlocked')}
             </Text>
             <Text className="text-6xl">{badge.icon}</Text>
             <Text variant="subtitle" color="white" className="text-center">

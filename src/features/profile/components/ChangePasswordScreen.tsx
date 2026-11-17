@@ -4,6 +4,8 @@ import { View } from 'react-native';
 
 import { PasswordRules } from '@/features/auth/components';
 import { isPasswordValid } from '@/features/auth/lib/passwordRules';
+import { useTranslation } from '@/i18n';
+import { ApiError } from '@/shared/lib';
 import { Button, Input, SubScreen, Text, useToast } from '@/shared/ui';
 
 import { useUpdateProfile } from '../hooks';
@@ -14,6 +16,7 @@ type Errors = Partial<Record<Field, string>>;
 /** Changement de mot de passe : actuel + nouveau (mêmes règles qu'à l'inscription) + confirmation. */
 export function ChangePasswordScreen() {
   const router = useRouter();
+  const { t } = useTranslation('profile');
   const toast = useToast();
   const update = useUpdateProfile();
   const [currentPassword, setCurrentPassword] = useState('');
@@ -23,10 +26,9 @@ export function ChangePasswordScreen() {
 
   const save = () => {
     const errs: Errors = {};
-    if (!currentPassword) errs.currentPassword = 'Renseigne ton mot de passe actuel.';
-    if (!isPasswordValid(newPassword))
-      errs.newPassword = 'Le mot de passe ne respecte pas les règles.';
-    if (newPassword !== confirm) errs.confirm = 'Les mots de passe ne correspondent pas.';
+    if (!currentPassword) errs.currentPassword = t('password.currentRequired');
+    if (!isPasswordValid(newPassword)) errs.newPassword = t('password.rulesNotMet');
+    if (newPassword !== confirm) errs.confirm = t('password.mismatch');
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
@@ -34,23 +36,25 @@ export function ChangePasswordScreen() {
       { currentPassword, newPassword },
       {
         onSuccess: () => {
-          toast.show('Mot de passe mis à jour', 'success');
+          toast.show(t('password.updated'), 'success');
           router.back();
         },
         // Le serveur ne peut refuser que le mot de passe actuel ou le nouveau.
         onError: (e) =>
           setErrors(
-            /actuel/i.test(e.message) ? { currentPassword: e.message } : { general: e.message },
+            e instanceof ApiError && e.field === 'currentPassword'
+              ? { currentPassword: e.message }
+              : { general: e.message },
           ),
       },
     );
   };
 
   return (
-    <SubScreen title="Changer le mot de passe" onBack={() => router.back()}>
+    <SubScreen title={t('password.title')} onBack={() => router.back()}>
       <View className="gap-4 py-3">
         <Input
-          label="Mot de passe actuel"
+          label={t('password.current')}
           value={currentPassword}
           onChangeText={setCurrentPassword}
           secureTextEntry
@@ -61,7 +65,7 @@ export function ChangePasswordScreen() {
 
         <View className="gap-2">
           <Input
-            label="Nouveau mot de passe"
+            label={t('password.new')}
             value={newPassword}
             onChangeText={setNewPassword}
             secureTextEntry
@@ -73,7 +77,7 @@ export function ChangePasswordScreen() {
         </View>
 
         <Input
-          label="Confirmer le nouveau mot de passe"
+          label={t('password.confirm')}
           value={confirm}
           onChangeText={setConfirm}
           secureTextEntry
@@ -88,7 +92,7 @@ export function ChangePasswordScreen() {
           </Text>
         ) : null}
 
-        <Button label="Mettre à jour" loading={update.isPending} onPress={save} />
+        <Button label={t('password.submit')} loading={update.isPending} onPress={save} />
       </View>
     </SubScreen>
   );

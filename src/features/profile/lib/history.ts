@@ -1,3 +1,5 @@
+import { dateLocale, i18n, isPlural } from '@/i18n/instance';
+
 import type { Visit } from '../types';
 
 /**
@@ -10,20 +12,8 @@ const monthOf = (visit: Visit) => visit.visitedAt.slice(0, 7); // 2026-11
 /** Heure de la visite, « 11:01 ». */
 export const timeOf = (visit: Visit) => visit.visitedAt.slice(11, 16);
 
-const MONTHS = [
-  'janv.',
-  'févr.',
-  'mars',
-  'avr.',
-  'mai',
-  'juin',
-  'juil.',
-  'août',
-  'sept.',
-  'oct.',
-  'nov.',
-  'déc.',
-];
+/** Nom court du mois dans la langue active (« janv. », « Jan »). */
+const monthLabel = (date: Date) => date.toLocaleDateString(dateLocale(), { month: 'short' });
 
 const monthKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -62,7 +52,7 @@ export function monthlyCounts(visits: Visit[], now: Date, span = 6): MonthCount[
     const key = monthKey(date);
     return {
       key,
-      label: MONTHS[date.getMonth()],
+      label: monthLabel(date),
       count: visits.filter((v) => monthOf(v) === key).length,
     };
   });
@@ -84,7 +74,7 @@ export function groupByDay(visits: Visit[]): DayGroup[] {
 /** « 2026-11-17 » → « mardi 17 novembre 2026 ». */
 export function formatDay(day: string): string {
   const [year, month, date] = day.split('-').map(Number);
-  return new Date(year, month - 1, date).toLocaleDateString('fr-FR', {
+  return new Date(year, month - 1, date).toLocaleDateString(dateLocale(), {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -95,7 +85,7 @@ export function formatDay(day: string): string {
 /** « 2026-07-07 » → « 7 juillet 2026 ». */
 export function formatDate(day: string): string {
   const [year, month, date] = day.split('-').map(Number);
-  return new Date(year, month - 1, date).toLocaleDateString('fr-FR', {
+  return new Date(year, month - 1, date).toLocaleDateString(dateLocale(), {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -111,13 +101,18 @@ export function timeAgo(day: string, now: Date): string {
       86_400_000,
   );
 
-  if (days <= 0) return "aujourd'hui";
-  if (days === 1) return 'hier';
-  if (days < 31) return `il y a ${days} jours`;
+  if (days <= 0) return i18n.t('profile:history.today');
+  if (days === 1) return i18n.t('profile:history.yesterday');
+  if (days < 31) return i18n.t('profile:history.daysAgo', { count: days });
   const months = Math.round(days / 30.44);
-  if (months < 12) return `il y a ${months} mois`;
+  if (months < 12) {
+    const key = isPlural(months) ? 'profile:history.monthsAgoMany' : 'profile:history.monthsAgoOne';
+    return i18n.t(key, { count: months });
+  }
   const years = Math.floor(months / 12);
-  return years > 1 ? `il y a ${years} ans` : 'il y a 1 an';
+  return years > 1
+    ? i18n.t('profile:history.yearsAgoMany', { count: years })
+    : i18n.t('profile:history.yearsAgoOne');
 }
 
 export { dayOf };

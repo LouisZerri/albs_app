@@ -1,6 +1,7 @@
 import type { LineDetail, Station } from '../types';
 
-export type LoopGroup = { directionLabel: string; stations: Station[] };
+/** `directionLabel` nul = sens non précisé par le serveur : l'écran affiche alors un libellé par défaut. */
+export type LoopGroup = { directionLabel: string | null; stations: Station[] };
 export type LoopData = { label: string; groups: LoopGroup[] };
 
 /** Station de boucle à sens unique (desservie dans un seul sens). */
@@ -17,7 +18,7 @@ export function getLoop(line: LineDetail): LoopData | null {
 
   const groups: LoopGroup[] = [];
   for (const s of loopStations) {
-    const directionLabel = s.directionLabel ?? 'Boucle';
+    const directionLabel = s.directionLabel ?? null;
     let group = groups.find((g) => g.directionLabel === directionLabel);
     if (!group) {
       group = { directionLabel, stations: [] };

@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
+import { useTranslation } from '@/i18n';
 import { usePullToRefresh } from '@/shared/hooks/usePullToRefresh';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, SearchInput, SkeletonList } from '@/shared/ui';
@@ -15,6 +16,7 @@ import { StationSearchResults } from './StationSearchResults';
 
 /** Vue Liste de l'onglet Réseau : recherche de station, progression globale, liste des lignes. */
 export function NetworkList() {
+  const { t } = useTranslation('network');
   const router = useRouter();
   const { data, error, isPending, isError, refetch } = useNetworkStats();
   const { refreshing, refresh } = usePullToRefresh(refetch);
@@ -22,21 +24,17 @@ export function NetworkList() {
   const search = useStationSearch(query);
 
   if (isPending) {
-    return (
-      <SkeletonList className="pt-1" />
-    );
+    return <SkeletonList className="pt-1" />;
   }
 
   if (isError || !data) {
-    return (
-      <ErrorState error={error} message="Impossible de charger le réseau." onRetry={() => refetch()} />
-    );
+    return <ErrorState error={error} message={t('list.loadError')} onRetry={() => refetch()} />;
   }
 
   return (
     <View className="flex-1">
       <View className="px-5 pb-3">
-        <SearchInput value={query} onChangeText={setQuery} placeholder="Rechercher une station…" />
+        <SearchInput value={query} onChangeText={setQuery} placeholder={t('searchPlaceholder')} />
       </View>
 
       {search.searching ? (
@@ -45,7 +43,10 @@ export function NetworkList() {
           isPending={search.isPending}
           isError={search.isError}
           onSelect={(hit) =>
-            router.push({ pathname: '/line/[id]', params: { id: hit.line.lineId, station: hit.name } })
+            router.push({
+              pathname: '/line/[id]',
+              params: { id: hit.line.lineId, station: hit.name },
+            })
           }
         />
       ) : (

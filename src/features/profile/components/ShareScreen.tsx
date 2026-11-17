@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
+import { useTranslation } from '@/i18n';
 import { Button, ErrorState, Skeleton, SubScreen, Text, useToast } from '@/shared/ui';
 
 import { useHistory, useShareImage } from '../hooks';
@@ -12,6 +13,7 @@ import { ShareCard } from './ShareCard';
 /** Partager ma progression : aperçu de la carte-souvenir + bouton de partage. */
 export function ShareScreen() {
   const router = useRouter();
+  const { t } = useTranslation('profile');
   const toast = useToast();
   const { user } = useAuth();
   const stats = useNetworkStats();
@@ -22,17 +24,17 @@ export function ShareScreen() {
   const first = history.data?.[history.data.length - 1];
 
   const onShare = () => {
-    share().catch(() => toast.show("Impossible de partager l'image. Réessaie.", 'error'));
+    share().catch(() => toast.show(t('share.failed'), 'error'));
   };
 
   return (
-    <SubScreen title="Partager ma progression" onBack={() => router.back()}>
+    <SubScreen title={t('share.title')} onBack={() => router.back()}>
       {stats.isPending ? (
         <Skeleton className="mt-3 h-96 w-full rounded-card" />
       ) : stats.isError || !stats.data ? (
         <ErrorState
           error={stats.error}
-          message="Impossible de préparer ton image."
+          message={t('share.loadError')}
           onRetry={() => stats.refetch()}
         />
       ) : (
@@ -43,9 +45,9 @@ export function ShareScreen() {
             stats={stats.data}
             since={first ? formatDate(dayOf(first)) : undefined}
           />
-          <Button label="Partager l’image" onPress={onShare} loading={sharing} />
+          <Button label={t('share.button')} onPress={onShare} loading={sharing} />
           <Text variant="muted" className="text-center">
-            Envoie-la à tes proches ou enregistre-la dans tes photos.
+            {t('share.hint')}
           </Text>
         </View>
       )}

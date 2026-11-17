@@ -1,7 +1,8 @@
 export {
   authTokensSchema,
-  loginInputSchema,
-  registerInputSchema,
+  createEmailSchema,
+  createLoginSchema,
+  createRegisterSchema,
   userSchema,
   type AuthTokens,
   type LoginInput,

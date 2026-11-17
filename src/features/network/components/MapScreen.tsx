@@ -4,6 +4,7 @@ import { ActivityIndicator, Keyboard, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 import { useBadgeCelebration } from '@/features/badges';
+import { useTranslation } from '@/i18n';
 import { useSyncStatus } from '@/shared/hooks/useSyncStatus';
 import { useThemeColors, useThemeMode } from '@/shared/theme';
 import { ErrorState, OfflineBasemap } from '@/shared/ui';
@@ -35,6 +36,7 @@ const PARIS = { latitude: 48.8566, longitude: 2.3522, latitudeDelta: 0.17, longi
 export function MapScreen() {
   const { mode } = useThemeMode();
   const colors = useThemeColors();
+  const { t } = useTranslation('network');
   const router = useRouter();
   const network = useNetwork();
   const stats = useNetworkStats();
@@ -67,7 +69,7 @@ export function MapScreen() {
     return (
       <ErrorState
         error={network.error}
-        message="Impossible de charger la carte."
+        message={t('map.loadError')}
         onRetry={() => network.refetch()}
       />
     );

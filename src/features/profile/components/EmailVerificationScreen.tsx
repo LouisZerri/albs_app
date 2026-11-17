@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { useAuth } from '@/features/auth/store';
+import { useTranslation } from '@/i18n';
 import { Button, Input, SubScreen, Text, TextLink, useToast } from '@/shared/ui';
 
 import { useResendVerification, useVerifyEmail } from '../hooks';
@@ -10,6 +11,7 @@ import { useResendVerification, useVerifyEmail } from '../hooks';
 /** Écran de vérification d'email depuis le profil : envoi du code + saisie. */
 export function EmailVerificationScreen() {
   const router = useRouter();
+  const { t } = useTranslation('profile');
   const { user } = useAuth();
   const toast = useToast();
   const resend = useResendVerification();
@@ -20,19 +22,19 @@ export function EmailVerificationScreen() {
 
   const sendCode = () => {
     resend.mutate(undefined, {
-      onSuccess: () => toast.show('Code envoyé par email 📧', 'success'),
+      onSuccess: () => toast.show(t('verifyEmail.sent'), 'success'),
       onError: (e) => toast.show(e.message, 'error'),
     });
   };
 
   const submit = () => {
-    if (!/^\d{6}$/.test(code)) return setError('Le code fait 6 chiffres.');
+    if (!/^\d{6}$/.test(code)) return setError(t('verifyEmail.codeInvalid'));
     setError(null);
     verify.mutate(
       { email: user?.email ?? '', code },
       {
         onSuccess: () => {
-          toast.show('Adresse confirmée ✅', 'success');
+          toast.show(t('verifyEmail.confirmed'), 'success');
           router.back();
         },
         onError: (e) => setError(e.message),
@@ -41,25 +43,25 @@ export function EmailVerificationScreen() {
   };
 
   return (
-    <SubScreen title="Vérifier mon adresse" onBack={() => router.back()}>
+    <SubScreen title={t('verifyEmail.title')} onBack={() => router.back()}>
       <View className="gap-5 py-3">
         <Text variant="muted">
-          On envoie un code à 6 chiffres à{' '}
+          {t('verifyEmail.introBefore')}
           <Text variant="muted" color="ink">
             {user?.email ?? ''}
           </Text>
-          . Saisis-le ci-dessous pour confirmer ton adresse.
+          {t('verifyEmail.introAfter')}
         </Text>
 
         <Button
-          label="Envoyer le code par email"
+          label={t('verifyEmail.send')}
           variant="secondary"
           loading={resend.isPending}
           onPress={sendCode}
         />
 
         <Input
-          label="Code reçu par email"
+          label={t('verifyEmail.codeLabel')}
           value={code}
           onChangeText={setCode}
           error={error ?? undefined}
@@ -69,10 +71,10 @@ export function EmailVerificationScreen() {
           textContentType="oneTimeCode"
         />
 
-        <Button label="Confirmer" loading={verify.isPending} onPress={submit} />
+        <Button label={t('verifyEmail.confirm')} loading={verify.isPending} onPress={submit} />
 
         <View className="items-center">
-          <TextLink label="Renvoyer le code" onPress={sendCode} />
+          <TextLink label={t('verifyEmail.resend')} onPress={sendCode} />
         </View>
       </View>
     </SubScreen>

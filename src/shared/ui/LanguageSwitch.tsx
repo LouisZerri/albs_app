@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { Pressable, View } from 'react-native';
 
 import { LANGUAGES, useLanguage, useTranslation } from '@/i18n';
@@ -9,6 +10,15 @@ import { Text } from './Text';
 export function LanguageSwitch() {
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguage();
+  const queryClient = useQueryClient();
+
+  const choose = (next: typeof language) => {
+    if (next === language) return;
+    setLanguage(next);
+    // Une partie des textes vient du serveur (anecdotes, parcours, badges) : on les redemande
+    // dans la nouvelle langue. Hors ligne, ils resteront dans l'ancienne jusqu'au retour du réseau.
+    void queryClient.invalidateQueries();
+  };
 
   return (
     <View
@@ -21,7 +31,7 @@ export function LanguageSwitch() {
         return (
           <Pressable
             key={option}
-            onPress={() => setLanguage(option)}
+            onPress={() => choose(option)}
             hitSlop={6}
             accessibilityRole="radio"
             accessibilityState={{ checked: active }}
