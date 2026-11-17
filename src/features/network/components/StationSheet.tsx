@@ -8,6 +8,7 @@ import type { StationState } from '../lib/stationState';
 import type { MapStation } from '../types';
 import { BonplansLink } from './BonplansLink';
 import { LineBadge } from './LineBadge';
+import { StationFact } from './StationFact';
 
 const STATES: { key: StationState; label: string }[] = [
   { key: 'todo', label: 'À faire' },
@@ -47,6 +48,8 @@ export function StationSheet({ station, state, onSetState, onOpenBonplans }: Pro
           />
         ))}
       </View>
+
+      {station.fact ? <StationFact fact={station.fact} /> : null}
 
       <View className="flex-row gap-2">
         {STATES.map((s) => {

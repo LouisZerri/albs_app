@@ -33,8 +33,8 @@ export default function TabsLayout() {
         options={{ title: 'Bons plans', tabBarIcon: tabIcon('pricetags', 'pricetags-outline') }}
       />
       <Tabs.Screen
-        name="forum"
-        options={{ title: 'Forum', tabBarIcon: tabIcon('chatbubbles', 'chatbubbles-outline') }}
+        name="decouvrir"
+        options={{ title: 'Découvrir', tabBarIcon: tabIcon('compass', 'compass-outline') }}
       />
       <Tabs.Screen
         name="profil"

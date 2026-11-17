@@ -44,6 +44,8 @@ export const stationBonplansSchema = z.object({
     lat: z.number().nullable(),
     lng: z.number().nullable(),
     lines: z.array(correspondenceSchema),
+    /** « Pourquoi descendre ici ? » ; null si la station n'a pas d'anecdote. */
+    fact: z.string().nullable().default(null),
   }),
   bonplans: z.array(bonplanSchema),
 });

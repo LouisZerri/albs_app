@@ -48,6 +48,8 @@ export function useToggleStation() {
         // Un cochage peut débloquer un badge / faire progresser sa jauge.
         // Match par préfixe (= BADGES_KEY ['profile','badges']) sans coupler network → profile.
         queryClient.invalidateQueries({ queryKey: ['profile'] });
+        // Parcours et stations fantômes dépendent des stations visitées (même principe, clé « discover »).
+        queryClient.invalidateQueries({ queryKey: ['discover'] });
       }
     },
   });

@@ -21,6 +21,8 @@ export const mapStationSchema = z.object({
   lines: z.array(correspondenceSchema).default([]),
   /** Bons plans autour de la station (lien vers l'onglet Bons plans). */
   bonplanCount: z.number().default(0),
+  /** « Pourquoi descendre ici ? » ; null si la station n'a pas d'anecdote. */
+  fact: z.string().nullable().default(null),
 });
 export type MapStation = z.infer<typeof mapStationSchema>;
 

@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, type FlatList, View } from 'react-native';
 
 import { useThemeColors } from '@/shared/theme';
+import { StationFact } from '@/features/network/components';
 import { BottomSheet, ErrorState, FloatingAction, Screen } from '@/shared/ui';
 
 import { useBonplanActions, useStationBonplans } from '../hooks';
@@ -108,14 +109,17 @@ export function StationBonplansScreen({ id }: { id: number }) {
             expanded={expanded}
             onExpandedChange={setExpanded}
             header={
-              <CategoryChips
-                categories={categoriesOf(all)}
-                selected={category}
-                onSelect={(next) => {
-                  setCategory(next);
-                  setSelectedId(null);
-                }}
-              />
+              <View>
+                {station.fact ? <StationFact fact={station.fact} className="mx-5" /> : null}
+                <CategoryChips
+                  categories={categoriesOf(all)}
+                  selected={category}
+                  onSelect={(next) => {
+                    setCategory(next);
+                    setSelectedId(null);
+                  }}
+                />
+              </View>
             }
           >
             <BonplanList

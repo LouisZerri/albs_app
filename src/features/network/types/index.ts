@@ -1,6 +1,8 @@
 export {
+  challengeSchema,
   lineStatsSchema,
   networkStatsSchema,
+  type Challenge,
   type LineStats,
   type NetworkStats,
 } from './schemas';

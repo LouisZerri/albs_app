@@ -8,6 +8,7 @@ import { ErrorState, SearchInput, SkeletonList } from '@/shared/ui';
 import { useNetworkStats, useStationSearch } from '../hooks';
 import { resumeLine } from '../lib/resumeLine';
 import type { NetworkStats } from '../types';
+import { ChallengesCard } from './ChallengesCard';
 import { LineRow } from './LineRow';
 import { NetworkProgressCard } from './NetworkProgressCard';
 import { ResumeLineCard } from './ResumeLineCard';
@@ -82,6 +83,9 @@ function LineList({ data, isRefetching, onRefresh }: LineListProps) {
             total={data.stations.total}
           />
           {resume ? <ResumeLineCard line={resume} onPress={() => router.push(`/line/${resume.id}`)} /> : null}
+          {data.challenges.length > 0 ? (
+            <ChallengesCard challenges={data.challenges} onOpenLine={(id) => router.push(`/line/${id}`)} />
+          ) : null}
         </View>
       }
     />
