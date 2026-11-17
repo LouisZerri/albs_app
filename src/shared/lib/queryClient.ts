@@ -4,6 +4,8 @@ import type { PersistQueryClientOptions } from '@tanstack/react-query-persist-cl
 import { ApiError, isNetworkError } from './ApiError';
 import { createFilePersister } from './cachePersister';
 
+const TOO_MANY_REQUESTS = 429;
+
 /** Durée de vie des données gardées pour le hors-ligne. */
 const OFFLINE_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 30; // 30 jours
 
@@ -67,10 +69,13 @@ export function resumePendingMutations(client: QueryClient = queryClient): void 
 /**
  * Politique de réessai d'une action à ne jamais perdre : sans réseau on réessaie indéfiniment
  * (la bibliothèque met l'action en pause jusqu'au retour de la connexion), une panne serveur
- * est retentée quelques fois, un refus (4xx) est définitif.
+ * est retentée quelques fois, un refus (4xx) est définitif — sauf « trop de requêtes » (429), qui
+ * est une simple demande d'attendre.
  */
 export function retryUntilSynced(failureCount: number, error: unknown): boolean {
   if (isNetworkError(error)) return true;
+  // 429 = le serveur demande de ralentir (plafond de cochages) : ce n'est pas un refus, on renverra.
+  if (error instanceof ApiError && error.status === TOO_MANY_REQUESTS) return true;
   if (error instanceof ApiError && error.status >= 400 && error.status < 500) return false;
   return failureCount < 3;
 }

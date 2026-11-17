@@ -223,3 +223,16 @@ test('refus définitif du serveur (4xx) : pas de boucle, l’app recharge la vé
   assert.equal(sent(600).length, 1, 'un refus ne doit pas être retenté');
   assert.equal(client.getQueryState(PROGRESS_KEY)?.isInvalidated, true);
 });
+
+test('serveur qui demande de ralentir (429) : le cochage est renvoyé, pas perdu', async () => {
+  const client = newClient();
+  client.setQueryData(PROGRESS_KEY, []);
+  server = 429;
+  toggle(client, 712, true, true, '2026-11-17T08:00:00.000Z');
+  await waitFor(() => sent(700).length === 1);
+  assert.equal(client.isMutating({ mutationKey: TOGGLE_STATION_KEY }), 1, 'toujours en file');
+
+  server = 'ok';
+  await waitFor(() => client.isMutating({ mutationKey: TOGGLE_STATION_KEY }) === 0);
+  assert.equal(sent(700).length, 2);
+});
