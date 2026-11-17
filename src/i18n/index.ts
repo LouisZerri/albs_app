@@ -4,7 +4,7 @@ import { initReactI18next, useTranslation } from 'react-i18next';
 
 import { i18n, isLanguage, type Language } from './instance';
 
-export { i18n, LANGUAGES, type Language } from './instance';
+export { dateLocale, i18n, LANGUAGES, type Language } from './instance';
 export { useTranslation } from 'react-i18next';
 
 // Branche l'instance sur React (les composants se redessinent au changement de langue).

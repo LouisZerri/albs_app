@@ -17,6 +17,9 @@ export function deviceLanguage(): Language {
   return isLanguage(code) ? code : 'en';
 }
 
+/** Réglage régional pour les dates et les nombres (`toLocaleDateString(dateLocale())`). */
+export const dateLocale = (): string => (i18n.language === 'en' ? 'en-GB' : 'fr-FR');
+
 /**
  * L'instance de traduction, utilisable hors de React (`i18n.t('common:errors.network')`).
  * Les deux langues sont embarquées dans l'app : aucune traduction ne dépend du réseau.
