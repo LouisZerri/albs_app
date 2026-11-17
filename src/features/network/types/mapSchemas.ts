@@ -18,7 +18,13 @@ export const mapStationSchema = z.object({
   name: z.string(),
   lat: z.number(),
   lng: z.number(),
-  lines: z.array(correspondenceSchema).default([]),
+  /**
+   * Lignes de la station. Pour un pôle, chacune porte la position de la station SUR cette ligne
+   * (`lat`/`lng`), utilisée quand la ligne est mise en avant sur la carte.
+   */
+  lines: z
+    .array(correspondenceSchema.extend({ lat: z.number().optional(), lng: z.number().optional() }))
+    .default([]),
   /** Bons plans autour de la station (lien vers l'onglet Bons plans). */
   bonplanCount: z.number().default(0),
   /** « Pourquoi descendre ici ? » ; null si la station n'a pas d'anecdote. */

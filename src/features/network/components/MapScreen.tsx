@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { Fragment, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Keyboard, View } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 
 import { useBadgeCelebration } from '@/features/badges';
 import { useSyncStatus } from '@/shared/hooks/useSyncStatus';
@@ -15,12 +15,19 @@ import {
   useStationFeedback,
   useToggleStation,
 } from '../hooks';
+import { stationPosition } from '../lib/stationPosition';
 import { progressMap, STATE_FLAGS, stationState, type StationState } from '../lib/stationState';
 import type { MapStation } from '../types';
 import { MAP_SHEET_COLLAPSED, MapProgressSheet } from './MapProgressSheet';
 import { MapSearch } from './MapSearch';
+import { NetworkLines } from './NetworkLines';
 import { StationDot } from './StationDot';
 import { StationSheet } from './StationSheet';
+
+const toRegionCenter = ({ lat, lng }: { lat: number; lng: number }) => ({
+  latitude: lat,
+  longitude: lng,
+});
 
 const PARIS = { latitude: 48.8566, longitude: 2.3522, latitudeDelta: 0.17, longitudeDelta: 0.17 };
 
@@ -81,8 +88,9 @@ export function MapScreen() {
     let bestDist = Infinity;
     // Parmi les points affichés seulement : on ne sélectionne pas une station masquée.
     for (const s of shownStations) {
-      const dLat = s.lat - lat;
-      const dLng = (s.lng - lng) * 0.66;
+      const at = stationPosition(s, lineId);
+      const dLat = at.lat - lat;
+      const dLng = (at.lng - lng) * 0.66;
       const dist = Math.sqrt(dLat * dLat + dLng * dLng);
       if (dist < bestDist) {
         bestDist = dist;
@@ -97,8 +105,7 @@ export function MapScreen() {
     setSelected(station);
     mapRef.current?.animateToRegion(
       {
-        latitude: station.lat,
-        longitude: station.lng,
+        ...toRegionCenter(stationPosition(station, lineId)),
         latitudeDelta: 0.012,
         longitudeDelta: 0.012,
       },
@@ -141,27 +148,17 @@ export function MapScreen() {
         <Fragment key={`${online ? 'online' : 'offline'}-${mode}`}>
           {online ? null : <OfflineBasemap />}
 
-          {network.data.lines.flatMap((line) => {
-            const dim = lineId !== null && line.id !== lineId;
-            const highlighted = line.id === lineId;
-            return (line.geometry ?? []).map((segment, i) => (
-              <Polyline
-                key={`${line.id}-${i}`}
-                coordinates={segment.map(([lng, lat]) => ({ latitude: lat, longitude: lng }))}
-                strokeColor={dim ? colors.todo : line.color}
-                strokeWidth={highlighted ? 5 : dim ? 2 : 3}
-                zIndex={highlighted ? 3 : 1}
-              />
-            ));
-          })}
+          <NetworkLines lines={network.data.lines} highlightedId={lineId} />
 
           {shownStations.map((s) => {
             const st = stationState(map.get(s.id));
             const isSel = selected?.id === s.id;
+            // Sur la ligne mise en avant, le point d'un pôle se place sur CETTE ligne.
+            const at = stationPosition(s, lineId);
             return (
               <Marker
                 key={s.id}
-                coordinate={{ latitude: s.lat, longitude: s.lng }}
+                coordinate={{ latitude: at.lat, longitude: at.lng }}
                 anchor={{ x: 0.5, y: 0.5 }}
                 tracksViewChanges={isSel}
               >
