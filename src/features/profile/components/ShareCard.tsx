@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import type { Ref } from 'react';
 import { Image, View, type HostInstance } from 'react-native';
 
@@ -10,8 +9,10 @@ import { rankFor } from '../lib/rank';
 
 // Logo « hub coloré » (même image que l'icône d'app).
 const LOGO = require('../../../../assets/images/icon.png');
-// Couleurs FIXES (dégradé violet de la marque) : l'image partagée est la même en thème clair et sombre.
-const GRADIENT = ['#7C3AED', '#5B21B6'] as const;
+// Couleurs FIXES : l'image partagée est la même en thème clair et sombre. Fond presque noir pour
+// laisser ressortir les couleurs des lignes ; le violet de la marque ne sert qu'au grand chiffre.
+const BACKGROUND = '#14161C';
+const HIGHLIGHT = '#A78BFA';
 
 type Props = {
   /** Réf. de la vue capturée en image. */
@@ -29,7 +30,7 @@ export function ShareCard({ captureRef, username, stats, since }: Props) {
   return (
     // collapsable={false} : indispensable sur Android pour que la vue existe et soit capturable.
     <View ref={captureRef} collapsable={false} className="overflow-hidden rounded-card">
-      <LinearGradient colors={GRADIENT} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+      <View style={{ backgroundColor: BACKGROUND }}>
         <View className="gap-5 p-6">
           <View className="flex-row items-center gap-3">
             <Image source={LOGO} className="h-10 w-10 rounded-md" />
@@ -39,7 +40,7 @@ export function ShareCard({ captureRef, username, stats, since }: Props) {
           </View>
 
           <View>
-            <Text color="white" style={{ fontSize: 64, lineHeight: 70 }} variant="title">
+            <Text variant="title" style={{ fontSize: 64, lineHeight: 70, color: HIGHLIGHT }}>
               {stats.stations.visited}
             </Text>
             <Text variant="subtitle" color="white">
@@ -76,7 +77,7 @@ export function ShareCard({ captureRef, username, stats, since }: Props) {
             {since ? ` · depuis le ${since}` : ''}
           </Text>
         </View>
-      </LinearGradient>
+      </View>
     </View>
   );
 }
