@@ -25,10 +25,10 @@ export function ProfileShortcuts({ onOpenHistory, onOpenShare }: Props) {
           className="flex-1 flex-row items-center gap-2.5 p-3.5"
         >
           <Ionicons name={item.icon} size={20} color={colors.accent} />
+          {/* Pas de chevron : sur un écran de 390 pt il ne restait pas la place d'écrire « Historique ». */}
           <Text className="flex-1" numberOfLines={1}>
             {item.label}
           </Text>
-          <Ionicons name="chevron-forward" size={18} color={colors.muted} />
         </Card>
       ))}
     </View>

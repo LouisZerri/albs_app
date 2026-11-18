@@ -36,7 +36,7 @@ export const bonplans = {
   card: {
     proposedBy: 'Proposé par {{name}}',
     aMember: 'un membre',
-    nearStation: 'près de {{name}}',
+    nearStation: 'station {{name}}',
     walk: '{{distance}} · {{minutes}} min à pied',
     decimalSeparator: ',',
     directions: 'Y aller',
@@ -63,7 +63,7 @@ export const bonplans = {
   },
   submit: {
     title: 'Proposer un bon plan',
-    nearStation: 'Près de {{name}}',
+    nearStation: 'Station {{name}}',
     intro:
       'Partage une bonne adresse à deux pas de la station. Elle sera vérifiée par l’équipe avant d’être publiée.',
     success: 'Merci ! Ton bon plan sera visible après validation.',

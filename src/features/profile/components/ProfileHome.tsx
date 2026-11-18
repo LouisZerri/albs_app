@@ -127,6 +127,7 @@ export function ProfileHome() {
             passed={s.stations.passed}
             visited={s.stations.visited}
             totalStations={s.stations.total}
+            totalPlatforms={s.lines.reduce((sum, line) => sum + line.total, 0)}
             badgesEarned={earned}
             badgesTotal={badges.data.length}
           />

@@ -10,12 +10,21 @@ type Props = {
   passed: number;
   visited: number;
   totalStations: number;
+  /** Nombre de quais du réseau : « passé » est propre à une ligne, donc compté par quai. */
+  totalPlatforms: number;
   badgesEarned: number;
   badgesTotal: number;
 };
 
 /** Bloc « Statistiques » du profil : 3 barres de progression. UI pure. */
-export function StatsCard({ passed, visited, totalStations, badgesEarned, badgesTotal }: Props) {
+export function StatsCard({
+  passed,
+  visited,
+  totalStations,
+  totalPlatforms,
+  badgesEarned,
+  badgesTotal,
+}: Props) {
   const colors = useThemeColors();
   const { t } = useTranslation('profile');
   const rows: Row[] = [
@@ -23,7 +32,7 @@ export function StatsCard({ passed, visited, totalStations, badgesEarned, badges
       icon: '🚶',
       label: t('stats.passed'),
       value: passed,
-      max: totalStations,
+      max: totalPlatforms,
       color: colors.passed,
     },
     {

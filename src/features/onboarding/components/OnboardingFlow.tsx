@@ -46,6 +46,9 @@ export function OnboardingFlow() {
   const next = () => {
     if (!isLast) {
       scrollRef.current?.scrollTo({ x: (index + 1) * width, animated: true });
+      // L'étape avance tout de suite : la fin d'un défilement lancé par le code n'est pas
+      // signalée sur toutes les plateformes, et l'on resterait bloqué sur « Continuer ».
+      setIndex(index + 1);
       return;
     }
     mutate(undefined, {
