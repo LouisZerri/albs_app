@@ -5,6 +5,7 @@ export {
   login,
   refreshTokens,
   register,
+  requestVerificationCode,
   resetPassword,
   verifyEmail,
   type ResetPasswordInput,

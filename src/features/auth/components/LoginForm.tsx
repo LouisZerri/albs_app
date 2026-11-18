@@ -4,7 +4,7 @@ import { View } from 'react-native';
 
 import { useLanguage, useTranslation } from '@/i18n';
 import { i18n } from '@/i18n/instance';
-import { ApiError } from '@/shared/lib';
+import { ApiError, EMAIL_NOT_VERIFIED } from '@/shared/lib';
 import { Button, Input, Text, TextLink } from '@/shared/ui';
 
 import { useLogin } from '../hooks';
@@ -43,7 +43,14 @@ export function LoginForm() {
       return;
     }
     setFieldErrors({});
-    mutate(parsed.data);
+    mutate(parsed.data, {
+      // Adresse pas encore confirmée : on mène droit à l'écran du code, adresse déjà remplie.
+      onError: (e) => {
+        if (e instanceof ApiError && e.reason === EMAIL_NOT_VERIFIED) {
+          router.push({ pathname: '/verify-email', params: { email: parsed.data.email } });
+        }
+      },
+    });
   };
 
   const apiMessage = error ? messageFor(error) : null;

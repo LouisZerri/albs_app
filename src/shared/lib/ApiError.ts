@@ -11,14 +11,20 @@ export class ApiError extends Error {
   readonly status: number;
   /** Champ du formulaire visé par le refus, quand l'API le précise (ex. `username`). */
   readonly field?: string;
+  /** Motif du refus quand l'app doit réagir autrement que par un message (ex. `email_not_verified`). */
+  readonly reason?: string;
 
-  constructor(message: string, status: number, field?: string) {
+  constructor(message: string, status: number, field?: string, reason?: string) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.field = field;
+    this.reason = reason;
   }
 }
+
+/** Motif renvoyé par l'API quand la connexion est refusée faute d'adresse e-mail confirmée. */
+export const EMAIL_NOT_VERIFIED = 'email_not_verified';
 
 /** L'appel a-t-il échoué faute de connexion (et non à cause d'une réponse d'erreur du serveur) ? */
 export function isNetworkError(error: unknown): boolean {

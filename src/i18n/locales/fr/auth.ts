@@ -73,7 +73,10 @@ export const auth = {
     title: 'Confirme ton adresse',
     subtitle: 'Saisis le code à 6 chiffres qu’on vient de t’envoyer par email.',
     submit: 'Confirmer mon adresse',
-    later: 'Plus tard',
+    resend: 'Renvoyer le code',
+    resent:
+      'Si ce compte attend sa confirmation, un nouveau code vient de partir. Pense à regarder tes spams.',
+    backToLogin: 'Retour à la connexion',
     success: 'Adresse confirmée, ton compte est activé.',
     failed: 'Vérification impossible. Réessaie.',
   },

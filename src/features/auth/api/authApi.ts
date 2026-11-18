@@ -48,6 +48,11 @@ export async function verifyEmail(input: { email: string; code: string }): Promi
   await apiFetch('/api/verify-email', { method: 'POST', body: input, auth: false });
 }
 
+/** Demande un nouveau code de confirmation, sans être connecté (réponse neutre). */
+export async function requestVerificationCode(email: string): Promise<void> {
+  await apiFetch('/api/resend-verification', { method: 'POST', body: { email }, auth: false });
+}
+
 /** Marque l'onboarding comme terminé (JWT requis). Renvoie l'utilisateur à jour. */
 export async function completeOnboarding(): Promise<User> {
   const data = await apiFetch<unknown>('/api/me/complete-onboarding', { method: 'POST' });

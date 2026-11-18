@@ -73,7 +73,10 @@ export const auth: typeof fr = {
     title: 'Confirm your address',
     subtitle: 'Enter the 6-digit code we’ve just emailed you.',
     submit: 'Confirm my address',
-    later: 'Later',
+    resend: 'Resend the code',
+    resent:
+      'If this account is awaiting confirmation, a new code is on its way. Check your spam folder too.',
+    backToLogin: 'Back to sign in',
     success: 'Address confirmed, your account is now active.',
     failed: 'Could not verify your address. Try again.',
   },

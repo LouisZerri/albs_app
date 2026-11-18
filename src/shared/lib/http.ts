@@ -76,7 +76,8 @@ async function parseResponse<T>(response: Response): Promise<T> {
     throw new ApiError(
       extractErrorMessage(data) ?? i18n.t('errors.generic'),
       response.status,
-      extractField(data),
+      extractString(data, 'field'),
+      extractString(data, 'reason'),
     );
   }
 
@@ -108,11 +109,10 @@ function extractErrorMessage(data: unknown): string | null {
   return null;
 }
 
-/** Champ visé par l'erreur (`{ field }`), que l'API renseigne pour les refus liés à un champ. */
-function extractField(data: unknown): string | undefined {
-  return data && typeof data === 'object' && 'field' in data && typeof data.field === 'string'
-    ? data.field
-    : undefined;
+/** Précision facultative de l'erreur : `field` (champ du formulaire visé) ou `reason` (motif du refus). */
+function extractString(data: unknown, key: 'field' | 'reason'): string | undefined {
+  const value = data && typeof data === 'object' ? (data as Record<string, unknown>)[key] : null;
+  return typeof value === 'string' ? value : undefined;
 }
 
 function safeJsonParse(raw: string): unknown {

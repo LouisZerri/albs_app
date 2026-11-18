@@ -1,4 +1,4 @@
-export { ApiError, isNetworkError } from './ApiError';
+export { ApiError, EMAIL_NOT_VERIFIED, isNetworkError } from './ApiError';
 export { apiFetch } from './http';
 export { config } from './config';
 export { watchNetworkStatus } from './network';
