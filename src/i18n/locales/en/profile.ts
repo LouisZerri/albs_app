@@ -61,6 +61,14 @@ export const profile: typeof fr = {
     favoriteLine: 'Favourite line',
     noFavoriteLine: 'None',
   },
+  site: {
+    forum: 'Community forum',
+    forumUrl: 'https://alabonnestation.fr/en/forum',
+    terms: 'Terms of Use',
+    termsUrl: 'https://alabonnestation.fr/en/conditions-utilisation',
+    onWebsite: 'On the alabonnestation.fr website',
+    openFailed: 'Could not open the website.',
+  },
   avatar: {
     permissionDenied: 'Allow access to your photos to change your avatar.',
     updated: 'Photo updated ✅',

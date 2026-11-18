@@ -60,6 +60,14 @@ export const profile = {
     favoriteLine: 'Ligne favorite',
     noFavoriteLine: 'Aucune',
   },
+  site: {
+    forum: 'Forum de la communauté',
+    forumUrl: 'https://alabonnestation.fr/fr/forum',
+    terms: 'Conditions d’utilisation',
+    termsUrl: 'https://alabonnestation.fr/fr/conditions-utilisation',
+    onWebsite: 'Sur le site alabonnestation.fr',
+    openFailed: 'Impossible d’ouvrir le site.',
+  },
   avatar: {
     permissionDenied: 'Autorise l’accès aux photos pour changer d’avatar.',
     updated: 'Photo mise à jour ✅',

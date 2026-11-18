@@ -16,6 +16,7 @@ import { useUpdateProfile } from '../hooks';
 import { AvatarEditor } from './AvatarEditor';
 import { DangerZone } from './DangerZone';
 import { FavoriteLinePicker } from './FavoriteLinePicker';
+import { SiteLinks } from './SiteLinks';
 
 type Field = 'username' | 'email' | 'general';
 type Errors = Partial<Record<Field, string>>;
@@ -136,6 +137,8 @@ export function ProfileEditScreen() {
         </Card>
 
         <RemindersCard />
+
+        <SiteLinks />
 
         <DangerZone />
       </View>
