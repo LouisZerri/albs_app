@@ -5,7 +5,7 @@ export type LoopGroup = { directionLabel: string | null; stations: Station[] };
 export type LoopData = { label: string; groups: LoopGroup[] };
 
 /** Station de boucle à sens unique (desservie dans un seul sens). */
-export function isLoopStation(s: Station): boolean {
+export function isLoopStation(s: Pick<Station, 'branch'>): boolean {
   return s.branch === 'direction' || s.branch === 'retour';
 }
 

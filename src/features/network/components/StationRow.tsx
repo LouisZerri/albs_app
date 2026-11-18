@@ -19,11 +19,13 @@ type Props = {
   isFirst: boolean;
   isLast: boolean;
   onPress: PressableProps['onPress'];
+  /** Appui long : commence un trajet depuis cette station. */
+  onLongPress?: PressableProps['onLongPress'];
   hideBottom?: boolean;
   hideTop?: boolean;
   /** Ouvre les bons plans de la station (lien affiché une fois la station visitée). */
   onOpenBonplans?: () => void;
-  /** Station visée par une recherche : fond violet clair pour la repérer. */
+  /** Station à repérer (visée par une recherche, ou sur le trajet en cours de saisie). */
   highlighted?: boolean;
 };
 
@@ -36,6 +38,7 @@ export function StationRow({
   isFirst,
   isLast,
   onPress,
+  onLongPress,
   hideBottom,
   hideTop,
   onOpenBonplans,
@@ -47,6 +50,7 @@ export function StationRow({
   return (
     <Pressable
       onPress={onPress}
+      onLongPress={onLongPress}
       className={cn(
         'flex-row items-center pr-4 active:bg-hair/40',
         highlighted && 'bg-accentSoft/60',

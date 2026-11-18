@@ -3,7 +3,6 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
 
-import { useBadgeCelebration } from '@/features/badges';
 import { useTranslation } from '@/i18n';
 import { useThemeColors } from '@/shared/theme';
 import { ErrorState, Screen, Text } from '@/shared/ui';
@@ -12,22 +11,18 @@ import {
   PROGRESS_KEY,
   useLineDetail,
   useMyProgress,
-  useStationFeedback,
-  useToggleStation,
+  useScrollToStation,
+  useRailToggle,
+  useTrip,
 } from '../hooks';
-import {
-  branchOfStation,
-  buildRail,
-  completesLine,
-  railIndexOf,
-  type RailItem,
-} from '../lib/railModel';
-import { nextState, progressMap, STATE_FLAGS, stationState } from '../lib/stationState';
-import type { ProgressEntry, Station } from '../types';
+import { branchOfStation, buildRail, railIndexOf, type RailItem } from '../lib/railModel';
+import { progressMap, stationState } from '../lib/stationState';
+import type { Station } from '../types';
 import { ForkRow } from './ForkRow';
 import { LineHeader } from './LineHeader';
 import { LoopCard } from './LoopCard';
 import { StationRow } from './StationRow';
+import { TRIP_BAR_SPACE, TripBar } from './TripBar';
 
 /** L'aide « Touche une station… » n'est affichée que tant que l'utilisateur a coché moins de stations que ça. */
 const HINT_UNTIL_STATIONS = 5;
@@ -44,17 +39,25 @@ export function LineRailScreen({ id, focusStation }: Props) {
   const { t } = useTranslation('network');
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { celebrate } = useBadgeCelebration();
   const lineQuery = useLineDetail(id);
   const progressQuery = useMyProgress();
-  const toggle = useToggleStation();
-  const feedback = useStationFeedback();
   const listRef = useRef<FlatList<RailItem>>(null);
-  const focused = useRef(false);
-  const retries = useRef(0);
   const [branch, setBranch] = useState<string | null>(null);
 
   const map = useMemo(() => progressMap(progressQuery.data ?? []), [progressQuery.data]);
+  const line = lineQuery.data;
+  // Tant que l'utilisateur n'a pas choisi de branche, on montre celle de la station recherchée.
+  const rail = useMemo(
+    () =>
+      line
+        ? buildRail(line, branch ?? (focusStation ? branchOfStation(line, focusStation) : null))
+        : null,
+    [line, branch, focusStation],
+  );
+  const focusIndex = rail && focusStation ? railIndexOf(rail.items, rail.loop, focusStation) : -1;
+  const scrolling = useScrollToStation(listRef, focusIndex);
+  const trip = useTrip(line, rail?.realStations ?? []);
+  const onToggle = useRailToggle(line?.number, rail?.realStations ?? []);
 
   // À chaque ouverture d'une ligne : resynchronise la progression (propagation hub cross-lignes).
   useFocusEffect(
@@ -73,7 +76,7 @@ export function LineRailScreen({ id, focusStation }: Props) {
     );
   }
 
-  if (lineQuery.isError || !lineQuery.data) {
+  if (lineQuery.isError || !line || !rail) {
     return (
       <Screen>
         <ErrorState
@@ -85,53 +88,15 @@ export function LineRailScreen({ id, focusStation }: Props) {
     );
   }
 
-  const line = lineQuery.data;
-  // Tant que l'utilisateur n'a pas choisi de branche, on montre celle de la station recherchée.
-  const rail = buildRail(
-    line,
-    branch ?? (focusStation ? branchOfStation(line, focusStation) : null),
-  );
-  const focusIndex = focusStation ? railIndexOf(rail.items, rail.loop, focusStation) : -1;
-
   const total = rail.realStations.length;
   const visited = rail.realStations.filter((s) => map.get(s.id)?.stopped).length;
 
-  const onToggle = (station: Station) => {
-    // Lecture du cache le plus frais (et pas du `map` mémoïsé) → cycle fiable en rafale.
-    const entries = queryClient.getQueryData<ProgressEntry[]>(PROGRESS_KEY) ?? [];
-    const next = nextState(stationState(entries.find((e) => e.stationId === station.id)));
-
-    feedback(next); // son + haptique immédiats
-
-    // Dernière station de la ligne : on fête la ligne terminée, sans attendre le serveur.
-    if (next === 'visited' && completesLine(rail.realStations, entries, station.id)) {
-      celebrate([
-        {
-          name: t('lineName', { number: line.number }),
-          icon: '🎉',
-          label: t('rail.lineCompleted'),
-        },
-      ]);
-    }
-
-    toggle.mutate(
-      { stationId: station.id, ...STATE_FLAGS[next] },
-      { onSuccess: (res) => celebrate(res.newBadges) },
-    );
-  };
-
   const openBonplans = (station: Station) => router.push(`/bonplans/${station.id}`);
 
-  // Amène la station recherchée dans le tiers haut de l'écran.
-  const scrollToIndex = () =>
-    listRef.current?.scrollToIndex({ index: focusIndex, viewPosition: 0.3, animated: true });
-
-  // Une seule fois, quand la liste a pris sa taille. Léger délai : les lignes doivent être mesurées.
-  const scrollToFocus = () => {
-    if (focused.current || focusIndex < 0) return;
-    focused.current = true;
-    setTimeout(scrollToIndex, 80);
-  };
+  // Pendant la saisie d'un trajet, un tap choisit le départ puis l'arrivée au lieu de cocher.
+  const onPress = (station: Station) => (trip.active ? trip.pick(station) : onToggle(station));
+  const isHighlighted = (station: Station) =>
+    trip.highlighted.has(station.id) || (!trip.active && station.name === focusStation);
 
   return (
     <View className="flex-1 bg-bg">
@@ -141,10 +106,11 @@ export function LineRailScreen({ id, focusStation }: Props) {
         total={total}
         percent={total > 0 ? Math.round((visited / total) * 100) : 0}
         onBack={() => router.back()}
+        onAddTrip={() => trip.begin()}
       />
 
       {/* Aide de prise en main : disparaît une fois le geste acquis (quelques stations cochées). */}
-      {map.size < HINT_UNTIL_STATIONS ? (
+      {map.size < HINT_UNTIL_STATIONS && !trip.active ? (
         <View className="px-5 py-2.5">
           <Text variant="muted">{t('rail.hint')}</Text>
         </View>
@@ -159,14 +125,8 @@ export function LineRailScreen({ id, focusStation }: Props) {
         // Une ligne compte au plus quelques dizaines de stations : on les rend toutes d'emblée,
         // sinon la station visée n'existe pas encore à l'écran et le défilement ne peut pas l'atteindre.
         initialNumToRender={rail.items.length}
-        onContentSizeChange={scrollToFocus}
-        // Cible pas encore mesurée (hauteurs variables : fourche, boucle) → on réessaie, 3 fois au plus.
-        onScrollToIndexFailed={() => {
-          if (retries.current < 3) {
-            retries.current += 1;
-            setTimeout(scrollToIndex, 150);
-          }
-        }}
+        onContentSizeChange={scrolling.onContentSizeChange}
+        onScrollToIndexFailed={scrolling.onScrollToIndexFailed}
         renderItem={({ item, index }) => {
           if (item.type === 'loop') {
             return rail.loop ? (
@@ -175,9 +135,10 @@ export function LineRailScreen({ id, focusStation }: Props) {
                 color={line.color}
                 textColor={line.textColor}
                 map={map}
-                onToggle={onToggle}
+                onToggle={onPress}
+                onLongPress={trip.begin}
                 onOpenBonplans={openBonplans}
-                highlightedName={focusStation}
+                isHighlighted={isHighlighted}
               />
             ) : null;
           }
@@ -188,7 +149,9 @@ export function LineRailScreen({ id, focusStation }: Props) {
             textColor: line.textColor,
             isFirst: index === 0,
             isLast: index === rail.items.length - 1,
-            onPress: () => onToggle(item.station),
+            onPress: () => onPress(item.station),
+            onLongPress: () => trip.begin(item.station),
+            highlighted: isHighlighted(item.station),
             onOpenBonplans: () => openBonplans(item.station),
           };
           return item.type === 'fork' ? (
@@ -200,17 +163,18 @@ export function LineRailScreen({ id, focusStation }: Props) {
               branchesBelow={rail.branchesBelow}
             />
           ) : (
-            <StationRow
-              {...common}
-              hideTop={item.hideTop}
-              hideBottom={item.hideBottom}
-              highlighted={index === focusIndex}
-            />
+            <StationRow {...common} hideTop={item.hideTop} hideBottom={item.hideBottom} />
           );
         }}
         contentContainerClassName="pb-10"
+        // La barre du trajet recouvre le bas : on laisse de quoi faire défiler les dernières stations.
+        contentContainerStyle={
+          trip.active || trip.canUndo ? { paddingBottom: TRIP_BAR_SPACE } : undefined
+        }
         showsVerticalScrollIndicator={false}
       />
+
+      <TripBar trip={trip} />
     </View>
   );
 }

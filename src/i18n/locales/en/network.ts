@@ -34,6 +34,18 @@ export const network: typeof fr = {
     oneWay: 'one-way',
     loopFallback: 'Loop',
   },
+  trip: {
+    add: 'Trip',
+    addA11y: 'Add a trip',
+    pickStart: 'Tap your departure station.',
+    pickEnd: 'From {{from}}. Tap your arrival station.',
+    summary: '{{from}} → {{to}} · {{count}} stations',
+    confirm: 'Confirm',
+    added: 'Trip added.',
+    undo: 'Undo trip',
+    impossible: 'This trip isn’t possible on this line.',
+    nothingNew: 'This trip was already ticked off.',
+  },
   map: {
     loadError: 'Couldn’t load the map.',
     percent: '{{percent}}% of the network',

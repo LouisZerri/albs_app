@@ -36,6 +36,6 @@ export function displayStations(stations: Station[], selectedBranch: string | nu
 }
 
 /** Vrai pour la station qui porte le sélecteur de branche. */
-export function isForkStation(station: Station): boolean {
+export function isForkStation(station: Pick<Station, 'branch'>): boolean {
   return station.branch === FORK;
 }

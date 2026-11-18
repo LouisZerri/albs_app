@@ -15,9 +15,11 @@ type Props = {
   textColor: string | null;
   map: Map<number, ProgressEntry>;
   onToggle: (station: Station) => void;
+  /** Appui long : commence un trajet depuis cette station. */
+  onLongPress?: (station: Station) => void;
   onOpenBonplans: (station: Station) => void;
-  /** Nom de la station visée par une recherche, à surligner si elle est dans la boucle. */
-  highlightedName?: string;
+  /** Faut-il repérer cette station (visée par une recherche, ou sur le trajet en cours) ? */
+  isHighlighted?: (station: Station) => boolean;
 };
 
 /** Bloc « Boucle » (ex. Boucle d'Auteuil, ligne 10) : deux groupes de stations par sens. */
@@ -27,8 +29,9 @@ export function LoopCard({
   textColor,
   map,
   onToggle,
+  onLongPress,
   onOpenBonplans,
-  highlightedName,
+  isHighlighted,
 }: Props) {
   const { t } = useTranslation('network');
 
@@ -66,8 +69,9 @@ export function LoopCard({
                   isFirst={!solo && index === 0}
                   isLast={!solo && index === group.stations.length - 1}
                   onPress={() => onToggle(station)}
+                  onLongPress={onLongPress ? () => onLongPress(station) : undefined}
                   onOpenBonplans={() => onOpenBonplans(station)}
-                  highlighted={station.name === highlightedName}
+                  highlighted={isHighlighted?.(station) ?? false}
                 />
               );
             })}

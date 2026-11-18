@@ -21,6 +21,8 @@ type Props = {
   isFirst: boolean;
   isLast: boolean;
   onPress: PressableProps['onPress'];
+  onLongPress?: PressableProps['onLongPress'];
+  highlighted?: boolean;
   onOpenBonplans?: () => void;
   branches: Branch[];
   selected: string | null;
@@ -38,6 +40,8 @@ export function ForkRow({
   isFirst,
   isLast,
   onPress,
+  onLongPress,
+  highlighted,
   onOpenBonplans,
   branches,
   selected,
@@ -124,6 +128,8 @@ export function ForkRow({
       isFirst={isFirst}
       isLast={isLast}
       onPress={onPress}
+      onLongPress={onLongPress}
+      highlighted={highlighted}
       onOpenBonplans={onOpenBonplans}
     />
   );

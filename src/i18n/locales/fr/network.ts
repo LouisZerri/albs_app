@@ -36,6 +36,18 @@ export const network = {
     oneWay: 'sens unique',
     loopFallback: 'Boucle',
   },
+  trip: {
+    add: 'Trajet',
+    addA11y: 'Ajouter un trajet',
+    pickStart: 'Touche ta station de départ.',
+    pickEnd: 'Départ : {{from}}. Touche ta station d’arrivée.',
+    summary: '{{from}} → {{to}} · {{count}} stations',
+    confirm: 'Valider',
+    added: 'Trajet ajouté.',
+    undo: 'Annuler le trajet',
+    impossible: 'Ce trajet n’est pas possible sur cette ligne.',
+    nothingNew: 'Ce trajet était déjà coché.',
+  },
   map: {
     loadError: 'Impossible de charger la carte.',
     percent: '{{percent}}% du réseau',

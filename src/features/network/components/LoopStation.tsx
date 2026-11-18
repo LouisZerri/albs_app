@@ -22,8 +22,9 @@ type Props = {
   isFirst: boolean;
   isLast: boolean;
   onPress: PressableProps['onPress'];
+  onLongPress?: PressableProps['onLongPress'];
   onOpenBonplans?: () => void;
-  /** Station visée par une recherche : fond violet clair pour la repérer. */
+  /** Station à repérer (visée par une recherche, ou sur le trajet en cours de saisie). */
   highlighted?: boolean;
 };
 
@@ -36,6 +37,7 @@ export function LoopStation({
   isFirst,
   isLast,
   onPress,
+  onLongPress,
   onOpenBonplans,
   highlighted,
 }: Props) {
@@ -45,6 +47,7 @@ export function LoopStation({
   return (
     <Pressable
       onPress={onPress}
+      onLongPress={onLongPress}
       className={cn(
         'flex-row items-center gap-2 rounded-md active:opacity-60',
         highlighted && 'bg-accentSoft/60',

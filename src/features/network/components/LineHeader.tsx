@@ -15,10 +15,12 @@ type Props = {
   total: number;
   percent: number;
   onBack: () => void;
+  /** Lance la saisie d'un trajet (départ → arrivée) sur cette ligne. */
+  onAddTrip: () => void;
 };
 
 /** En-tête de l'écran rail : bouton retour, pastille, noms, progression de la ligne. */
-export function LineHeader({ line, visited, total, percent, onBack }: Props) {
+export function LineHeader({ line, visited, total, percent, onBack, onAddTrip }: Props) {
   const colors = useThemeColors();
   const { t } = useTranslation('network');
   const insets = useSafeAreaInsets();
@@ -43,6 +45,18 @@ export function LineHeader({ line, visited, total, percent, onBack }: Props) {
               {line.name}
             </Text>
           </View>
+          <Pressable
+            onPress={onAddTrip}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('trip.addA11y')}
+            className="flex-row items-center gap-1.5 rounded-pill bg-accentSoft px-3 py-2 active:opacity-70"
+          >
+            <Ionicons name="swap-vertical" size={16} color={colors.accent} />
+            <Text variant="label" color="accent">
+              {t('trip.add')}
+            </Text>
+          </Pressable>
         </View>
 
         <View className="mt-3 gap-1.5">
