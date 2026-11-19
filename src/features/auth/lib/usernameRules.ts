@@ -1,7 +1,8 @@
 /**
  * Règle des pseudos, miroir de `UsernamePolicy` côté API (et de l'inscription du site) :
  * 3 à 20 caractères, lettres sans accent, chiffres, tirets et tirets bas.
- * Les pseudos réservés (« admin »…) sont refusés par le serveur, qui renvoie son message.
+ * Le reste (noms réservés, mots interdits, répétitions, suites) est jugé par le serveur, qui
+ * renvoie son message : l'app ne recopie que la forme, pour répondre sans attendre le réseau.
  */
 export const USERNAME_MIN = 3;
 export const USERNAME_MAX = 20;
