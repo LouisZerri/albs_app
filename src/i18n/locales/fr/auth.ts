@@ -15,8 +15,8 @@ export const auth = {
   validation: {
     emailInvalid: 'Email invalide.',
     passwordRequired: 'Mot de passe requis.',
-    usernameMin: 'Le pseudo doit faire au moins 3 caractères.',
-    usernameMax: 'Le pseudo ne peut pas dépasser 30 caractères.',
+    usernameLength: 'Le pseudo doit faire entre 3 et 20 caractères.',
+    usernameCharacters: 'Lettres sans accent, chiffres, tirets et tirets bas uniquement.',
     passwordAllRules: 'Le mot de passe ne respecte pas toutes les règles.',
     passwordRules: 'Le mot de passe ne respecte pas les règles.',
     passwordMismatch: 'Les mots de passe ne correspondent pas.',

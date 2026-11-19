@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { i18n } from '@/i18n/instance';
 
 import { isPasswordValid } from '../lib/passwordRules';
+import { USERNAME_MAX, USERNAME_MIN } from '../lib/usernameRules';
 
 /**
  * Utilisateur tel que renvoyé par l'API (groupe `user:read`).
@@ -60,8 +61,9 @@ export const createRegisterSchema = () =>
     email: createEmailSchema(),
     username: z
       .string()
-      .min(3, i18n.t('auth:validation.usernameMin'))
-      .max(30, i18n.t('auth:validation.usernameMax')),
+      .min(USERNAME_MIN, i18n.t('auth:validation.usernameLength'))
+      .max(USERNAME_MAX, i18n.t('auth:validation.usernameLength'))
+      .regex(/^[a-zA-Z0-9_-]+$/, i18n.t('auth:validation.usernameCharacters')),
     plainPassword: z
       .string()
       .refine(isPasswordValid, { message: i18n.t('auth:validation.passwordAllRules') }),

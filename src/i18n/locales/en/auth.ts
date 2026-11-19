@@ -15,8 +15,8 @@ export const auth: typeof fr = {
   validation: {
     emailInvalid: 'Invalid email.',
     passwordRequired: 'Password required.',
-    usernameMin: 'Your username must be at least 3 characters long.',
-    usernameMax: 'Your username cannot be longer than 30 characters.',
+    usernameLength: 'Your username must be 3 to 20 characters long.',
+    usernameCharacters: 'Unaccented letters, digits, hyphens and underscores only.',
     passwordAllRules: 'Your password does not meet all the rules.',
     passwordRules: 'Your password does not meet the rules.',
     passwordMismatch: 'The passwords do not match.',

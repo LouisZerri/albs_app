@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import type { UpdateProfileInput } from '@/features/auth/api';
+import { usernameProblem } from '@/features/auth/lib/usernameRules';
 import { useAuth } from '@/features/auth/store';
 import { useNetworkStats } from '@/features/network/hooks';
 import { RemindersCard } from '@/features/reminders/components';
@@ -18,13 +19,15 @@ import { DangerZone } from './DangerZone';
 import { FavoriteLinePicker } from './FavoriteLinePicker';
 import { SiteLinks } from './SiteLinks';
 
-type Field = 'username' | 'email' | 'general';
+type Field = 'username' | 'email' | 'currentPassword' | 'general';
 type Errors = Partial<Record<Field, string>>;
 
 /** Champ sous lequel afficher un refus du serveur : celui que l'API désigne, sinon « general ». */
 function fieldOf(error: Error): Field {
   const field = error instanceof ApiError ? error.field : undefined;
-  return field === 'username' || field === 'email' ? field : 'general';
+  return field === 'username' || field === 'email' || field === 'currentPassword'
+    ? field
+    : 'general';
 }
 
 /** Écran d'édition du profil : avatar, identité, ligne favorite ; accès au mot de passe et à la suppression. */
@@ -39,6 +42,9 @@ export function ProfileEditScreen() {
 
   const [username, setUsername] = useState(user?.username ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
+  // Demandé seulement si l'adresse change : c'est elle qui permet de récupérer le compte.
+  const [currentPassword, setCurrentPassword] = useState('');
+  const emailChanged = email.trim() !== (user?.email ?? '');
   const [favoriteLineId, setFavoriteLineId] = useState<number | null>(
     user?.favoriteLine?.id ?? null,
   );
@@ -50,20 +56,17 @@ export function ProfileEditScreen() {
 
     const name = username.trim();
     if (name !== user?.username) {
-      if (name.length < 3 || name.length > 30) {
-        errs.username = t('edit.usernameLength');
-      } else {
-        payload.username = name;
-      }
+      const problem = usernameProblem(name);
+      if (problem === 'length') errs.username = t('edit.usernameLength');
+      else if (problem === 'characters') errs.username = t('edit.usernameCharacters');
+      else payload.username = name;
     }
 
     const mail = email.trim();
-    if (mail !== user?.email) {
-      if (!/^\S+@\S+\.\S+$/.test(mail)) {
-        errs.email = t('edit.emailInvalid');
-      } else {
-        payload.email = mail;
-      }
+    if (emailChanged) {
+      if (!/^\S+@\S+\.\S+$/.test(mail)) errs.email = t('edit.emailInvalid');
+      else if (currentPassword === '') errs.currentPassword = t('edit.emailPasswordRequired');
+      else Object.assign(payload, { email: mail, currentPassword });
     }
 
     if (favoriteLineId !== (user?.favoriteLine?.id ?? null)) {
@@ -81,6 +84,11 @@ export function ProfileEditScreen() {
 
     update.mutate(payload, {
       onSuccess: () => {
+        // Nouvelle adresse : on mène à la saisie du code, la prochaine connexion l'exigera.
+        if (payload.email) {
+          toast.show(t('edit.emailChanged'), 'success');
+          return router.replace('/profile/verify-email');
+        }
         toast.show(t('edit.saved'), 'success');
         router.back();
       },
@@ -109,6 +117,18 @@ export function ProfileEditScreen() {
             keyboardType="email-address"
             error={errors.email}
           />
+          {emailChanged ? (
+            <Input
+              label={t('edit.emailPassword')}
+              placeholder={t('edit.emailPasswordHint')}
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+              secureTextEntry
+              autoComplete="current-password"
+              textContentType="password"
+              error={errors.currentPassword}
+            />
+          ) : null}
         </View>
 
         {stats.data ? (
